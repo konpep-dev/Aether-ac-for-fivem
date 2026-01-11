@@ -378,15 +378,20 @@ Config.BlacklistedWeapons = {
 ## 📁 Project Structure
 
 ```
-aether-anticheat/
+wasteland_admin/
+├── 📄 fxmanifest.lua
 ├── 📄 config.lua
 ├── 📄 client.lua
-├── 📄 server.lua
+├── �  server.lua
+├── 📄 nametag.lua
+├── 📄 nametag_server.lua
 ├── 📁 anticheat/
 │   ├── 📄 client.lua
 │   └── 📄 server.lua
-├── 📁 api/
-│   └── 📄 discord_screenshots.py
+├── � api/s
+│   ├── 📄 discord_screenshots.py
+│   ├── � requirerments.txt
+│   └── � start__api.bat
 ├── 📁 data/
 │   └── 📄 schema.sql
 ├── 📁 images/
@@ -394,6 +399,16 @@ aether-anticheat/
 │   ├── 🖼️ admin_panel.png
 │   └── 🖼️ discord.png
 └── 📁 web/
+    ├── 📄 index.html
+    ├── 📄 package.json
+    ├── 📄 vite.config.ts
+    ├── 📁 ban/
+    │   └── 📄 index.html
+    └── 📁 src/
+        ├── 📄 App.tsx
+        ├── 📄 main.tsx
+        ├── 📄 styles.css
+        └── 📄 types.ts
 ```
 
 <br/>
@@ -406,7 +421,8 @@ aether-anticheat/
 
 ## 🆘 Support
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Support-5865F2?style=for-the-badge&logo=discord)](https://discord.gg/your-server)
+**Discord:** 𝓴𝓸𝓷𝓹𝓮𝓹ᵗᵐ
+**ID:** `926572380409712660`
 
 <br/>
 
@@ -416,7 +432,7 @@ aether-anticheat/
 
 ## 💖 Credits
 
-**Developed by [konpep](https://github.com/konpep)**
+**Developed by [konpep](https://github.com/konpep-dev)**
 
 <sub>Aether Anticheat v4.0 • Made with ❤️ for FiveM</sub>
 
