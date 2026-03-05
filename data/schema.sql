@@ -1,4 +1,4 @@
--- Wasteland Admesxlegacy_5bcb97in Panel Database Schema
+-- Wasteland Admin Panel Database Schema
 -- Run this SQL to create all required tables
 
 -- =============================================
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `admin_permissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================
--- Bans Table
+-- Bans Table (WITH SCREENSHOT SUPPORT)
 -- =============================================
 CREATE TABLE IF NOT EXISTS `admin_bans` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `admin_bans` (
     `admin` VARCHAR(100),
     `expiry` BIGINT,
     `screenshot_url` VARCHAR(500),
+    `screenshot` LONGBLOB,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_license` (`license`),
     INDEX `idx_license2` (`license2`),

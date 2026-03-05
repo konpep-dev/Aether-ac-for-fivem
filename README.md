@@ -6,9 +6,10 @@
 
 ### Advanced Protection System for FiveM
 
-[![Version](https://img.shields.io/badge/Version-4.0-7289DA?style=for-the-badge)](https://github.com)
+[![Version](https://img.shields.io/badge/Version-4.5.0-7289DA?style=for-the-badge)](https://github.com/konpep-dev/Aether-ac-for-fivem)
 [![FiveM](https://img.shields.io/badge/FiveM-Ready-F97316?style=for-the-badge)](https://fivem.net)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge)](https://discord.gg/your-server)
+[![Protected](https://img.shields.io/badge/Protected-Anti--Tamper-FF0000?style=for-the-badge)](https://github.com/konpep-dev/Aether-ac-for-fivem)
 
 <br/>
 
@@ -18,13 +19,59 @@
 
 **🔒 Protect your server from cheaters with advanced detection systems**
 
+**Coded by konpep**
+
 <br/>
 
-[📖 Documentation](#-documentation) • [⚡ Quick Start](#-quick-start) • [📸 Screenshots](#-screenshots) • [🔌 Developer API](#-developer-api)
+[📖 Documentation](#-documentation) • [⚡ Quick Start](#-quick-start) • [🆕 What's New](#-whats-new-v45) • [📸 Screenshots](#-screenshots) • [🔌 Developer API](#-developer-api)
 
 ---
 
 </div>
+
+<br/>
+
+## 🆕 What's New (v4.5)
+
+### 🔐 Anti-Tamper Protection
+- **Obfuscated protection system** - Cannot be bypassed or removed
+- **Author verification** - Ensures credits remain intact
+- **File integrity checks** - Detects tampering attempts
+- **Automatic blocking** - Blocks all connections if tampered
+
+### 🌍 Anti-VPN System
+- **VPN/Proxy detection** - Blocks VPN and proxy connections
+- **Country blacklist** - Block specific countries/regions
+- **IP caching** - Saves API requests (7-day cache)
+- **Beautiful cards** - Professional connection denial screens
+- **Webhook notifications** - Get notified of blocked connections
+
+### 🔄 Auto-Update System
+- **GitHub integration** - Checks for updates automatically
+- **Version comparison** - Smart version checking
+- **Admin notifications** - In-game update alerts
+- **Config backup** - Preserves your settings during updates
+- **Commands**: `/checkupdate`, `/update`
+
+### 📊 Player Info System
+- **Detailed player info** - View all player data with `/info [id]`
+- **Screenshot viewer** - Browse player screenshots with arrow keys
+- **Connection history** - Track player connections and bans
+- **Beautiful UI** - Native Lua UI with modern design
+- **Admin only** - Secure access control
+
+### 🎨 AC Info Command
+- **`/ac info`** - Beautiful info card showing AC details
+- **Version display** - Shows current version (4.5)
+- **Feature list** - All protection features listed
+- **Minimal design** - Clean and professional UI
+- **Press C** - View screenshots in player info
+
+### 🛡️ Enhanced Anticheat
+- **Blacklisted plates** - Detects cheat signature plates
+- **Illegal vehicle mods** - Blocks modifications outside mechanic shops
+- **Debug mode** - Toggle debug messages with `Config.Debug`
+- **Better detection** - Improved godmode, noclip, teleport detection
 
 <br/>
 
@@ -116,6 +163,33 @@ Players see a professional ban screen with their screenshot, reason, and appeal 
 | 🔫 **Weapon Blacklist** | Railgun, alien weapons | ✅ |
 | 💓 **Heartbeat System** | Disabled anticheat detection | ✅ |
 | 📦 **Anti-Resource Stop** | Prevents stopping server resources | ✅ |
+| 🚨 **Anti-Spam System** | Vehicle/Prop/Ped spam detection | ✅ |
+| 🧱 **Anti-Prop** | Whitelist-based prop protection | ✅ |
+
+<br/>
+
+### 🚨 Advanced Spam Detection System
+
+Aether includes an intelligent spam detection system that monitors entity spawning patterns:
+
+| Entity Type | Detection Features | Action |
+|-------------|-------------------|--------|
+| 🚗 **Vehicles** | Short/medium/long window tracking, same model detection, cluster analysis | Ban/Kick |
+| 🧱 **Props** | Whitelist enforcement, spam pattern detection, cluster analysis | Ban/Kick |
+| 👤 **Peds** | Spawn rate monitoring, model tracking, cluster detection | Ban/Kick |
+
+**How it works:**
+- Tracks entity spawns in multiple time windows (5s, 15s, 30s)
+- Detects same model spam (e.g., 10x same vehicle)
+- Analyzes spatial clustering (entities spawned close together)
+- Ignores ambient traffic and server-spawned entities
+- Respects safe mode and admin permissions
+
+**Prop Protection:**
+- Only whitelisted props can be spawned
+- Illegal props are instantly deleted
+- Player is banned immediately for spawning illegal props
+- Configure whitelist in `Config.WhitelistedProps`
 
 <br/>
 
@@ -142,13 +216,78 @@ Players see a professional ban screen with their screenshot, reason, and appeal 
 
 ### ⚠️ IMPORTANT FOR SCRIPT DEVELOPERS
 
-**Use these events to prevent false bans in your scripts!**
+**Aether Anticheat v4.0 includes AUTO-INTEGRATION and EXPORTS to prevent false bans!**
 
 </div>
 
 <br/>
 
-### 📋 Quick Reference
+### 🎯 Auto-Integration (NEW!)
+
+**No manual setup needed!** Aether automatically integrates with popular scripts:
+
+| Script | Auto-Detected | Safe Mode Duration |
+|--------|:-------------:|:------------------:|
+| qb-multicharacter | ✅ | 5 seconds |
+| qbx_multicharacter | ✅ | 5 seconds |
+| esx_multicharacter | ✅ | 5 seconds |
+| qb-spawn | ✅ | 3 seconds |
+| qbx_spawn | ✅ | 3 seconds |
+| qb-ambulancejob | ✅ | 3 seconds |
+| esx_ambulancejob | ✅ | 3 seconds |
+
+**How it works:**
+- Aether listens to common events (character selection, spawn, revive)
+- Automatically enables "Safe Mode" for players
+- Disables anticheat checks temporarily
+- Re-enables after the action completes
+
+**No configuration needed - it just works!** 🎉
+
+<br/>
+
+### 🔧 Manual Integration (For Custom Scripts)
+
+If you have a custom script, use these exports:
+
+#### Server-Side Exports
+
+```lua
+-- Enable Safe Mode for a player
+exports['aether-anticheat']:SetPlayerSafeMode(source, true)
+
+-- Your code here (spawn, teleport, etc)
+-- Player won't get banned during this time
+
+-- Disable Safe Mode after 5 seconds
+SetTimeout(5000, function()
+    exports['aether-anticheat']:SetPlayerSafeMode(source, false)
+end)
+```
+
+#### Check if Player is in Safe Mode
+
+```lua
+local isSafe = exports['aether-anticheat']:IsPlayerInSafeMode(source)
+if isSafe then
+    print('Player is protected from anticheat')
+end
+```
+
+#### Add Custom Auto-Integration
+
+```lua
+-- Add your own script to auto-integration
+exports['aether-anticheat']:AddAutoIntegration(
+    'my-custom-script',           -- Resource name
+    'my-script:spawnPlayer',      -- Event name
+    5000                          -- Duration in ms
+)
+```
+
+<br/>
+
+### 📋 Quick Reference (Legacy Events)
 
 | Action | Event | Duration |
 |--------|-------|----------|
@@ -161,112 +300,134 @@ Players see a professional ban screen with their screenshot, reason, and appeal 
 
 <br/>
 
-### 🏥 Heal / Revive Protection
+### 🏥 Example: Custom Spawn Script
 
 ```lua
 -- SERVER SIDE
-RegisterNetEvent('hospital:revivePlayer', function(targetId)
-    -- ⚠️ Notify anticheat BEFORE healing
-    TriggerClientEvent('anticheat:adminActionProtection', targetId, 'revive', 10000)
-    Wait(100)
-    
-    -- Now safe to revive
-    SetEntityHealth(GetPlayerPed(targetId), 200)
-end)
-```
-
-<br/>
-
-### ⚡ Teleport Protection
-
-```lua
--- SERVER SIDE
-RegisterNetEvent('teleport:toLocation', function(targetId, x, y, z)
-    -- ⚠️ Notify anticheat BEFORE teleporting
-    TriggerClientEvent('anticheat:adminActionProtection', targetId, 'teleport', 5000)
-    Wait(100)
-    
-    SetEntityCoords(GetPlayerPed(targetId), x, y, z)
-end)
-```
-
-<br/>
-
-### 🏠 Spawn Protection
-
-```lua
--- SERVER SIDE
-RegisterNetEvent('spawn:playerSpawned', function(spawnPoint)
+RegisterNetEvent('myspawn:selectSpawn', function(spawnId)
     local src = source
     
-    -- ⚠️ Enable spawn protection
-    TriggerClientEvent('anticheat:setSpawnProtection', src, true, 15000)
-    Wait(100)
+    -- Method 1: Use Safe Mode (RECOMMENDED)
+    exports['aether-anticheat']:SetPlayerSafeMode(src, true)
     
-    SetEntityCoords(GetPlayerPed(src), spawnPoint.x, spawnPoint.y, spawnPoint.z)
+    -- Spawn player
+    local coords = GetSpawnCoords(spawnId)
+    SetEntityCoords(GetPlayerPed(src), coords.x, coords.y, coords.z)
     SetEntityHealth(GetPlayerPed(src), 200)
+    
+    -- Disable Safe Mode after 5 seconds
+    SetTimeout(5000, function()
+        exports['aether-anticheat']:SetPlayerSafeMode(src, false)
+    end)
 end)
 ```
 
 <br/>
 
-### 🏰 Safezone Protection
+### ⚡ Example: Custom Teleport Script
+
+```lua
+-- SERVER SIDE
+RegisterCommand('tpto', function(source, args)
+    local src = source
+    local targetId = tonumber(args[1])
+    
+    if not targetId then return end
+    
+    -- Enable Safe Mode
+    exports['aether-anticheat']:SetPlayerSafeMode(src, true)
+    
+    -- Teleport
+    local targetPed = GetPlayerPed(targetId)
+    local targetCoords = GetEntityCoords(targetPed)
+    SetEntityCoords(GetPlayerPed(src), targetCoords.x, targetCoords.y, targetCoords.z)
+    
+    -- Disable after 3 seconds
+    SetTimeout(3000, function()
+        exports['aether-anticheat']:SetPlayerSafeMode(src, false)
+    end)
+end)
+```
+
+<br/>
+
+### 🏰 Example: Safezone Script
 
 ```lua
 -- CLIENT SIDE
 -- Entering safezone
-exports['aether-anticheat']:SetSafezoneProtection(true, 'safezone_name')
-SetPlayerInvincible(PlayerId(), true)
+AddEventHandler('safezone:enter', function(zoneName)
+    exports['aether-anticheat']:SetSafezoneProtection(true, zoneName)
+    SetPlayerInvincible(PlayerId(), true)
+end)
 
 -- Leaving safezone
-exports['aether-anticheat']:SetSafezoneProtection(false)
-SetPlayerInvincible(PlayerId(), false)
+AddEventHandler('safezone:exit', function()
+    exports['aether-anticheat']:SetSafezoneProtection(false)
+    SetPlayerInvincible(PlayerId(), false)
+end)
 ```
 
 <br/>
 
-### 📝 All Available Events
+### 📝 All Available Exports
 
-| Event | Parameters | Side |
-|-------|------------|------|
-| `anticheat:adminActionProtection` | `playerId, actionType, durationMs` | Server→Client |
-| `anticheat:setSpawnProtection` | `playerId, enabled, durationMs` | Server→Client |
-| `SetSafezoneProtection` (export) | `enabled, zoneName` | Client |
+| Export | Parameters | Side | Description |
+|--------|------------|------|-------------|
+| `SetPlayerSafeMode` | `source, enabled` | Server | Enable/disable anticheat for player |
+| `IsPlayerInSafeMode` | `source` | Server | Check if player is protected |
+| `AddAutoIntegration` | `resource, event, duration` | Server | Add custom auto-integration |
+| `SetSafezoneProtection` | `enabled, zoneName` | Client | Safezone protection |
 
 <br/>
 
 <details>
-<summary><b>💡 Complete Examples (Click to expand)</b></summary>
+<summary><b>💡 More Examples (Click to expand)</b></summary>
 
 ### Hospital Script
 ```lua
 RegisterNetEvent('hospital:heal', function(targetId)
-    TriggerClientEvent('anticheat:adminActionProtection', targetId, 'heal', 5000)
+    exports['aether-anticheat']:SetPlayerSafeMode(targetId, true)
     Wait(100)
     SetEntityHealth(GetPlayerPed(targetId), 200)
+    SetTimeout(5000, function()
+        exports['aether-anticheat']:SetPlayerSafeMode(targetId, false)
+    end)
 end)
 ```
 
-### Spawn Script
-```lua
-RegisterNetEvent('spawn:select', function(spawnId)
-    local src = source
-    TriggerClientEvent('anticheat:setSpawnProtection', src, true, 15000)
-    Wait(100)
-    -- Spawn code here
-end)
-```
-
-### Admin Script
+### Admin Godmode
 ```lua
 RegisterNetEvent('admin:godmode', function(targetId)
-    TriggerClientEvent('anticheat:adminActionProtection', targetId, 'godmode', 999999)
+    exports['aether-anticheat']:SetPlayerSafeMode(targetId, true)
     Wait(100)
     SetPlayerInvincible(targetId, true)
+    -- Keep safe mode enabled while godmode is active
+end)
+```
+
+### Character Creation
+```lua
+RegisterNetEvent('character:create', function()
+    local src = source
+    exports['aether-anticheat']:SetPlayerSafeMode(src, true)
+    
+    -- Character creation code...
+    
+    -- Disable after character is created and spawned
+    SetTimeout(10000, function()
+        exports['aether-anticheat']:SetPlayerSafeMode(src, false)
+    end)
 end)
 ```
 
 </details>
+
+<br/>
+
+### 📖 Full Integration Guide
+
+For detailed integration examples, see **[INTEGRATION.md](INTEGRATION.md)**
 
 <br/>
 
@@ -281,8 +442,9 @@ end)
 ```
 ✅ FiveM Server (latest)
 ✅ oxmysql
-✅ screenshot-basic
-✅ Python 3.8+ (optional)
+✅ screenshot-basic (optional)
+✅ Python 3.8+ (optional - for Discord screenshots)
+✅ QBCore / QBX / ESX (optional - auto-detected)
 ```
 
 ### 2️⃣ Installation
@@ -293,7 +455,7 @@ mysql -u root -p your_database < data/schema.sql
 
 # Add to server.cfg
 ensure oxmysql
-ensure screenshot-basic
+ensure screenshot-basic  # optional
 ensure aether-anticheat
 ```
 
@@ -301,16 +463,47 @@ ensure aether-anticheat
 
 ```lua
 -- config.lua
+
+-- Framework (auto-detects QBCore, QBX, ESX, or runs standalone)
+Config.Framework = 'auto'  -- Options: 'auto', 'qb', 'qbx', 'esx', 'standalone'
+
+-- Discord Webhooks
 Config.Webhooks = {
     anticheat = 'https://discord.com/api/webhooks/...',
 }
 
+-- Admins
 Config.Admins = {
     ['license:xxxxxxxx'] = 'superadmin',
 }
 
 Config.DiscordInvite = 'https://discord.gg/your-server'
 ```
+
+### 🔧 Framework Support (NEW!)
+
+**Aether v4.0 includes `framework.lua` for automatic framework detection!**
+
+The system automatically detects and supports:
+- **QBCore** (`qb-core`) - Full integration
+- **QBX** (`qbx_core`) - Full integration  
+- **ESX** (`es_extended`) - Full integration
+- **Standalone** - Works without any framework
+
+**Framework Features:**
+- ✅ Auto-detection on startup (no manual configuration needed)
+- ✅ Player management (get player, identifier, job, money)
+- ✅ Inventory system (add/remove items, ox_inventory support)
+- ✅ Notifications (framework-specific or fallback to chat)
+- ✅ Revive system (uses framework ambulance scripts)
+- ✅ Safe mode tracking (prevents false bans during character selection)
+
+**Supported Frameworks:**
+```lua
+Config.Framework = 'auto'  -- Options: 'auto', 'qb', 'qbx', 'esx', 'standalone'
+```
+
+The framework is automatically detected when set to `'auto'`. All admin panel features adapt to your framework automatically!
 
 <br/>
 
@@ -435,5 +628,165 @@ wasteland_admin/
 **Developed by [konpep](https://github.com/konpep-dev)**
 
 <sub>Aether Anticheat v4.0 • Made with ❤️ for FiveM</sub>
+
+</div>
+
+
+---
+
+## ⚙️ Configuration
+
+### 🔐 Anti-VPN Setup
+
+```lua
+Config.AntiVPN = {
+    enabled = true,
+    apiKey = 'YOUR_PROXYCHECK_IO_API_KEY',  -- Get free key from proxycheck.io
+    cacheDuration = 7 * 24 * 60 * 60,  -- Cache IPs for 7 days
+    countryBlacklistEnabled = true,
+    blacklistedCountries = {
+        ['CN'] = true,  -- China
+        ['RU'] = true,  -- Russia
+        -- Add more country codes as needed
+    }
+}
+```
+
+### 🐛 Debug Mode
+
+```lua
+Config.Debug = true  -- Enable debug messages
+Config.Debug = false -- Disable debug messages (production)
+```
+
+### 🚗 Vehicle Protection
+
+```lua
+-- Blacklisted plates (cheat signatures)
+Config.BlacklistedPlates = {
+    'EULEN',
+    'MODDER',
+    'CHEATER',
+    -- Add more plates
+}
+
+-- Mechanic shop locations (where mods are allowed)
+Config.MechanicShops = {
+    {x = -337.0, y = -136.0, z = 39.0, radius = 30.0},
+    -- Add your mechanic shops
+}
+```
+
+---
+
+## 📝 Commands
+
+### Admin Commands
+- `/ac info` - Show anticheat information
+- `/info [playerid]` - View detailed player information
+- `/checkupdate` - Check for script updates
+- `/update` - Show update installation instructions
+- `/checkip [ip]` - Check if IP is VPN/Proxy (admins)
+- `/clearvpncache` - Clear VPN cache (superadmins)
+
+### Player Info UI
+- **Press C** - Toggle screenshot viewer
+- **← →** - Navigate between screenshots
+- **Enter/ESC** - Close UI
+
+---
+
+## 🔒 Anti-Tamper Protection
+
+This script is protected by an advanced anti-tamper system:
+
+- ✅ **Obfuscated protection** - Cannot be easily bypassed
+- ✅ **Author verification** - Ensures credits remain intact
+- ✅ **File integrity checks** - Detects tampering attempts
+- ✅ **Automatic blocking** - Blocks all connections if tampered
+
+### ⚠️ Important
+- **DO NOT** remove author credits
+- **DO NOT** delete `anti_tamper.lua`
+- **DO NOT** modify the fxmanifest author field
+- Doing so will block all server connections
+
+---
+
+## 🔄 Auto-Update
+
+The script automatically checks for updates every 30 minutes:
+
+1. Checks GitHub for new releases
+2. Notifies admins in-game
+3. Sends Discord webhook notification
+4. Use `/update` for installation instructions
+
+### Update Process
+1. Your `config.lua` is backed up to `config.lua.bk`
+2. Download latest release from GitHub
+3. Extract and replace files (keep `config.lua.bk`)
+4. Restore your settings from backup
+5. Restart the resource
+
+---
+
+## 🛡️ Protection Features
+
+### Detections
+- ✅ Godmode (multiple methods)
+- ✅ Noclip
+- ✅ Teleport
+- ✅ Speed hacks
+- ✅ Weapon spawning
+- ✅ Vehicle spawning
+- ✅ Blacklisted plates
+- ✅ Illegal vehicle modifications
+- ✅ Resource manipulation
+- ✅ Executor detection
+- ✅ VPN/Proxy connections
+- ✅ Blacklisted countries
+
+### Protection Systems
+- ✅ Spawn protection
+- ✅ Ragdoll protection
+- ✅ Safezone protection
+- ✅ Admin action protection
+- ✅ Debug mode for testing
+- ✅ Screenshot evidence
+- ✅ Discord logging
+- ✅ IP caching
+- ✅ Anti-tamper
+
+---
+
+## 📞 Support
+
+- **GitHub**: [Issues](https://github.com/konpep-dev/Aether-ac-for-fivem/issues)
+- **Discord**: Join our Discord server
+- **Documentation**: Check the wiki
+
+---
+
+## 📜 License
+
+This script is protected and copyrighted by **konpep**.
+
+- ✅ Free to use on your FiveM server
+- ❌ Do not remove author credits
+- ❌ Do not resell or redistribute
+- ❌ Do not claim as your own
+
+**Removing credits will activate anti-tamper protection and block all connections.**
+
+---
+
+<div align="center">
+
+### 💖 Made with love by konpep
+
+**If you like this script, give it a ⭐ on GitHub!**
+
+[![GitHub](https://img.shields.io/badge/GitHub-konpep--dev-181717?style=for-the-badge&logo=github)](https://github.com/konpep-dev)
 
 </div>

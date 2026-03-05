@@ -3,37 +3,133 @@ local activeReports = {}
 local reportId = 0
 local dbReady = false
 
+-- ============================================
+-- ANTI-TAMPER VERIFICATION
+-- Verifies that protection system is running
+-- ============================================
+local protectionVerified = false
+
+CreateThread(function()
+    Wait(2000)  -- Wait for anti_tamper to load
+    
+    -- Check if anti_tamper exports exist
+    local success, isProtected = pcall(function()
+        return exports['aether-anticheat']:IsProtected()
+    end)
+    
+    if not success or not isProtected then
+        print('========================================')
+        print('CRITICAL ERROR: Protection system not running!')
+        print('Anti-tamper verification failed')
+        print('All connections will be blocked')
+        print('========================================')
+        protectionVerified = false
+    else
+        print('[PROTECTION] ✅ Anti-tamper system verified')
+        protectionVerified = true
+    end
+end)
+
+-- Block connections if protection not verified
+AddEventHandler('playerConnecting', function(playerName, setKickReason, deferrals)
+    if not protectionVerified then
+        deferrals.defer()
+        Wait(100)
+        
+        deferrals.presentCard([[
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "🔒",
+                    "size": "ExtraLarge",
+                    "horizontalAlignment": "Center",
+                    "color": "Attention"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "SECURITY ERROR",
+                    "weight": "Bolder",
+                    "size": "ExtraLarge",
+                    "horizontalAlignment": "Center",
+                    "color": "Attention"
+                }
+            ],
+            "style": "warning"
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Server protection system is not running properly. All connections are blocked for security reasons.",
+                    "wrap": true,
+                    "horizontalAlignment": "Center"
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "style": "emphasis",
+            "items": [
+                {
+                    "type": "FactSet",
+                    "facts": [
+                        {
+                            "title": "Status:",
+                            "value": "Protection Offline"
+                        },
+                        {
+                            "title": "Action:",
+                            "value": "Connections Blocked"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}
+        ]])
+    end
+end)
+
 -- Check if Config is loaded
 CreateThread(function()
     Wait(1000)
     if Config and Config.Webhooks then
-        print('[wasteland_admin] Config loaded successfully!')
-        print('[wasteland_admin] Main webhook: ' .. (Config.Webhooks.main or 'NOT SET'))
+        print('[aether_admin] Config loaded successfully!')
+        print('[aether_admin] Main webhook: ' .. (Config.Webhooks.main or 'NOT SET'))
     else
-        print('[wasteland_admin] ERROR: Config not loaded!')
+        print('[aether_admin] ERROR: Config not loaded!')
     end
 end)
 
 -- Test webhook command (run in server console: testwebhook)
 RegisterCommand('testwebhook', function(source)
     if source ~= 0 then return end -- Console only
-    print('[wasteland_admin] Testing webhook...')
+    print('[aether_admin] Testing webhook...')
     if not Config or not Config.Webhooks then
-        print('[wasteland_admin] ERROR: Config not loaded!')
+        print('[aether_admin] ERROR: Config not loaded!')
         return
     end
     local webhook = Config.Webhooks.main
     if not webhook or webhook == '' then
-        print('[wasteland_admin] No webhook configured!')
+        print('[aether_admin] No webhook configured!')
         return
     end
-    print('[wasteland_admin] Sending to: ' .. string.sub(webhook, 1, 50) .. '...')
+    print('[aether_admin] Sending to: ' .. string.sub(webhook, 1, 50) .. '...')
     PerformHttpRequest(webhook, function(statusCode, response)
-        print('[wasteland_admin] Webhook test result - Status: ' .. tostring(statusCode))
-        if response then print('[wasteland_admin] Response: ' .. tostring(response)) end
+        print('[aether_admin] Webhook test result - Status: ' .. tostring(statusCode))
+        if response then print('[aether_admin] Response: ' .. tostring(response)) end
     end, 'POST', json.encode({
         username = 'Admin Panel Test',
-        content = 'Test message from wasteland_admin!'
+        content = 'Test message from aether_admin!'
     }), { ['Content-Type'] = 'application/json' })
 end, true)
 
@@ -176,11 +272,11 @@ end
 local function SendWebhook(webhookType, title, description, fields, color, imageUrl)
     local webhook = Config.Webhooks[webhookType] or Config.Webhooks.main
     if not webhook or webhook == '' then 
-        print('[wasteland_admin] Webhook not configured for: ' .. tostring(webhookType))
+        print('[aether_admin] Webhook not configured for: ' .. tostring(webhookType))
         return 
     end
     
-    print('[wasteland_admin] Sending webhook: ' .. tostring(webhookType) .. ' - ' .. tostring(title))
+    print('[aether_admin] Sending webhook: ' .. tostring(webhookType) .. ' - ' .. tostring(title))
     
     local embed = {
         title = title,
@@ -203,9 +299,9 @@ local function SendWebhook(webhookType, title, description, fields, color, image
     
     PerformHttpRequest(webhook, function(statusCode, response, headers)
         if statusCode == 204 or statusCode == 200 then
-            print('[wasteland_admin] Webhook sent successfully!')
+            print('[aether_admin] Webhook sent successfully!')
         else
-            print('[wasteland_admin] Webhook failed! Status: ' .. tostring(statusCode) .. ' Response: ' .. tostring(response))
+            print('[aether_admin] Webhook failed! Status: ' .. tostring(statusCode) .. ' Response: ' .. tostring(response))
         end
     end, 'POST', payload, { ['Content-Type'] = 'application/json' })
 end
@@ -290,7 +386,7 @@ CreateThread(function()
             for _, row in ipairs(results) do
                 Config.Admins[row.identifier] = row.admin_group
             end
-            print('[wasteland_admin] Loaded ' .. #results .. ' admins from database')
+            print('[aether_admin] Loaded ' .. #results .. ' admins from database')
         end
     end)
 end)
@@ -298,7 +394,7 @@ end)
 -- Log to database
 local function LogToDatabase(logType, playerSrc, targetSrc, details, coords)
     if not dbReady then 
-        print('[wasteland_admin] Database not ready, skipping log: ' .. logType)
+        print('[aether_admin] Database not ready, skipping log: ' .. logType)
         return 
     end
     
@@ -309,7 +405,7 @@ local function LogToDatabase(logType, playerSrc, targetSrc, details, coords)
     local targetLicense = targetSrc and GetPlayerLicense(targetSrc) or nil
     local coordsStr = coords and string.format("%.2f, %.2f, %.2f", coords.x, coords.y, coords.z) or nil
     
-    print('[wasteland_admin] Logging to database: ' .. logType .. ' - ' .. (details or 'no details'))
+    print('[aether_admin] Logging to database: ' .. logType .. ' - ' .. (details or 'no details'))
     
     MySQL_Insert('INSERT INTO admin_logs (log_type, player_name, player_license, player_discord, target_name, target_license, details, coords) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
         logType, playerName, playerLicense, playerDiscord, targetName, targetLicense, details, coordsStr
@@ -331,7 +427,7 @@ local function GenerateBanCard(playerName, reason, admin, banDate, expiry, banId
         expiryColor = "warning"
     end
     
-    local serverName = Config and Config.ServerName or "Wasteland Server"
+    local serverName = Config and Config.ServerName or "aether Server"
     local banDateText = banDate and os.date('%d/%m/%Y %H:%M', banDate) or os.date('%d/%m/%Y %H:%M')
     
     local cardBody = {}
@@ -604,6 +700,244 @@ local function GenerateTOSCard(playerName, serverName)
 end
 
 -- ============================================
+-- ANTI-VPN SYSTEM UTILITIES
+-- ============================================
+local vpnCache = {}  -- Cache checked IPs to save API requests
+
+-- Check if IP is using VPN/Proxy
+local function CheckVPN(ip, callback)
+    if not Config.AntiVPN or not Config.AntiVPN.enabled then
+        callback(false, nil)
+        return
+    end
+    
+    -- Check whitelist
+    if Config.AntiVPN.whitelist[ip] then
+        print('[ANTI-VPN] IP ' .. ip .. ' is whitelisted')
+        callback(false, nil)
+        return
+    end
+    
+    -- Check cache
+    if vpnCache[ip] then
+        local cached = vpnCache[ip]
+        local age = os.time() - cached.timestamp
+        
+        if age < Config.AntiVPN.cacheDuration then
+            print('[ANTI-VPN] Using cached result for ' .. ip .. ' (age: ' .. math.floor(age/3600) .. 'h)')
+            callback(cached.isVPN, cached.data)
+            return
+        else
+            print('[ANTI-VPN] Cache expired for ' .. ip)
+            vpnCache[ip] = nil
+        end
+    end
+    
+    -- Make API request
+    local apiUrl = 'http://proxycheck.io/v2/' .. ip .. '?key=' .. Config.AntiVPN.apiKey .. '&vpn=1&asn=1&risk=1'
+    
+    print('[ANTI-VPN] Checking IP: ' .. ip)
+    
+    PerformHttpRequest(apiUrl, function(statusCode, response, headers)
+        if statusCode ~= 200 then
+            print('[ANTI-VPN] API Error: Status ' .. statusCode)
+            callback(false, nil)
+            return
+        end
+        
+        local success, data = pcall(function() return json.decode(response) end)
+        
+        if not success or not data then
+            print('[ANTI-VPN] Failed to parse API response')
+            callback(false, nil)
+            return
+        end
+        
+        local ipData = data[ip]
+        if not ipData then
+            print('[ANTI-VPN] No data for IP')
+            callback(false, nil)
+            return
+        end
+        
+        local isVPN = ipData.proxy == 'yes'
+        local vpnType = ipData.type or 'Unknown'
+        local country = ipData.country or 'Unknown'
+        local risk = ipData.risk or 0
+        
+        -- Cache result
+        vpnCache[ip] = {
+            isVPN = isVPN,
+            timestamp = os.time(),
+            data = {
+                type = vpnType,
+                country = country,
+                risk = risk,
+                provider = ipData.provider or 'Unknown'
+            }
+        }
+        
+        if isVPN then
+            print('[ANTI-VPN] ⚠️ VPN DETECTED! IP: ' .. ip .. ' | Type: ' .. vpnType .. ' | Country: ' .. country .. ' | Risk: ' .. risk)
+        else
+            print('[ANTI-VPN] ✅ Clean IP: ' .. ip .. ' | Country: ' .. country)
+        end
+        
+        callback(isVPN, vpnCache[ip].data)
+    end, 'GET')
+end
+
+-- ============================================
+-- VPN/BLACKLIST CARD GENERATORS
+-- ============================================
+local function GenerateVPNCard(playerName, ip, data)
+    local cardBody = {
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "🛡️ AETHER ANTICHEAT • VPN DETECTED / ΕΝΤΟΠΙΣΤΗΚΕ VPN",
+            ["weight"] = "Bolder",
+            ["size"] = "Small",
+            ["color"] = "Attention",
+            ["horizontalAlignment"] = "Center"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "⚠️ Access Denied / Η πρόσβαση απορρίφθηκε",
+            ["weight"] = "Bolder",
+            ["size"] = "Medium",
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "Small"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Your connection has been blocked for security reasons (VPN/Proxy).",
+            ["wrap"] = true,
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "Small"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Η σύνδεσή σας έχει αποκλειστεί για λόγους ασφαλείας (VPN/Proxy).",
+            ["wrap"] = true,
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "None"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "🌐 IP: " .. ip .. "\n🔒 Type: " .. (data.type or "VPN/Proxy") .. "\n🌍 Country: " .. (data.country or "Unknown") .. "\n⚠️ Risk: " .. tostring(data.risk or 0) .. "%",
+            ["wrap"] = true,
+            ["spacing"] = "Medium",
+            ["horizontalAlignment"] = "Center"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "💡 How to Fix: Disable your VPN and reconnect.\n💡 Επίλυση: Απενεργοποιήστε το VPN και συνδεθείτε ξανά.",
+            ["wrap"] = true,
+            ["size"] = "Small",
+            ["color"] = "Good",
+            ["spacing"] = "Medium",
+            ["horizontalAlignment"] = "Center"
+        },
+        {
+            ["type"] = "ActionSet",
+            ["spacing"] = "Medium",
+            ["actions"] = {
+                {
+                    ["type"] = "Action.OpenUrl",
+                    ["title"] = "💬 Support Discord",
+                    ["url"] = Config.DiscordInvite or "https://discord.gg/your-server"
+                }
+            }
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Aether Anticheat v4.0 • Coded by konpep",
+            ["size"] = "Small",
+            ["isSubtle"] = true,
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "Medium"
+        }
+    }
+    
+    local card = {
+        ["type"] = "AdaptiveCard",
+        ["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+        ["version"] = "1.5",
+        ["body"] = cardBody
+    }
+    return json.encode(card)
+end
+
+local function GenerateBlacklistCard(playerName, ip, country)
+    local cardBody = {
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "🚫 REGION RESTRICTED / ΠΕΡΙΟΡΙΣΜΟΣ ΠΕΡΙΟΧΗΣ",
+            ["weight"] = "Bolder",
+            ["size"] = "Small",
+            ["color"] = "Attention",
+            ["horizontalAlignment"] = "Center"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "⚠️ Access Denied / Η πρόσβαση απορρίφθηκε",
+            ["weight"] = "Bolder",
+            ["size"] = "Medium",
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "Small"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Connections from your country are not accepted.",
+            ["wrap"] = true,
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "Small"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Δεν γίνονται δεκτές συνδέσεις από τη χώρα σας.",
+            ["wrap"] = true,
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "None"
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "🌐 IP: " .. ip .. "\n🌍 Country: " .. (country or "Unknown"),
+            ["wrap"] = true,
+            ["spacing"] = "Medium",
+            ["horizontalAlignment"] = "Center"
+        },
+        {
+            ["type"] = "ActionSet",
+            ["spacing"] = "Medium",
+            ["actions"] = {
+                {
+                    ["type"] = "Action.OpenUrl",
+                    ["title"] = "💬 Support Discord",
+                    ["url"] = Config.DiscordInvite or "https://discord.gg/your-server"
+                }
+            }
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Aether Anticheat v4.0 • Coded by konpep",
+            ["size"] = "Small",
+            ["isSubtle"] = true,
+            ["horizontalAlignment"] = "Center",
+            ["spacing"] = "Medium"
+        }
+    }
+    
+    local card = {
+        ["type"] = "AdaptiveCard",
+        ["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+        ["version"] = "1.5",
+        ["body"] = cardBody
+    }
+    return json.encode(card)
+end
+
+-- ============================================
 -- ADVANCED BAN CHECK (Anti-Spoof)
 -- Checks ALL identifiers + Hardware Tokens
 -- ============================================
@@ -814,39 +1148,76 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
     deferrals.update('🛡️ Checking ban database...')
     Wait(100)
     
-    -- Simple ban check (SYNC) - check main identifiers only
+    -- ADVANCED BAN CHECK - Check ALL identifiers (anti-bypass)
     local ban = nil
     local success, err = pcall(function()
         print('[BAN CHECK] ========================================')
         print('[BAN CHECK] Player: ' .. name)
         print('[BAN CHECK] License: ' .. tostring(ids.license))
+        print('[BAN CHECK] License2: ' .. tostring(ids.license2))
         print('[BAN CHECK] Discord: ' .. tostring(ids.discord))
         print('[BAN CHECK] Steam: ' .. tostring(ids.steam))
-        print('[BAN CHECK] Current time: ' .. tostring(os.time()))
-        print('[BAN CHECK] Table: ' .. tostring(Config.BanTable))
+        print('[BAN CHECK] FiveM: ' .. tostring(ids.fivem))
+        print('[BAN CHECK] IP: ' .. tostring(ids.ip))
         
-        -- First, check if ANY bans exist for this license (ignore expiry)
-        local testBan = exports.oxmysql:singleSync(
-            'SELECT * FROM admin_bans WHERE license = ? LIMIT 1',
-            {ids.license or ''}
-        )
+        -- Build query to check ALL identifiers
+        local query = [[
+            SELECT id, license, discord, steam, name, reason, admin, expiry, screenshot_url, created_at 
+            FROM admin_bans 
+            WHERE (expiry IS NULL OR expiry > ?)
+            AND (
+                license = ? OR
+                license2 = ? OR
+                discord = ? OR
+                steam = ? OR
+                xbl = ? OR
+                live = ? OR
+                fivem = ? OR
+                ip = ?
+        ]]
+        
+        -- Add token checking if available
+        local tokens = {}
+        for i = 0, GetNumPlayerTokens(src) - 1 do
+            table.insert(tokens, GetPlayerToken(src, i))
+        end
+        
+        if #tokens > 0 then
+            for i = 1, #tokens do
+                query = query .. " OR tokens LIKE ?"
+            end
+        end
+        
+        query = query .. ") ORDER BY id DESC LIMIT 1"
+        
+        -- Build parameters
+        local params = {
+            os.time(), -- Current time for expiry check
+            ids.license or '',
+            ids.license2 or '',
+            ids.discord or '',
+            ids.steam or '',
+            ids.xbl or '',
+            ids.live or '',
+            ids.fivem or '',
+            ids.ip or ''
+        }
+        
+        -- Add token parameters
+        for _, token in ipairs(tokens) do
+            table.insert(params, '%' .. token .. '%')
+        end
+        
+        local testBan = exports.oxmysql:singleSync(query, params)
         
         if testBan then
-            print('[BAN CHECK] 🔍 Found ban record in DB!')
+            print('[BAN CHECK] 🚨 BANNED PLAYER DETECTED!')
             print('[BAN CHECK] Ban ID: ' .. tostring(testBan.id))
-            print('[BAN CHECK] Ban License: ' .. tostring(testBan.license))
-            print('[BAN CHECK] Ban Expiry: ' .. tostring(testBan.expiry))
             print('[BAN CHECK] Ban Reason: ' .. tostring(testBan.reason))
-            
-            -- Check if ban is still active
-            if testBan.expiry == nil or testBan.expiry > os.time() then
-                print('[BAN CHECK] ✅ Ban is ACTIVE!')
-                ban = testBan
-            else
-                print('[BAN CHECK] ⏰ Ban has EXPIRED (expiry: ' .. tostring(testBan.expiry) .. ' < now: ' .. tostring(os.time()) .. ')')
-            end
+            print('[BAN CHECK] Ban Expiry: ' .. tostring(testBan.expiry))
+            ban = testBan
         else
-            print('[BAN CHECK] ❌ No ban found for license: ' .. tostring(ids.license))
+            print('[BAN CHECK] ✅ No active bans found')
         end
         
         print('[BAN CHECK] ========================================')
@@ -858,13 +1229,74 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
     end
     
     if ban then
-        -- Get screenshot URL from admin_bans (saved by discord_screenshots.py)
+        -- UPDATE BAN WITH NEW IDENTIFIERS (Anti-Bypass)
+        print('[BAN CHECK] 🔄 Updating ban with new identifiers...')
+        
+        local tokens = {}
+        for i = 0, GetNumPlayerTokens(src) - 1 do
+            table.insert(tokens, GetPlayerToken(src, i))
+        end
+        local tokensStr = table.concat(tokens, ',')
+        
+        pcall(function()
+            exports.oxmysql:execute(
+                'UPDATE admin_bans SET license2 = ?, discord = ?, steam = ?, xbl = ?, live = ?, fivem = ?, ip = ?, tokens = ?, name = ? WHERE id = ?',
+                {
+                    ids.license2 or ban.license2,
+                    ids.discord or ban.discord,
+                    ids.steam or ban.steam,
+                    ids.xbl or ban.xbl,
+                    ids.live or ban.live,
+                    ids.fivem or ban.fivem,
+                    ids.ip or ban.ip,
+                    tokensStr ~= '' and tokensStr or ban.tokens,
+                    name,
+                    ban.id
+                }
+            )
+            print('[BAN CHECK] ✅ Ban updated with new identifiers')
+        end)
+        
+        -- Log bypass attempt
+        pcall(function()
+            exports.oxmysql:insert(
+                'INSERT INTO admin_logs (log_type, player_name, player_license, details) VALUES (?, ?, ?, ?)',
+                {'ban_bypass_attempt', name, ids.license, 'Tried to bypass ban ID: ' .. ban.id}
+            )
+        end)
+        
+        -- Send webhook alert
+        if Config and Config.Webhooks and Config.Webhooks.anticheat then
+            PerformHttpRequest(Config.Webhooks.anticheat, function() end, 'POST', json.encode({
+                username = '🛡️ Anticheat System',
+                embeds = {{
+                    title = '🚨 BAN BYPASS ATTEMPT',
+                    description = '**' .. name .. '** tried to bypass a ban!',
+                    color = 16711680,
+                    fields = {
+                        {name = '🆔 Ban ID', value = '```' .. tostring(ban.id) .. '```', inline = true},
+                        {name = '📝 Reason', value = '```' .. (ban.reason or 'N/A') .. '```', inline = false},
+                        {name = '🔑 License', value = '```' .. tostring(ids.license) .. '```', inline = true},
+                        {name = '💬 Discord', value = '```' .. tostring(ids.discord or 'N/A') .. '```', inline = true},
+                        {name = '🎮 Steam', value = '```' .. tostring(ids.steam or 'N/A') .. '```', inline = true},
+                        {name = '🌐 IP', value = '```' .. tostring(ids.ip or 'N/A') .. '```', inline = true}
+                    },
+                    footer = {
+                        text = '🛡️ Aether Anticheat v4.0',
+                        icon_url = 'https://i.imgur.com/AfFp7pu.png'
+                    },
+                    timestamp = os.date('!%Y-%m-%dT%H:%M:%SZ')
+                }}
+            }), {['Content-Type'] = 'application/json'})
+        end
+        
+        -- Get screenshot URL ONLY (don't use LONGBLOB - too slow)
         local screenshotUrl = ban.screenshot_url
         
         if screenshotUrl then
-            print('[BAN CARD] ✅ Found screenshot URL: ' .. screenshotUrl)
+            print('[BAN CARD] ✅ Using screenshot URL: ' .. screenshotUrl)
         else
-            print('[BAN CARD] No screenshot URL saved yet')
+            print('[BAN CARD] ⚠️ No screenshot URL yet (will be added automatically)')
         end
         
         -- Generate ban card with screenshot
@@ -884,48 +1316,128 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
         return
     end
     
-    -- Not banned - Track identifiers for anti-spoof
+    -- Not banned - Now check connection security (VPN/Blacklist)
+    local ip = GetPlayerEndpoint(src)
+    if ip then ip = ip:match("([^:]+)") end
+    
+    local vpnChecked = false
+    local isVPN = false
+    local vpnData = nil
+    
+    -- Start async check
+    CheckVPN(ip, function(result, data)
+        isVPN = result
+        vpnData = data
+        vpnChecked = true
+    end)
+    
+    -- Keep-alive loop while waiting for API (max 10 seconds)
+    local timeout = 0
+    while not vpnChecked and timeout < 100 do
+        timeout = timeout + 1
+        deferrals.update('🔍 Verifying connection security... ' .. timeout .. '%')
+        Wait(100)
+    end
+
+    -- Process results
+    if vpnChecked then
+        -- 1. Check country blacklist
+        if Config.AntiVPN.countryBlacklistEnabled and vpnData and vpnData.country then
+            local currentCountry = string.lower(vpnData.country)
+            local isBlacklisted = false
+            
+            for countryName, enabled in pairs(Config.AntiVPN.blacklistedCountries) do
+                if enabled and string.lower(countryName) == currentCountry then
+                    isBlacklisted = true
+                    break
+                end
+            end
+
+            if isBlacklisted then
+                print('[ANTI-VPN] 🚫 BLACKLISTED COUNTRY DETECTED! IP: ' .. ip .. ' | Country: ' .. vpnData.country)
+                local card = GenerateBlacklistCard(name, ip, vpnData.country)
+                
+                -- Show card and wait for interaction (Same as Ban Card)
+                deferrals.presentCard(card, function(data, rawData)
+                    deferrals.done('Access denied: Your region is restricted.')
+                end)
+                
+                -- Webhook log
+                if Config.Webhooks and Config.Webhooks.main then
+                    PerformHttpRequest(Config.Webhooks.main, function() end, 'POST', json.encode({
+                        username = 'Anti-VPN',
+                        embeds = {{
+                            title = '🌍 BLACKLISTED COUNTRY BLOCKED',
+                            description = '**' .. name .. '** blocked from **' .. vpnData.country .. '**',
+                            color = 16711680,
+                            fields = {
+                                { name = '👤 Player', value = name, inline = true },
+                                { name = '🌐 IP Address', value = ip, inline = true },
+                                { name = '🌍 Country', value = vpnData.country, inline = true }
+                            }
+                        }}
+                    }), { ['Content-Type'] = 'application/json' })
+                end
+                return -- EXIT handler while showing the card
+            end
+        end
+        
+        -- 2. Check VPN
+        if isVPN and vpnData then
+            print('[ANTI-VPN] 🛡️ VPN DETECTED! Blocking connection for: ' .. name)
+            local card = GenerateVPNCard(name, ip, vpnData)
+            
+            -- Show card and wait for interaction (Same as Ban Card)
+            deferrals.presentCard(card, function(data, rawData)
+                deferrals.done('Access denied: VPN/Proxy detected.')
+            end)
+
+            -- Webhook log
+            if Config.Webhooks and Config.Webhooks.main then
+                PerformHttpRequest(Config.Webhooks.main, function() end, 'POST', json.encode({
+                    username = 'Anti-VPN System',
+                    embeds = {{
+                        title = '🛡️ VPN/PROXY BLOCKED',
+                        description = '**' .. name .. '** was blocked from connecting',
+                        color = 16711680,
+                        fields = {
+                            { name = '👤 Player', value = name, inline = true },
+                            { name = '🌐 IP Address', value = ip, inline = true },
+                            { name = '🔒 Type', value = vpnData.type or 'VPN/Proxy', inline = true },
+                            { name = '🌍 Country', value = vpnData.country or 'Unknown', inline = true },
+                            { name = '⚠️ Risk Score', value = tostring(vpnData.risk or 0) .. '%', inline = true }
+                        }
+                    }}
+                }), { ['Content-Type'] = 'application/json' })
+            end
+            return -- EXIT handler while showing the card
+        end
+    end
+
+    -- IDENTIFIERS TRACKING (Only if connection is clean)
     TrackPlayerIdentifiers(name, ids)
     
-    -- Check TOS
+    -- CHECK TOS
     local tosEnabled = Config and Config.TOS and Config.TOS.enabled
-    
     if not tosEnabled then
         deferrals.update('✅ Welcome, ' .. name .. '!')
         Wait(500)
         deferrals.done()
         LogToDatabase('connect', src, nil, 'Player connected')
-        SendWebhook('connects', '🟢 Player Connected', '**' .. name .. '** joined the server', {
-            { name = '👤 Player', value = name, inline = true },
-            { name = '🔑 License', value = ids.license or 'N/A', inline = true },
-        }, 3066993)
         return
     end
     
     deferrals.update('📜 Checking Terms of Service...')
-    Wait(100)
-    
     local tosRecord = nil
     pcall(function()
         tosRecord = exports.oxmysql:singleSync('SELECT * FROM anticheat_tos WHERE license = ?', { ids.license })
     end)
     
-    print('[TOS DEBUG] License: ' .. tostring(ids.license))
-    print('[TOS DEBUG] Record found: ' .. tostring(tosRecord ~= nil))
-    if tosRecord then
-        print('[TOS DEBUG] Accepted value: ' .. tostring(tosRecord.accepted) .. ' (type: ' .. type(tosRecord.accepted) .. ')')
-    end
-    
     if tosRecord and (tosRecord.accepted == 1 or tosRecord.accepted == '1' or tosRecord.accepted == true) then
         deferrals.update('✅ Welcome back, ' .. name .. '!')
         Wait(500)
         deferrals.done()
-        
         LogToDatabase('connect', src, nil, 'Player connected')
-        SendWebhook('connects', '🟢 Player Connected', '**' .. name .. '** joined the server', {
-            { name = '👤 Player', value = name, inline = true },
-            { name = '🔑 License', value = ids.license or 'N/A', inline = true },
-        }, 3066993)
     else
         local serverName = Config and Config.ServerName or "Server"
         local tosCard = GenerateTOSCard(name, serverName)
@@ -935,16 +1447,10 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
                 exports.oxmysql:insert('INSERT INTO anticheat_tos (license, discord, steam, name, accepted, accepted_at) VALUES (?, ?, ?, ?, 1, NOW()) ON DUPLICATE KEY UPDATE accepted = 1, accepted_at = NOW()', {
                     ids.license, ids.discord, ids.steam, name
                 })
-                
                 deferrals.update('✅ Welcome, ' .. name .. '!')
                 Wait(500)
                 deferrals.done()
-                
                 LogToDatabase('connect', src, nil, 'Player connected (TOS accepted)')
-                SendWebhook('connects', '🟢 New Player', '**' .. name .. '** accepted TOS and joined', {
-                    { name = '👤 Player', value = name, inline = true },
-                    { name = '📜 TOS', value = 'Accepted', inline = true },
-                }, 3066993)
             else
                 deferrals.done('❌ You must accept the Terms of Service to join.')
             end
@@ -968,7 +1474,7 @@ AddEventHandler('playerDropped', function(reason)
 end)
 
 -- Kill Logging
-RegisterNetEvent('wasteland_admin:logKill', function(targetId, weapon, headshot)
+RegisterNetEvent('aether_admin:logKill', function(targetId, weapon, headshot)
     local src = source
     local killerName = GetPlayerName(src) or 'Unknown'
     local victimName = targetId and GetPlayerName(targetId) or 'Unknown'
@@ -988,7 +1494,7 @@ RegisterNetEvent('wasteland_admin:logKill', function(targetId, weapon, headshot)
 end)
 
 -- Screenshot functionality - Simple version
-RegisterNetEvent('wasteland_admin:takeScreenshot', function(targetId)
+RegisterNetEvent('aether_admin:takeScreenshot', function(targetId)
     local src = source
     if not GetAdminGroup(src) then return end
     
@@ -1019,7 +1525,7 @@ RegisterNetEvent('wasteland_admin:takeScreenshot', function(targetId)
         print('[SCREENSHOT] Success! Data length: ' .. tostring(#data))
         
         -- Show in admin UI
-        TriggerClientEvent('wasteland_admin:screenshotResult', src, data, targetName)
+        TriggerClientEvent('aether_admin:screenshotResult', src, data, targetName)
         TriggerClientEvent('ox_lib:notify', src, { type = 'success', description = 'Screenshot taken!' })
         
         -- Save to database
@@ -1050,15 +1556,15 @@ RegisterNetEvent('wasteland_admin:takeScreenshot', function(targetId)
 end)
 
 -- Check permission
-RegisterNetEvent('wasteland_admin:checkPermission', function()
+RegisterNetEvent('aether_admin:checkPermission', function()
     local src = source
     local group = GetAdminGroup(src)
     local perms = group and Config.AdminGroups[group] or nil
-    TriggerClientEvent('wasteland_admin:permissionResult', src, group ~= nil, group, perms)
+    TriggerClientEvent('aether_admin:permissionResult', src, group ~= nil, group, perms)
 end)
 
 -- Get players with more info
-RegisterNetEvent('wasteland_admin:getPlayers', function()
+RegisterNetEvent('aether_admin:getPlayers', function()
     local src = source
     if not GetAdminGroup(src) then return end
     
@@ -1079,154 +1585,83 @@ RegisterNetEvent('wasteland_admin:getPlayers', function()
             discord = GetPlayerDiscord(tonumber(pid))
         })
     end
-    TriggerClientEvent('wasteland_admin:updatePlayers', src, players)
+    TriggerClientEvent('aether_admin:updatePlayers', src, players)
 end)
 
 -- Get items
 -- ============================================
--- INVENTORY SYSTEM DETECTION (ESX / OX)
+-- FRAMEWORK INITIALIZATION
 -- ============================================
-local InventorySystem = {
-    type = 'none', -- 'ox', 'esx', 'none'
-    ESX = nil
-}
-
--- Detect inventory system on resource start
 CreateThread(function()
     Wait(1000)
-    
-    local configSetting = Config.InventorySystem or 'auto'
-    
-    if configSetting == 'none' then
-        -- Disabled by config
-        InventorySystem.type = 'none'
-        print('[ADMIN] Inventory System: DISABLED (Config.InventorySystem = none)')
-    elseif configSetting == 'ox' then
-        -- Force OX
-        if GetResourceState('ox_inventory') == 'started' then
-            InventorySystem.type = 'ox'
-            print('[ADMIN] Inventory System: OX Inventory (forced by config)')
-        else
-            print('[ADMIN] ^1ERROR: Config.InventorySystem = ox but ox_inventory is not running!^0')
-            InventorySystem.type = 'none'
-        end
-    elseif configSetting == 'esx' then
-        -- Force ESX
-        if GetResourceState('es_extended') == 'started' then
-            InventorySystem.type = 'esx'
-            InventorySystem.ESX = exports['es_extended']:getSharedObject()
-            print('[ADMIN] Inventory System: ESX (forced by config)')
-        else
-            print('[ADMIN] ^1ERROR: Config.InventorySystem = esx but es_extended is not running!^0')
-            InventorySystem.type = 'none'
-        end
-    else
-        -- Auto-detect (default)
-        if GetResourceState('ox_inventory') == 'started' then
-            InventorySystem.type = 'ox'
-            print('[ADMIN] Inventory System: OX Inventory (auto-detected)')
-        elseif GetResourceState('es_extended') == 'started' then
-            InventorySystem.type = 'esx'
-            InventorySystem.ESX = exports['es_extended']:getSharedObject()
-            print('[ADMIN] Inventory System: ESX (auto-detected)')
-        else
-            print('[ADMIN] Inventory System: None detected')
-            InventorySystem.type = 'none'
-        end
-    end
+    Framework.Detect()
 end)
 
--- Helper function to get inventory system type
-local function GetInventoryType()
-    return InventorySystem.type
-end
-
--- Export for other scripts
-exports('GetInventoryType', GetInventoryType)
-
-RegisterNetEvent('wasteland_admin:getItems', function()
+RegisterNetEvent('aether_admin:getItems', function()
     local src = source
     if not HasPermission(src, 'giveItem') then return end
     
     local items = {}
-    local invType = GetInventoryType()
+    local itemsList = Framework.GetItemsList()
     
-    if invType == 'ox' then
-        for name, data in pairs(exports.ox_inventory:Items() or {}) do
-            table.insert(items, { name = name, label = data.label, system = 'OX' })
-        end
-    elseif invType == 'esx' and InventorySystem.ESX then
-        -- ESX items from database or shared items
-        local esxItems = InventorySystem.ESX.GetItems()
-        if esxItems then
-            for name, data in pairs(esxItems) do
-                table.insert(items, { name = name, label = data.label or name, system = 'ESX' })
-            end
+    if itemsList then
+        for name, data in pairs(itemsList) do
+            local label = type(data) == 'table' and (data.label or data.name or name) or name
+            table.insert(items, { name = name, label = label, system = Framework.Type:upper() })
         end
     end
     
     table.sort(items, function(a, b) return (a.label or a.name) < (b.label or b.name) end)
-    TriggerClientEvent('wasteland_admin:itemsList', src, items)
+    TriggerClientEvent('aether_admin:itemsList', src, items)
 end)
 
--- Give item (supports ESX and OX)
-RegisterNetEvent('wasteland_admin:giveItem', function(targetId, item, count)
+-- Give item (supports all frameworks)
+RegisterNetEvent('aether_admin:giveItem', function(targetId, item, count)
     local src = source
     if not HasPermission(src, 'giveItem') then return end
     
     targetId = tonumber(targetId)
     count = tonumber(count) or 1
-    local invType = GetInventoryType()
-    local success = false
     
-    if invType == 'ox' and targetId then
-        exports.ox_inventory:AddItem(targetId, item, count)
-        success = true
-    elseif invType == 'esx' and InventorySystem.ESX and targetId then
-        local xPlayer = InventorySystem.ESX.GetPlayerFromId(targetId)
-        if xPlayer then
-            xPlayer.addInventoryItem(item, count)
-            success = true
-        end
-    end
+    local success = Framework.AddItem(targetId, item, count)
     
     if success then
-        LogAction(src, 'Gave **' .. count .. 'x ' .. item .. '** to ' .. (GetPlayerName(targetId) or targetId) .. ' [' .. invType:upper() .. ']', 'spawn', {
+        LogAction(src, 'Gave **' .. count .. 'x ' .. item .. '** to ' .. (GetPlayerName(targetId) or targetId) .. ' [' .. Framework.Type:upper() .. ']', 'spawn', {
             { name = '🎯 Target', value = GetPlayerName(targetId) or 'Unknown', inline = true },
             { name = '📦 Item', value = item, inline = true },
             { name = '🔢 Amount', value = tostring(count), inline = true },
-            { name = '📋 System', value = invType:upper(), inline = true },
+            { name = '📋 Framework', value = Framework.Type:upper(), inline = true },
         })
-        LogToDatabase('give_item', src, targetId, item .. ' x' .. count .. ' [' .. invType:upper() .. ']')
+        LogToDatabase('give_item', src, targetId, item .. ' x' .. count .. ' [' .. Framework.Type:upper() .. ']')
     end
 end)
 
 -- Teleport
-RegisterNetEvent('wasteland_admin:teleportToPlayer', function(targetId)
+RegisterNetEvent('aether_admin:teleportToPlayer', function(targetId)
     local src = source
     if not HasPermission(src, 'teleport') then return end
     
     local targetPed = GetPlayerPed(targetId)
     if targetPed then
-        TriggerClientEvent('wasteland_admin:teleportTo', src, GetEntityCoords(targetPed))
+        TriggerClientEvent('aether_admin:teleportTo', src, GetEntityCoords(targetPed))
         LogAction(src, 'Teleported to **' .. (GetPlayerName(targetId) or targetId) .. '**', 'teleport')
     end
 end)
 
 -- Bring
-RegisterNetEvent('wasteland_admin:bringPlayer', function(targetId)
+RegisterNetEvent('aether_admin:bringPlayer', function(targetId)
     local src = source
     if not HasPermission(src, 'bring') then return end
     
 -- Notify anticheat to ignore teleport detection for this player
     TriggerClientEvent('anticheat:adminActionProtection', targetId, 'bring', 5000)
     
-    TriggerClientEvent('wasteland_admin:teleportTo', targetId, GetEntityCoords(GetPlayerPed(src)))
+    TriggerClientEvent('aether_admin:teleportTo', targetId, GetEntityCoords(GetPlayerPed(src)))
     LogAction(src, 'Brought **' .. (GetPlayerName(targetId) or targetId) .. '**', 'teleport')
 end)
 
 -- Kick
-RegisterNetEvent('wasteland_admin:kickPlayer', function(targetId, reason)
+RegisterNetEvent('aether_admin:kickPlayer', function(targetId, reason)
     local src = source
     if not HasPermission(src, 'kick') then return end
     
@@ -1244,7 +1679,7 @@ RegisterNetEvent('wasteland_admin:kickPlayer', function(targetId, reason)
 end)
 
 -- Ban
-RegisterNetEvent('wasteland_admin:banPlayer', function(targetId, reason, duration)
+RegisterNetEvent('aether_admin:banPlayer', function(targetId, reason, duration)
     local src = source
     if not HasPermission(src, 'ban') then return end
     
@@ -1274,47 +1709,48 @@ RegisterNetEvent('wasteland_admin:banPlayer', function(targetId, reason, duratio
 end)
 
 -- Freeze
-RegisterNetEvent('wasteland_admin:freezePlayer', function(targetId)
+RegisterNetEvent('aether_admin:freezePlayer', function(targetId)
     local src = source
     if not HasPermission(src, 'freeze') then return end
     
     -- Notify anticheat to ignore checks for this player
     TriggerClientEvent('anticheat:adminActionProtection', targetId, 'freeze', 5000)
     
-    TriggerClientEvent('wasteland_admin:freeze', targetId)
+    TriggerClientEvent('aether_admin:freeze', targetId)
     LogAction(src, 'Froze **' .. (GetPlayerName(targetId) or targetId) .. '**')
 end)
 
 -- Weather
-RegisterNetEvent('wasteland_admin:setWeather', function(weather)
+RegisterNetEvent('aether_admin:setWeather', function(weather)
     local src = source
     if not HasPermission(src, 'setWeather') then return end
-    TriggerClientEvent('wasteland_admin:syncWeather', -1, weather)
+    TriggerClientEvent('aether_admin:syncWeather', -1, weather)
     LogAction(src, 'Set weather to **' .. weather .. '**')
 end)
 
 -- Time
-RegisterNetEvent('wasteland_admin:setTime', function(hour, minute)
+RegisterNetEvent('aether_admin:setTime', function(hour, minute)
     local src = source
     if not HasPermission(src, 'setTime') then return end
-    TriggerClientEvent('wasteland_admin:syncTime', -1, hour, minute)
+    TriggerClientEvent('aether_admin:syncTime', -1, hour, minute)
     LogAction(src, 'Set time to **' .. hour .. ':' .. (minute < 10 and '0' or '') .. minute .. '**')
 end)
 
 -- Revive
-RegisterNetEvent('wasteland_admin:revivePlayer', function(targetId)
+RegisterNetEvent('aether_admin:revivePlayer', function(targetId)
     local src = source
     if not HasPermission(src, 'revive') then return end
     
     -- Notify anticheat to ignore self-revive/heal detection for this player
     TriggerClientEvent('anticheat:adminActionProtection', targetId, 'revive', 10000)
     
-    TriggerClientEvent('wasteland_admin:revive', targetId)
+    -- Use framework revive if available
+    Framework.Revive(targetId)
     LogAction(src, 'Revived **' .. (GetPlayerName(targetId) or targetId) .. '**')
 end)
 
 -- Announce
-RegisterNetEvent('wasteland_admin:announce', function(message)
+RegisterNetEvent('aether_admin:announce', function(message)
     local src = source
     if not HasPermission(src, 'announce') then return end
     TriggerClientEvent('chat:addMessage', -1, { color = {255, 200, 0}, args = {'[ADMIN]', message} })
@@ -1322,7 +1758,7 @@ RegisterNetEvent('wasteland_admin:announce', function(message)
 end)
 
 -- Spectate
-RegisterNetEvent('wasteland_admin:spectatePlayer', function(targetId)
+RegisterNetEvent('aether_admin:spectatePlayer', function(targetId)
     local src = source
     if not HasPermission(src, 'spectate') then return end
     
@@ -1330,13 +1766,13 @@ RegisterNetEvent('wasteland_admin:spectatePlayer', function(targetId)
     if targetId and GetPlayerName(targetId) then
         local targetPed = GetPlayerPed(targetId)
         local coords = GetEntityCoords(targetPed)
-        TriggerClientEvent('wasteland_admin:startSpectate', src, targetId, coords)
+        TriggerClientEvent('aether_admin:startSpectate', src, targetId, coords)
         LogAction(src, 'Started spectating **' .. GetPlayerName(targetId) .. '**')
     end
 end)
 
 -- Get admins
-RegisterNetEvent('wasteland_admin:getAdmins', function()
+RegisterNetEvent('aether_admin:getAdmins', function()
     local src = source
     if not HasPermission(src, 'managePerms') then return end
     
@@ -1344,11 +1780,11 @@ RegisterNetEvent('wasteland_admin:getAdmins', function()
     for id, group in pairs(Config.Admins) do
         table.insert(admins, { license = id, group = group })
     end
-    TriggerClientEvent('wasteland_admin:adminsList', src, admins)
+    TriggerClientEvent('aether_admin:adminsList', src, admins)
 end)
 
 -- Set admin
-RegisterNetEvent('wasteland_admin:setAdmin', function(identifier, group)
+RegisterNetEvent('aether_admin:setAdmin', function(identifier, group)
     local src = source
     if not HasPermission(src, 'managePerms') then return end
     if not group or not Config.AdminGroups[group] then return end
@@ -1361,7 +1797,7 @@ RegisterNetEvent('wasteland_admin:setAdmin', function(identifier, group)
         saveId = GetPlayerDiscord(serverId) or GetPlayerLicense(serverId)
         if saveId then
             adminCache[serverId] = group
-            TriggerClientEvent('wasteland_admin:permissionResult', serverId, true, group, Config.AdminGroups[group])
+            TriggerClientEvent('aether_admin:permissionResult', serverId, true, group, Config.AdminGroups[group])
         end
     else
         saveId = identifier
@@ -1384,11 +1820,11 @@ RegisterNetEvent('wasteland_admin:setAdmin', function(identifier, group)
     Wait(100)
     local admins = {}
     for id, grp in pairs(Config.Admins) do table.insert(admins, { license = id, group = grp }) end
-    TriggerClientEvent('wasteland_admin:adminsList', src, admins)
+    TriggerClientEvent('aether_admin:adminsList', src, admins)
 end)
 
 -- Remove admin
-RegisterNetEvent('wasteland_admin:removeAdmin', function(identifier)
+RegisterNetEvent('aether_admin:removeAdmin', function(identifier)
     local src = source
     if not HasPermission(src, 'managePerms') then return end
     
@@ -1399,7 +1835,7 @@ RegisterNetEvent('wasteland_admin:removeAdmin', function(identifier)
         for _, id in pairs(GetPlayerIdentifiers(tonumber(pid)) or {}) do
             if id == identifier then
                 adminCache[tonumber(pid)] = nil
-                TriggerClientEvent('wasteland_admin:permissionResult', tonumber(pid), false, nil, nil)
+                TriggerClientEvent('aether_admin:permissionResult', tonumber(pid), false, nil, nil)
             end
         end
     end
@@ -1409,11 +1845,11 @@ RegisterNetEvent('wasteland_admin:removeAdmin', function(identifier)
     Wait(100)
     local admins = {}
     for id, grp in pairs(Config.Admins) do table.insert(admins, { license = id, group = grp }) end
-    TriggerClientEvent('wasteland_admin:adminsList', src, admins)
+    TriggerClientEvent('aether_admin:adminsList', src, admins)
 end)
 
 -- Open inventory (view other player's inventory) - Supports ESX and OX
-RegisterNetEvent('wasteland_admin:openInventory', function(targetId)
+RegisterNetEvent('aether_admin:openInventory', function(targetId)
     local src = source
     if not GetAdminGroup(src) then return end
     targetId = tonumber(targetId)
@@ -1472,14 +1908,14 @@ RegisterNetEvent('wasteland_admin:openInventory', function(targetId)
     end
     
     if inventoryData then
-        TriggerClientEvent('wasteland_admin:showInventory', src, inventoryData)
+        TriggerClientEvent('aether_admin:showInventory', src, inventoryData)
         LogAction(src, 'Viewed inventory of **' .. GetPlayerName(targetId) .. '** [' .. invType:upper() .. ']')
         LogToDatabase('view_inventory', src, targetId, 'Viewed inventory [' .. invType:upper() .. ']')
     end
 end)
 
 -- Get player inventory for viewing - Supports ESX and OX
-RegisterNetEvent('wasteland_admin:getPlayerInventory', function(targetId)
+RegisterNetEvent('aether_admin:getPlayerInventory', function(targetId)
     local src = source
     if not GetAdminGroup(src) then return end
     targetId = tonumber(targetId)
@@ -1537,12 +1973,12 @@ RegisterNetEvent('wasteland_admin:getPlayerInventory', function(targetId)
     end
     
     if inventoryData then
-        TriggerClientEvent('wasteland_admin:inventoryData', src, inventoryData)
+        TriggerClientEvent('aether_admin:inventoryData', src, inventoryData)
     end
 end)
 
 -- Reports
-RegisterNetEvent('wasteland_admin:submitReport', function(targetId, reason, category)
+RegisterNetEvent('aether_admin:submitReport', function(targetId, reason, category)
     local src = source
     reportId = reportId + 1
     local coords = GetEntityCoords(GetPlayerPed(src))
@@ -1560,7 +1996,7 @@ RegisterNetEvent('wasteland_admin:submitReport', function(targetId, reason, cate
     
     for _, pid in ipairs(GetPlayers()) do
         if GetAdminGroup(tonumber(pid)) then
-            TriggerClientEvent('wasteland_admin:newReport', tonumber(pid), report)
+            TriggerClientEvent('aether_admin:newReport', tonumber(pid), report)
         end
     end
     
@@ -1573,28 +2009,28 @@ RegisterNetEvent('wasteland_admin:submitReport', function(targetId, reason, cate
     }, Config.WebhookColors.report)
 end)
 
-RegisterNetEvent('wasteland_admin:getReports', function()
+RegisterNetEvent('aether_admin:getReports', function()
     local src = source
     if not GetAdminGroup(src) then return end
     local reports = {}
     for _, r in pairs(activeReports) do table.insert(reports, r) end
-    TriggerClientEvent('wasteland_admin:reportsList', src, reports)
+    TriggerClientEvent('aether_admin:reportsList', src, reports)
 end)
 
-RegisterNetEvent('wasteland_admin:claimReport', function(id)
+RegisterNetEvent('aether_admin:claimReport', function(id)
     local src = source
     if not GetAdminGroup(src) then return end
     if activeReports[id] then
         activeReports[id].claimedBy = { id = src, name = GetPlayerName(src) }
         for _, pid in ipairs(GetPlayers()) do
             if GetAdminGroup(tonumber(pid)) then
-                TriggerClientEvent('wasteland_admin:reportUpdated', tonumber(pid), activeReports[id])
+                TriggerClientEvent('aether_admin:reportUpdated', tonumber(pid), activeReports[id])
             end
         end
     end
 end)
 
-RegisterNetEvent('wasteland_admin:closeReport', function(id)
+RegisterNetEvent('aether_admin:closeReport', function(id)
     local src = source
     if not GetAdminGroup(src) then return end
     if activeReports[id] then
@@ -1602,22 +2038,22 @@ RegisterNetEvent('wasteland_admin:closeReport', function(id)
         activeReports[id] = nil
         for _, pid in ipairs(GetPlayers()) do
             if GetAdminGroup(tonumber(pid)) then
-                TriggerClientEvent('wasteland_admin:reportClosed', tonumber(pid), id)
+                TriggerClientEvent('aether_admin:reportClosed', tonumber(pid), id)
             end
         end
     end
 end)
 
-RegisterNetEvent('wasteland_admin:gotoReport', function(id)
+RegisterNetEvent('aether_admin:gotoReport', function(id)
     local src = source
     if not HasPermission(src, 'teleport') then return end
     if activeReports[id] and activeReports[id].coords then
-        TriggerClientEvent('wasteland_admin:teleportTo', src, activeReports[id].coords)
+        TriggerClientEvent('aether_admin:teleportTo', src, activeReports[id].coords)
     end
 end)
 
 -- Get logs from database
-RegisterNetEvent('wasteland_admin:getLogs', function(logType, limit)
+RegisterNetEvent('aether_admin:getLogs', function(logType, limit)
     local src = source
     if not GetAdminGroup(src) then return end
     
@@ -1634,7 +2070,7 @@ RegisterNetEvent('wasteland_admin:getLogs', function(logType, limit)
     table.insert(params, limit)
     
     MySQL_Query(query, params, function(results)
-        TriggerClientEvent('wasteland_admin:logsData', src, results or {})
+        TriggerClientEvent('aether_admin:logsData', src, results or {})
     end)
 end)
 
@@ -1643,17 +2079,17 @@ end)
 -- ============================================
 
 -- Get all bans
-RegisterNetEvent('wasteland_admin:getBans', function()
+RegisterNetEvent('aether_admin:getBans', function()
     local src = source
     if not HasPermission(src, 'ban') then return end
     
     MySQL_Query('SELECT * FROM ' .. Config.BanTable .. ' ORDER BY created_at DESC', {}, function(results)
-        TriggerClientEvent('wasteland_admin:bansList', src, results or {})
+        TriggerClientEvent('aether_admin:bansList', src, results or {})
     end)
 end)
 
 -- Unban player
-RegisterNetEvent('wasteland_admin:unbanPlayer', function(banId)
+RegisterNetEvent('aether_admin:unbanPlayer', function(banId)
     local src = source
     if not HasPermission(src, 'ban') then return end
     
@@ -1677,8 +2113,381 @@ RegisterNetEvent('wasteland_admin:unbanPlayer', function(banId)
             
             -- Refresh ban list
             MySQL_Query('SELECT * FROM ' .. Config.BanTable .. ' ORDER BY created_at DESC', {}, function(results)
-                TriggerClientEvent('wasteland_admin:bansList', src, results or {})
+                TriggerClientEvent('aether_admin:bansList', src, results or {})
             end)
         end
     end)
 end)
+
+
+-- ============================================
+-- EXPORTS FOR OTHER SCRIPTS
+-- Use these to prevent false positives
+-- ============================================
+
+-- Enable/Disable safe mode for a player
+-- Usage: exports['aether-anticheat']:SetPlayerSafeMode(source, true)
+function SetPlayerSafeMode(src, enabled)
+    Framework.SetPlayerSafeMode(src, enabled)
+end
+
+-- Check if player is in safe mode
+-- Usage: local isSafe = exports['aether-anticheat']:IsPlayerInSafeMode(source)
+function IsPlayerInSafeMode(src)
+    return Framework.IsPlayerInSafeMode(src)
+end
+
+
+-- Server events for client-triggered safe mode
+RegisterNetEvent('aether:enableSafeMode', function()
+    local src = source
+    exports['aether-anticheat']:SetPlayerSafeMode(src, true)
+end)
+
+RegisterNetEvent('aether:disableSafeMode', function()
+    local src = source
+    exports['aether-anticheat']:SetPlayerSafeMode(src, false)
+end)
+
+
+-- ============================================
+-- AC INFO COMMAND
+-- Shows anticheat information to admins
+-- ============================================
+RegisterCommand('ac', function(source, args, rawCommand)
+    if source == 0 then
+        print('[ANTICHEAT] Aether Anticheat v4.5 - Coded by konpep')
+        print('[ANTICHEAT] Advanced Protection System')
+        print('[ANTICHEAT] Use /ac info in-game for detailed information')
+        return
+    end
+    
+    -- Check if player has admin permissions
+    local adminGroup = GetAdminGroup(source)
+    if not adminGroup then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 0, 0},
+            multiline = true,
+            args = {"Anticheat", "You don't have permission to use this command!"}
+        })
+        return
+    end
+    
+    -- Check subcommand
+    if args[1] == 'info' then
+        -- Trigger client UI
+        TriggerClientEvent('anticheat:showInfo', source)
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {100, 200, 255},
+            multiline = true,
+            args = {"Anticheat", "Usage: /ac info - Show anticheat information"}
+        })
+    end
+end, false)
+
+
+-- ============================================
+-- PLAYER INFO COMMAND
+-- Shows detailed player information to admins
+-- ============================================
+RegisterCommand('info', function(source, args, rawCommand)
+    if source == 0 then
+        print('[ADMIN] Usage: /info [playerid]')
+        return
+    end
+    
+    -- Check if player has admin permissions
+    local adminGroup = GetAdminGroup(source)
+    if not adminGroup then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 0, 0},
+            multiline = true,
+            args = {"Admin", "You don't have permission to use this command!"}
+        })
+        return
+    end
+    
+    -- Check if player ID was provided
+    if not args[1] then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 100, 100},
+            multiline = true,
+            args = {"Admin", "Usage: /info [playerid]"}
+        })
+        return
+    end
+    
+    local targetId = tonumber(args[1])
+    if not targetId then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 100, 100},
+            multiline = true,
+            args = {"Admin", "Invalid player ID!"}
+        })
+        return
+    end
+    
+    -- Check if player exists
+    local targetName = GetPlayerName(targetId)
+    if not targetName then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 100, 100},
+            multiline = true,
+            args = {"Admin", "Player not found!"}
+        })
+        return
+    end
+    
+    -- Get player identifiers
+    local license = GetPlayerLicense(targetId) or 'Unknown'
+    local discord = GetPlayerDiscord(targetId) or 'Unknown'
+    local steam = GetPlayerSteam(targetId) or 'Unknown'
+    local ip = GetPlayerEndpoint(targetId) or 'Unknown'
+    
+    print('[DEBUG] Getting info for player: ' .. targetName .. ' (ID: ' .. targetId .. ')')
+    print('[DEBUG] License: ' .. license)
+    
+    -- Query database for bans
+    MySQL_Query('SELECT COUNT(*) as count FROM ' .. Config.BanTable .. ' WHERE license = ? OR discord = ? OR steam = ?', 
+        {license, discord, steam}, 
+        function(bans)
+            print('[DEBUG] Ban query completed')
+            local banCount = bans and bans[1] and bans[1].count or 0
+            print('[DEBUG] Ban count: ' .. banCount)
+            
+            -- Try to get screenshots (with error handling)
+            local screenshotList = {}
+            pcall(function()
+                MySQL_Query('SELECT screenshot_url, reason, created_at FROM admin_screenshots WHERE license = ? ORDER BY created_at DESC LIMIT 20', 
+                    {license}, 
+                    function(screenshots)
+                        if screenshots then
+                            print('[DEBUG] Found ' .. #screenshots .. ' screenshots')
+                            for _, ss in ipairs(screenshots) do
+                                table.insert(screenshotList, {
+                                    url = ss.screenshot_url,
+                                    reason = ss.reason or 'No reason',
+                                    date = ss.created_at or 'Unknown'
+                                })
+                            end
+                        end
+                    end
+                )
+            end)
+            
+            -- Try to get logs (with error handling)
+            local logList = {}
+            pcall(function()
+                MySQL_Query('SELECT action, details, timestamp FROM admin_logs WHERE target_license = ? ORDER BY timestamp DESC LIMIT 10', 
+                    {license}, 
+                    function(logs)
+                        if logs then
+                            print('[DEBUG] Found ' .. #logs .. ' logs')
+                            for _, log in ipairs(logs) do
+                                table.insert(logList, {
+                                    action = log.action or 'Unknown',
+                                    details = log.details or '',
+                                    time = log.timestamp or 'Unknown'
+                                })
+                            end
+                        end
+                    end
+                )
+            end)
+            
+            -- Wait a bit for async queries to complete, then send
+            Wait(500)
+            
+            -- Build player info
+            local playerInfo = {
+                id = targetId,
+                name = targetName,
+                license = license,
+                discord = discord,
+                steam = steam,
+                ip = ip,
+                bans = banCount,
+                kicks = 0,
+                warns = 0,
+                playtime = "Unknown",
+                firstJoin = "Unknown",
+                lastSeen = "Now (Online)",
+                screenshots = screenshotList,
+                logs = logList
+            }
+            
+            print('[DEBUG] Sending player info to client ' .. source)
+            print('[DEBUG] Screenshots count: ' .. #screenshotList)
+            print('[DEBUG] Logs count: ' .. #logList)
+            -- Send to client
+            TriggerClientEvent('admin:showPlayerInfo', source, playerInfo)
+            print('[DEBUG] Player info sent!')
+        end
+    )
+end, false)
+
+
+-- ============================================
+-- ANTI-VPN SYSTEM
+-- Checks for VPN/Proxy on player connect
+-- ============================================
+
+local vpnCache = {}  -- Cache checked IPs to save API requests
+
+-- Load cache from file (optional - for persistence across restarts)
+CreateThread(function()
+    -- You could load from database here if needed
+    print('[ANTI-VPN] System initialized')
+end)
+
+-- Check if IP is using VPN/Proxy
+local function CheckVPN(ip, callback)
+    if not Config.AntiVPN or not Config.AntiVPN.enabled then
+        callback(false, nil)
+        return
+    end
+    
+    -- Check whitelist
+    if Config.AntiVPN.whitelist[ip] then
+        print('[ANTI-VPN] IP ' .. ip .. ' is whitelisted')
+        callback(false, nil)
+        return
+    end
+    
+    -- Check cache
+    if vpnCache[ip] then
+        local cached = vpnCache[ip]
+        local age = os.time() - cached.timestamp
+        
+        if age < Config.AntiVPN.cacheDuration then
+            print('[ANTI-VPN] Using cached result for ' .. ip .. ' (age: ' .. math.floor(age/3600) .. 'h)')
+            callback(cached.isVPN, cached.data)
+            return
+        else
+            print('[ANTI-VPN] Cache expired for ' .. ip)
+            vpnCache[ip] = nil
+        end
+    end
+    
+    -- Make API request
+    local apiUrl = 'http://proxycheck.io/v2/' .. ip .. '?key=' .. Config.AntiVPN.apiKey .. '&vpn=1&asn=1&risk=1'
+    
+    print('[ANTI-VPN] Checking IP: ' .. ip)
+    
+    PerformHttpRequest(apiUrl, function(statusCode, response, headers)
+        if statusCode ~= 200 then
+            print('[ANTI-VPN] API Error: Status ' .. statusCode)
+            callback(false, nil)
+            return
+        end
+        
+        local success, data = pcall(function() return json.decode(response) end)
+        
+        if not success or not data then
+            print('[ANTI-VPN] Failed to parse API response')
+            callback(false, nil)
+            return
+        end
+        
+        local ipData = data[ip]
+        if not ipData then
+            print('[ANTI-VPN] No data for IP')
+            callback(false, nil)
+            return
+        end
+        
+        local isVPN = ipData.proxy == 'yes'
+        local vpnType = ipData.type or 'Unknown'
+        local country = ipData.country or 'Unknown'
+        local risk = ipData.risk or 0
+        
+        -- Cache result
+        vpnCache[ip] = {
+            isVPN = isVPN,
+            timestamp = os.time(),
+            data = {
+                type = vpnType,
+                country = country,
+                risk = risk,
+                provider = ipData.provider or 'Unknown'
+            }
+        }
+        
+        if isVPN then
+            print('[ANTI-VPN] ⚠️ VPN DETECTED! IP: ' .. ip .. ' | Type: ' .. vpnType .. ' | Country: ' .. country .. ' | Risk: ' .. risk)
+        else
+            print('[ANTI-VPN] ✅ Clean IP: ' .. ip .. ' | Country: ' .. country)
+        end
+        
+        callback(isVPN, vpnCache[ip].data)
+    end, 'GET')
+end
+
+-- Player connecting event
+
+-- Command to check IP manually (admin only)
+RegisterCommand('checkip', function(source, args, rawCommand)
+    if source == 0 then
+        print('[ANTI-VPN] Usage: checkip [ip]')
+        return
+    end
+    
+    local adminGroup = GetAdminGroup(source)
+    if not adminGroup then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 0, 0},
+            args = {"Anti-VPN", "No permission!"}
+        })
+        return
+    end
+    
+    if not args[1] then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 100, 100},
+            args = {"Anti-VPN", "Usage: /checkip [ip]"}
+        })
+        return
+    end
+    
+    local ip = args[1]
+    
+    TriggerClientEvent('chat:addMessage', source, {
+        color = {100, 200, 255},
+        args = {"Anti-VPN", "Checking IP: " .. ip .. "..."}
+    })
+    
+    CheckVPN(ip, function(isVPN, data)
+        if isVPN and data then
+            TriggerClientEvent('chat:addMessage', source, {
+                color = {255, 50, 50},
+                args = {"Anti-VPN", "⚠️ VPN DETECTED! Type: " .. (data.type or 'Unknown') .. " | Country: " .. (data.country or 'Unknown') .. " | Risk: " .. (data.risk or 0) .. "%"}
+            })
+        else
+            TriggerClientEvent('chat:addMessage', source, {
+                color = {50, 255, 50},
+                args = {"Anti-VPN", "✅ Clean IP | Country: " .. (data and data.country or 'Unknown')}
+            })
+        end
+    end)
+end, false)
+
+-- Command to clear VPN cache
+RegisterCommand('clearvpncache', function(source, args, rawCommand)
+    if source ~= 0 then
+        local adminGroup = GetAdminGroup(source)
+        if not adminGroup or adminGroup ~= 'superadmin' then
+            return
+        end
+    end
+    
+    vpnCache = {}
+    print('[ANTI-VPN] Cache cleared!')
+    
+    if source ~= 0 then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {100, 255, 100},
+            args = {"Anti-VPN", "Cache cleared!"}
+        })
+    end
+end, false)

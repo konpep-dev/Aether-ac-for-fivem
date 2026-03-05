@@ -1,9 +1,9 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'Wasteland'
-description 'Admin Panel with SQL Database'
-version '2.0.0'
+author 'konpep'
+description 'Aether Anticheat v4.5 - Advanced Protection System with Anti-VPN, Auto-Update, Anti-Tamper, and Player Info'
+version '4.5.0'
 
 lua54 'yes'
 
@@ -20,19 +20,24 @@ dependencies {
 
 
 shared_scripts {
-    'config.lua'
+    'config.lua',
+    'framework.lua'
 }
 
 client_scripts {
     'client.lua',
-    'anticheat/client.lua',
-    'nametag.lua'
+    'anticheat/client.lua'
 }
 
 server_scripts {
+    'anti_tamper.lua',  -- MUST BE FIRST - Protection system
     'server.lua',
     'anticheat/server.lua',
-    'nametag_server.lua'
+    'anticheat/events.lua',
+    'anticheat/spam_detection.lua',
+    'anticheat/spam_server.lua',
+    'auto_integration.lua',  -- Auto-integrate with other scripts
+    'auto_update.lua'  -- Auto-update system
 }
 
 ui_page 'web/dist/index.html'
@@ -42,3 +47,8 @@ files {
     'web/dist/**/*'
 }
 
+-- Exports for other scripts to use
+server_exports {
+    'SetPlayerSafeMode',
+    'IsPlayerInSafeMode'
+}

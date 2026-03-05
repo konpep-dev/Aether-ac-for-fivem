@@ -24,7 +24,7 @@ MYSQL_DATABASE = 'esxlegacy_5bcb97'  # Το database name σου
 DISCORD_WEBHOOK = None
 
 # Check interval (seconds)
-CHECK_INTERVAL = 10
+CHECK_INTERVAL = 3  # Faster checking (was 10)
 
 # File to track sent screenshots
 SENT_FILE = os.path.join(os.path.dirname(__file__), '.sent_ids.json')
@@ -286,10 +286,12 @@ def save_screenshot_url(player_license, image_url):
         
         cursor = conn.cursor()
         
-        # First find the ban ID, then update it
+        # FIXED: Find the most recent ban for this license (within last 5 minutes)
+        # This ensures we update the correct ban even if screenshot_url already has a value
         cursor.execute("""
             SELECT id FROM admin_bans 
-            WHERE license = %s AND screenshot_url IS NULL
+            WHERE license = %s 
+            AND created_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
             ORDER BY id DESC LIMIT 1
         """, (player_license,))
         
@@ -304,7 +306,7 @@ def save_screenshot_url(player_license, image_url):
             conn.commit()
             print(f"[OK] Updated ban ID {ban_id} with screenshot URL")
         else:
-            print(f"[WARN] No ban found for license {player_license}")
+            print(f"[WARN] No recent ban found for license {player_license[:30]}...")
         
         cursor.close()
         conn.close()

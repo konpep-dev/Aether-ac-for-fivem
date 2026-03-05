@@ -7,13 +7,19 @@ local noclipEnabled = false
 local spectating = false
 local spectateTarget = nil
 
+-- Initialize framework on client
+CreateThread(function()
+    Wait(1000)
+    Framework.Detect()
+end)
+
 -- Check permission on resource start
 CreateThread(function()
     Wait(2000)
-    TriggerServerEvent('wasteland_admin:checkPermission')
+    TriggerServerEvent('aether_admin:checkPermission')
 end)
 
-RegisterNetEvent('wasteland_admin:permissionResult', function(result, group, perms)
+RegisterNetEvent('aether_admin:permissionResult', function(result, group, perms)
     hasPermission = result
     adminGroup = group
     adminPerms = perms
@@ -24,7 +30,7 @@ RegisterCommand(Config.OpenCommand, function()
     if hasPermission then
         OpenAdminPanel()
     else
-        TriggerEvent('ox_lib:notify', { type = 'error', description = 'No permission' })
+        Framework.Notify('No permission', 'error')
     end
 end, false)
 
@@ -38,7 +44,7 @@ RegisterCommand('adminnoclip', function()
     if hasPermission and adminPerms and adminPerms.noclip then
         noclipEnabled = not noclipEnabled
         ToggleNoclip(noclipEnabled)
-        TriggerEvent('ox_lib:notify', { type = 'info', description = noclipEnabled and 'Noclip ON' or 'Noclip OFF' })
+        Framework.Notify(noclipEnabled and 'Noclip ON' or 'Noclip OFF', 'info')
     end
 end, false)
 
@@ -46,7 +52,7 @@ end, false)
 RegisterCommand('report', function(_, args)
     local reason = table.concat(args, ' ')
     if reason == '' then
-        TriggerEvent('ox_lib:notify', { type = 'error', description = 'Usage: /report [reason]' })
+        Framework.Notify('Usage: /report [reason]', 'error')
         return
     end
     
@@ -74,7 +80,7 @@ RegisterCommand('report', function(_, args)
     elseif lowerReason:find('grief') or lowerReason:find('troll') then category = 'Griefing'
     end
     
-    TriggerServerEvent('wasteland_admin:submitReport', closestPlayer, reason, category)
+    TriggerServerEvent('aether_admin:submitReport', closestPlayer, reason, category)
 end, false)
 
 TriggerEvent('chat:addSuggestion', '/report', 'Report a player', {{ name = 'reason', help = 'Reason' }})
@@ -84,9 +90,9 @@ function OpenAdminPanel()
     isOpen = true
     SetNuiFocus(true, true)
     
-    TriggerServerEvent('wasteland_admin:getPlayers')
-    TriggerServerEvent('wasteland_admin:getItems')
-    TriggerServerEvent('wasteland_admin:getReports')
+    TriggerServerEvent('aether_admin:getPlayers')
+    TriggerServerEvent('aether_admin:getItems')
+    TriggerServerEvent('aether_admin:getReports')
     
     local vehicles = {}
     for k, v in pairs(Config.VehicleCategories) do vehicles[k] = v end
@@ -116,66 +122,66 @@ CreateThread(function()
     while true do
         Wait(5000)
         if isOpen then
-            TriggerServerEvent('wasteland_admin:getPlayers')
-            TriggerServerEvent('wasteland_admin:getReports')
+            TriggerServerEvent('aether_admin:getPlayers')
+            TriggerServerEvent('aether_admin:getReports')
         end
     end
 end)
 
 -- Server events
-RegisterNetEvent('wasteland_admin:updatePlayers', function(players)
+RegisterNetEvent('aether_admin:updatePlayers', function(players)
     SendNUIMessage({ action = 'updatePlayers', players = players })
 end)
 
-RegisterNetEvent('wasteland_admin:itemsList', function(items)
+RegisterNetEvent('aether_admin:itemsList', function(items)
     SendNUIMessage({ action = 'updateItems', items = items })
 end)
 
-RegisterNetEvent('wasteland_admin:adminsList', function(admins)
+RegisterNetEvent('aether_admin:adminsList', function(admins)
     SendNUIMessage({ action = 'updateAdmins', admins = admins })
 end)
 
-RegisterNetEvent('wasteland_admin:reportsList', function(reports)
+RegisterNetEvent('aether_admin:reportsList', function(reports)
     SendNUIMessage({ action = 'updateReports', reports = reports })
 end)
 
-RegisterNetEvent('wasteland_admin:newReport', function(report)
+RegisterNetEvent('aether_admin:newReport', function(report)
     SendNUIMessage({ action = 'newReport', report = report })
     if hasPermission then
-        TriggerEvent('ox_lib:notify', { type = 'warning', description = 'New Report: ' .. report.category })
+        Framework.Notify('New Report: ' .. report.category, 'warning')
     end
 end)
 
-RegisterNetEvent('wasteland_admin:reportUpdated', function(report)
+RegisterNetEvent('aether_admin:reportUpdated', function(report)
     SendNUIMessage({ action = 'updateReport', report = report })
 end)
 
-RegisterNetEvent('wasteland_admin:reportClosed', function(id)
+RegisterNetEvent('aether_admin:reportClosed', function(id)
     SendNUIMessage({ action = 'closeReport', id = id })
 end)
 
 -- Screenshot result
-RegisterNetEvent('wasteland_admin:screenshotResult', function(imageData, targetName)
+RegisterNetEvent('aether_admin:screenshotResult', function(imageData, targetName)
     SendNUIMessage({ action = 'showScreenshot', image = imageData, targetName = targetName })
-    TriggerEvent('ox_lib:notify', { type = 'success', description = 'Screenshot of ' .. targetName })
+    Framework.Notify('Screenshot of ' .. targetName, 'success')
 end)
 
 -- Inventory viewing
-RegisterNetEvent('wasteland_admin:showInventory', function(data)
+RegisterNetEvent('aether_admin:showInventory', function(data)
     SendNUIMessage({ action = 'showInventory', inventory = data })
 end)
 
-RegisterNetEvent('wasteland_admin:inventoryData', function(data)
+RegisterNetEvent('aether_admin:inventoryData', function(data)
     SendNUIMessage({ action = 'showInventory', inventory = data })
 end)
 
 -- Logs data
-RegisterNetEvent('wasteland_admin:logsData', function(logs)
+RegisterNetEvent('aether_admin:logsData', function(logs)
     SendNUIMessage({ action = 'updateLogs', logs = logs })
 end)
 
 -- Bans data
-RegisterNetEvent('wasteland_admin:bansList', function(bans)
+RegisterNetEvent('aether_admin:bansList', function(bans)
     SendNUIMessage({ action = 'updateBans', bans = bans })
 end)
 
@@ -185,59 +191,59 @@ RegisterNUICallback('teleport', function(data, cb)
     if data.coords then SetEntityCoords(PlayerPedId(), data.coords.x, data.coords.y, data.coords.z, false, false, false, false) end
     cb({})
 end)
-RegisterNUICallback('teleportToPlayer', function(data, cb) TriggerServerEvent('wasteland_admin:teleportToPlayer', data.id) cb({}) end)
-RegisterNUICallback('bringPlayer', function(data, cb) TriggerServerEvent('wasteland_admin:bringPlayer', data.id) cb({}) end)
-RegisterNUICallback('kickPlayer', function(data, cb) TriggerServerEvent('wasteland_admin:kickPlayer', data.id, data.reason) cb({}) end)
-RegisterNUICallback('banPlayer', function(data, cb) TriggerServerEvent('wasteland_admin:banPlayer', data.id, data.reason, data.duration) cb({}) end)
-RegisterNUICallback('freezePlayer', function(data, cb) TriggerServerEvent('wasteland_admin:freezePlayer', data.id) cb({}) end)
-RegisterNUICallback('setWeather', function(data, cb) TriggerServerEvent('wasteland_admin:setWeather', data.weather) cb({}) end)
-RegisterNUICallback('setTime', function(data, cb) TriggerServerEvent('wasteland_admin:setTime', data.hour, data.minute) cb({}) end)
-RegisterNUICallback('revivePlayer', function(data, cb) TriggerServerEvent('wasteland_admin:revivePlayer', data.id) cb({}) end)
-RegisterNUICallback('announce', function(data, cb) TriggerServerEvent('wasteland_admin:announce', data.message) cb({}) end)
-RegisterNUICallback('refreshPlayers', function(_, cb) TriggerServerEvent('wasteland_admin:getPlayers') cb({}) end)
-RegisterNUICallback('getAdmins', function(_, cb) TriggerServerEvent('wasteland_admin:getAdmins') cb({}) end)
-RegisterNUICallback('setAdmin', function(data, cb) TriggerServerEvent('wasteland_admin:setAdmin', data.license, data.group) cb({}) end)
-RegisterNUICallback('removeAdmin', function(data, cb) TriggerServerEvent('wasteland_admin:removeAdmin', data.license) cb({}) end)
+RegisterNUICallback('teleportToPlayer', function(data, cb) TriggerServerEvent('aether_admin:teleportToPlayer', data.id) cb({}) end)
+RegisterNUICallback('bringPlayer', function(data, cb) TriggerServerEvent('aether_admin:bringPlayer', data.id) cb({}) end)
+RegisterNUICallback('kickPlayer', function(data, cb) TriggerServerEvent('aether_admin:kickPlayer', data.id, data.reason) cb({}) end)
+RegisterNUICallback('banPlayer', function(data, cb) TriggerServerEvent('aether_admin:banPlayer', data.id, data.reason, data.duration) cb({}) end)
+RegisterNUICallback('freezePlayer', function(data, cb) TriggerServerEvent('aether_admin:freezePlayer', data.id) cb({}) end)
+RegisterNUICallback('setWeather', function(data, cb) TriggerServerEvent('aether_admin:setWeather', data.weather) cb({}) end)
+RegisterNUICallback('setTime', function(data, cb) TriggerServerEvent('aether_admin:setTime', data.hour, data.minute) cb({}) end)
+RegisterNUICallback('revivePlayer', function(data, cb) TriggerServerEvent('aether_admin:revivePlayer', data.id) cb({}) end)
+RegisterNUICallback('announce', function(data, cb) TriggerServerEvent('aether_admin:announce', data.message) cb({}) end)
+RegisterNUICallback('refreshPlayers', function(_, cb) TriggerServerEvent('aether_admin:getPlayers') cb({}) end)
+RegisterNUICallback('getAdmins', function(_, cb) TriggerServerEvent('aether_admin:getAdmins') cb({}) end)
+RegisterNUICallback('setAdmin', function(data, cb) TriggerServerEvent('aether_admin:setAdmin', data.license, data.group) cb({}) end)
+RegisterNUICallback('removeAdmin', function(data, cb) TriggerServerEvent('aether_admin:removeAdmin', data.license) cb({}) end)
 RegisterNUICallback('toggleEsp', function(data, cb) espEnabled = data.enabled cb({}) end)
-RegisterNUICallback('giveItem', function(data, cb) TriggerServerEvent('wasteland_admin:giveItem', data.targetId, data.item, data.count) cb({}) end)
-RegisterNUICallback('giveWeapon', function(data, cb) TriggerServerEvent('wasteland_admin:giveItem', data.targetId or GetPlayerServerId(PlayerId()), data.weapon, 1) cb({}) end)
+RegisterNUICallback('giveItem', function(data, cb) TriggerServerEvent('aether_admin:giveItem', data.targetId, data.item, data.count) cb({}) end)
+RegisterNUICallback('giveWeapon', function(data, cb) TriggerServerEvent('aether_admin:giveItem', data.targetId or GetPlayerServerId(PlayerId()), data.weapon, 1) cb({}) end)
 
 -- Ban list callbacks
-RegisterNUICallback('getBans', function(_, cb) TriggerServerEvent('wasteland_admin:getBans') cb({}) end)
-RegisterNUICallback('unbanPlayer', function(data, cb) TriggerServerEvent('wasteland_admin:unbanPlayer', data.id) cb({}) end)
+RegisterNUICallback('getBans', function(_, cb) TriggerServerEvent('aether_admin:getBans') cb({}) end)
+RegisterNUICallback('unbanPlayer', function(data, cb) TriggerServerEvent('aether_admin:unbanPlayer', data.id) cb({}) end)
 
 -- Anticheat callbacks
-RegisterNUICallback('clearEntities', function(data, cb) TriggerServerEvent('wasteland_admin:clearEntities', data.type, data.radius) cb({}) end)
-RegisterNUICallback('warnPlayer', function(data, cb) TriggerServerEvent('wasteland_admin:warnPlayer', data.id) cb({}) end)
+RegisterNUICallback('clearEntities', function(data, cb) TriggerServerEvent('aether_admin:clearEntities', data.type, data.radius) cb({}) end)
+RegisterNUICallback('warnPlayer', function(data, cb) TriggerServerEvent('aether_admin:warnPlayer', data.id) cb({}) end)
 RegisterNUICallback('toggleAnticheatDebug', function(data, cb) TriggerServerEvent('anticheat:toggleDebugMode', data.enabled) cb({}) end)
 
 -- Screenshot callback
-RegisterNUICallback('takeScreenshot', function(data, cb) TriggerServerEvent('wasteland_admin:takeScreenshot', data.id) cb({}) end)
+RegisterNUICallback('takeScreenshot', function(data, cb) TriggerServerEvent('aether_admin:takeScreenshot', data.id) cb({}) end)
 
 -- Spectate callback
-RegisterNUICallback('spectatePlayer', function(data, cb) TriggerServerEvent('wasteland_admin:spectatePlayer', data.id) cb({}) end)
+RegisterNUICallback('spectatePlayer', function(data, cb) TriggerServerEvent('aether_admin:spectatePlayer', data.id) cb({}) end)
 
 -- View inventory callback
-RegisterNUICallback('viewInventory', function(data, cb) TriggerServerEvent('wasteland_admin:getPlayerInventory', data.id) cb({}) end)
+RegisterNUICallback('viewInventory', function(data, cb) TriggerServerEvent('aether_admin:getPlayerInventory', data.id) cb({}) end)
 
 -- Get logs callback
-RegisterNUICallback('getLogs', function(data, cb) TriggerServerEvent('wasteland_admin:getLogs', data.logType, data.limit) cb({}) end)
+RegisterNUICallback('getLogs', function(data, cb) TriggerServerEvent('aether_admin:getLogs', data.logType, data.limit) cb({}) end)
 
 -- Report callbacks
-RegisterNUICallback('getReports', function(_, cb) TriggerServerEvent('wasteland_admin:getReports') cb({}) end)
-RegisterNUICallback('claimReport', function(data, cb) TriggerServerEvent('wasteland_admin:claimReport', data.id) cb({}) end)
-RegisterNUICallback('closeReport', function(data, cb) TriggerServerEvent('wasteland_admin:closeReport', data.id) cb({}) end)
-RegisterNUICallback('gotoReport', function(data, cb) TriggerServerEvent('wasteland_admin:gotoReport', data.id) cb({}) end)
+RegisterNUICallback('getReports', function(_, cb) TriggerServerEvent('aether_admin:getReports') cb({}) end)
+RegisterNUICallback('claimReport', function(data, cb) TriggerServerEvent('aether_admin:claimReport', data.id) cb({}) end)
+RegisterNUICallback('closeReport', function(data, cb) TriggerServerEvent('aether_admin:closeReport', data.id) cb({}) end)
+RegisterNUICallback('gotoReport', function(data, cb) TriggerServerEvent('aether_admin:gotoReport', data.id) cb({}) end)
 
 -- View player inventory (shows in corner panel, doesn't close admin menu)
 RegisterNUICallback('openPlayerInventory', function(data, cb)
     -- Don't close the panel - just request inventory data
-    TriggerServerEvent('wasteland_admin:getPlayerInventory', data.id)
+    TriggerServerEvent('aether_admin:getPlayerInventory', data.id)
     cb({})
 end)
 
 -- Legacy: Open ox_inventory directly (not used anymore)
-RegisterNetEvent('wasteland_admin:openTargetInventory', function(targetId)
+RegisterNetEvent('aether_admin:openTargetInventory', function(targetId)
     if GetResourceState('ox_inventory') == 'started' then
         exports.ox_inventory:openInventory('player', targetId)
     end
@@ -246,7 +252,49 @@ end)
 -- Self actions
 RegisterNUICallback('heal', function(_, cb) SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId())) cb({}) end)
 RegisterNUICallback('armor', function(_, cb) SetPedArmour(PlayerPedId(), 100) cb({}) end)
-RegisterNUICallback('godMode', function(data, cb) SetEntityInvincible(PlayerPedId(), data.enabled) cb({}) end)
+
+-- Godmode with proper implementation
+local godModeActive = false
+RegisterNUICallback('godMode', function(data, cb) 
+    godModeActive = data.enabled
+    local ped = PlayerPedId()
+    
+    if godModeActive then
+        SetEntityInvincible(ped, true)
+        SetPlayerInvincible(PlayerId(), true)
+        -- Notify anticheat to ignore godmode detection
+        TriggerServerEvent('anticheat:adminActionProtection', GetPlayerServerId(PlayerId()), 'godmode', 999999)
+    else
+        SetEntityInvincible(ped, false)
+        SetPlayerInvincible(PlayerId(), false)
+    end
+    
+    cb({}) 
+end)
+
+-- Godmode thread to maintain invincibility
+CreateThread(function()
+    while true do
+        Wait(0)
+        if godModeActive then
+            local ped = PlayerPedId()
+            SetEntityInvincible(ped, true)
+            SetPlayerInvincible(PlayerId(), true)
+            
+            -- Prevent all damage
+            SetEntityProofs(ped, true, true, true, true, true, true, true, true)
+            
+            -- Keep health and armor full
+            if GetEntityHealth(ped) < 200 then
+                SetEntityHealth(ped, 200)
+            end
+            if GetPedArmour(ped) < 100 then
+                SetPedArmour(ped, 100)
+            end
+        end
+    end
+end)
+
 RegisterNUICallback('invisible', function(data, cb) SetEntityVisible(PlayerPedId(), not data.enabled, false) cb({}) end)
 RegisterNUICallback('noclip', function(data, cb) ToggleNoclip(data.enabled) cb({}) end)
 
@@ -312,24 +360,24 @@ end
 
 -- Event handlers
 local isFrozen = false
-RegisterNetEvent('wasteland_admin:freeze', function() isFrozen = not isFrozen FreezeEntityPosition(PlayerPedId(), isFrozen) end)
-RegisterNetEvent('wasteland_admin:teleportTo', function(coords) SetEntityCoords(PlayerPedId(), coords.x, coords.y, coords.z, false, false, false, false) end)
-RegisterNetEvent('wasteland_admin:revive', function()
+RegisterNetEvent('aether_admin:freeze', function() isFrozen = not isFrozen FreezeEntityPosition(PlayerPedId(), isFrozen) end)
+RegisterNetEvent('aether_admin:teleportTo', function(coords) SetEntityCoords(PlayerPedId(), coords.x, coords.y, coords.z, false, false, false, false) end)
+RegisterNetEvent('aether_admin:revive', function()
     local ped = PlayerPedId()
     SetEntityHealth(ped, GetEntityMaxHealth(ped))
     SetPedArmour(ped, 100)
     if IsEntityDead(ped) then NetworkResurrectLocalPlayer(GetEntityCoords(ped), GetEntityHeading(ped), true, false) end
 end)
-RegisterNetEvent('wasteland_admin:syncWeather', function(weather)
+RegisterNetEvent('aether_admin:syncWeather', function(weather)
     SetWeatherTypeNowPersist(weather)
     SetWeatherTypeNow(weather)
     SetWeatherTypePersist(weather)
     SetOverrideWeather(weather)
 end)
-RegisterNetEvent('wasteland_admin:syncTime', function(hour, minute) NetworkOverrideClockTime(hour, minute, 0) end)
+RegisterNetEvent('aether_admin:syncTime', function(hour, minute) NetworkOverrideClockTime(hour, minute, 0) end)
 
 -- Spectate system
-RegisterNetEvent('wasteland_admin:startSpectate', function(targetId, coords)
+RegisterNetEvent('aether_admin:startSpectate', function(targetId, coords)
     spectating = true
     spectateTarget = targetId
     local ped = PlayerPedId()
@@ -358,7 +406,7 @@ RegisterCommand('stopspectate', function()
         SetEntityVisible(ped, true, false)
         SetEntityCollision(ped, true, true)
         FreezeEntityPosition(ped, false)
-        TriggerEvent('ox_lib:notify', { type = 'info', description = 'Stopped spectating' })
+        Framework.Notify('Stopped spectating', 'info')
     end
 end, false)
 
@@ -384,7 +432,7 @@ CreateThread(function()
                     local weapon = GetSelectedPedWeapon(ped)
                     local weaponName = GetWeaponName(weapon)
                     local headshot = GetPedLastDamageBone(entity) == 31086
-                    TriggerServerEvent('wasteland_admin:logKill', GetPlayerServerId(targetPlayer), weaponName, headshot)
+                    TriggerServerEvent('aether_admin:logKill', GetPlayerServerId(targetPlayer), weaponName, headshot)
                 end
             end
         end
@@ -663,3 +711,338 @@ end)
 
 
 
+
+
+
+-- ============================================
+-- PLAYER INFO UI - Minimal & Beautiful
+-- ============================================
+local playerInfoUIActive = false
+local currentPlayerInfo = nil
+local screenshotViewerActive = false
+local currentScreenshotIndex = 1
+
+RegisterNetEvent('admin:showPlayerInfo', function(playerInfo)
+    print('[DEBUG] Received admin:showPlayerInfo event')
+    print('[DEBUG] Player Info:', json.encode(playerInfo))
+    
+    if playerInfoUIActive then 
+        print('[DEBUG] UI already active, ignoring')
+        return 
+    end
+    
+    currentPlayerInfo = playerInfo
+    playerInfoUIActive = true
+    screenshotViewerActive = false
+    currentScreenshotIndex = 1
+    
+    -- Disable controls while UI is open
+    CreateThread(function()
+        while playerInfoUIActive do
+            Wait(0)
+            
+            -- Disable all controls except specific ones
+            DisableAllControlActions(0)
+            EnableControlAction(0, 322, true) -- ESC
+            EnableControlAction(0, 18, true)  -- Enter
+            EnableControlAction(0, 191, true) -- Enter (alternative)
+            EnableControlAction(0, 26, true)  -- C key
+            EnableControlAction(0, 174, true) -- Left Arrow
+            EnableControlAction(0, 175, true) -- Right Arrow
+            
+            -- Check for Enter or ESC key to close
+            if IsControlJustPressed(0, 18) or IsControlJustPressed(0, 191) or IsControlJustPressed(0, 322) then
+                playerInfoUIActive = false
+                screenshotViewerActive = false
+                currentPlayerInfo = nil
+                PlaySoundFrontend(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
+            end
+            
+            -- Check for C key to toggle screenshot viewer
+            if IsControlJustPressed(0, 26) and currentPlayerInfo.screenshots and #currentPlayerInfo.screenshots > 0 then
+                screenshotViewerActive = not screenshotViewerActive
+                PlaySoundFrontend(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
+            end
+            
+            -- Navigate screenshots with arrow keys
+            if screenshotViewerActive and currentPlayerInfo.screenshots then
+                if IsControlJustPressed(0, 174) then -- Left
+                    currentScreenshotIndex = currentScreenshotIndex - 1
+                    if currentScreenshotIndex < 1 then
+                        currentScreenshotIndex = #currentPlayerInfo.screenshots
+                    end
+                    PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
+                elseif IsControlJustPressed(0, 175) then -- Right
+                    currentScreenshotIndex = currentScreenshotIndex + 1
+                    if currentScreenshotIndex > #currentPlayerInfo.screenshots then
+                        currentScreenshotIndex = 1
+                    end
+                    PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
+                end
+            end
+        end
+    end)
+    
+    -- Draw the UI
+    CreateThread(function()
+        local startTime = GetGameTimer()
+        local fadeInDuration = 300
+        
+        print('[DEBUG] Starting UI draw thread')
+        
+        while playerInfoUIActive and currentPlayerInfo do
+            Wait(0)
+            
+            -- Wrap in pcall to catch errors
+            local success, err = pcall(function()
+                -- Calculate fade in alpha
+                local elapsed = GetGameTimer() - startTime
+                local fadeAlpha = math.min(255, (elapsed / fadeInDuration) * 255)
+                
+                -- Background overlay
+                DrawRect(0.5, 0.5, 1.0, 1.0, 0, 0, 0, math.floor(180 * (fadeAlpha / 255)))
+            
+            -- Main panel background
+            local panelX = 0.5
+            local panelY = 0.5
+            local panelW = 0.40
+            local panelH = 0.60
+            
+            DrawRect(panelX, panelY, panelW, panelH, 15, 15, 20, math.floor(fadeAlpha))
+            
+            -- Top accent line (purple/blue)
+            DrawRect(panelX, panelY - (panelH / 2) + 0.002, panelW, 0.004, 100, 100, 255, math.floor(fadeAlpha))
+            
+            -- Title
+            SetTextFont(4)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.55)
+            SetTextColour(100, 100, 255, math.floor(fadeAlpha))
+            SetTextDropshadow(0, 0, 0, 0, 255)
+            SetTextEdge(1, 0, 0, 0, 255)
+            SetTextCentre(true)
+            SetTextEntry("STRING")
+            AddTextComponentString("PLAYER INFORMATION")
+            DrawText(panelX, panelY - (panelH / 2) + 0.025)
+            
+            -- Player Name
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.40)
+            SetTextColour(255, 255, 255, math.floor(fadeAlpha))
+            SetTextCentre(true)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString(currentPlayerInfo.name .. " [ID: " .. currentPlayerInfo.id .. "]")
+            DrawText(panelX, panelY - (panelH / 2) + 0.065)
+            
+            -- Separator line
+            DrawRect(panelX, panelY - (panelH / 2) + 0.095, panelW - 0.04, 0.001, 100, 100, 100, math.floor(fadeAlpha))
+            
+            -- Info sections
+            local startY = panelY - (panelH / 2) + 0.11
+            local lineHeight = 0.035
+            
+            -- Helper function to draw info line
+            local function DrawInfoLine(label, value, yPos, valueColor)
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.28)
+                SetTextColour(150, 150, 150, math.floor(fadeAlpha))
+                SetTextCentre(false)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString(label)
+                DrawText(panelX - (panelW / 2) + 0.03, yPos)
+                
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.28)
+                SetTextColour(valueColor.r or 255, valueColor.g or 255, valueColor.b or 255, math.floor(fadeAlpha))
+                SetTextCentre(false)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString(tostring(value))
+                DrawText(panelX - 0.02, yPos)
+            end
+            
+            -- Identifiers Section
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(100, 100, 255, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("IDENTIFIERS")
+            DrawText(panelX - (panelW / 2) + 0.03, startY)
+            
+            startY = startY + 0.032
+            DrawInfoLine("License:", string.sub(currentPlayerInfo.license, 1, 25) .. "...", startY, {r=200, g=200, b=200})
+            
+            startY = startY + lineHeight
+            DrawInfoLine("Discord:", currentPlayerInfo.discord ~= "Unknown" and string.sub(currentPlayerInfo.discord, 1, 20) .. "..." or "Not Linked", startY, {r=200, g=200, b=200})
+            
+            startY = startY + lineHeight
+            DrawInfoLine("Steam:", currentPlayerInfo.steam ~= "Unknown" and string.sub(currentPlayerInfo.steam, 1, 20) .. "..." or "Not Linked", startY, {r=200, g=200, b=200})
+            
+            startY = startY + lineHeight
+            DrawInfoLine("IP Address:", currentPlayerInfo.ip, startY, {r=200, g=200, b=200})
+            
+            -- Statistics Section
+            startY = startY + lineHeight + 0.015
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(100, 100, 255, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("STATISTICS")
+            DrawText(panelX - (panelW / 2) + 0.03, startY)
+            
+            startY = startY + 0.032
+            DrawInfoLine("Playtime:", currentPlayerInfo.playtime, startY, {r=100, g=255, b=100})
+            
+            startY = startY + lineHeight
+            DrawInfoLine("First Join:", currentPlayerInfo.firstJoin, startY, {r=200, g=200, b=200})
+            
+            startY = startY + lineHeight
+            DrawInfoLine("Last Seen:", currentPlayerInfo.lastSeen, startY, {r=100, g=255, b=100})
+            
+            -- Punishments Section
+            startY = startY + lineHeight + 0.015
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(255, 100, 100, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("PUNISHMENTS")
+            DrawText(panelX - (panelW / 2) + 0.03, startY)
+            
+            startY = startY + 0.032
+            local banColor = currentPlayerInfo.bans > 0 and {r=255, g=50, b=50} or {r=100, g=255, b=100}
+            DrawInfoLine("Total Bans:", currentPlayerInfo.bans, startY, banColor)
+            
+            startY = startY + lineHeight
+            local kickColor = currentPlayerInfo.kicks > 0 and {r=255, g=150, b=50} or {r=100, g=255, b=100}
+            DrawInfoLine("Total Kicks:", currentPlayerInfo.kicks, startY, kickColor)
+            
+            startY = startY + lineHeight
+            local warnColor = currentPlayerInfo.warns > 0 and {r=255, g=200, b=50} or {r=100, g=255, b=100}
+            DrawInfoLine("Total Warns:", currentPlayerInfo.warns, startY, warnColor)
+            
+            -- Bottom instructions
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.28)
+            SetTextColour(100, 100, 100, math.floor(fadeAlpha))
+            SetTextCentre(true)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            local hasScreenshots = currentPlayerInfo.screenshots and #currentPlayerInfo.screenshots > 0
+            if hasScreenshots then
+                AddTextComponentString("Press ~b~C~s~ for Screenshots | ~b~ENTER~s~/~b~ESC~s~ to close")
+            else
+                AddTextComponentString("Press ~b~ENTER~s~ or ~b~ESC~s~ to close")
+            end
+            DrawText(panelX, panelY + (panelH / 2) - 0.025)
+            
+            -- Screenshot Viewer Overlay
+            if screenshotViewerActive and currentPlayerInfo.screenshots and #currentPlayerInfo.screenshots > 0 then
+                local ss = currentPlayerInfo.screenshots[currentScreenshotIndex]
+                
+                -- Dark overlay
+                DrawRect(0.5, 0.5, 1.0, 1.0, 0, 0, 0, 230)
+                
+                -- Screenshot panel
+                local ssX = 0.5
+                local ssY = 0.5
+                local ssW = 0.6
+                local ssH = 0.7
+                
+                DrawRect(ssX, ssY, ssW, ssH, 20, 20, 25, 255)
+                
+                -- Title
+                SetTextFont(4)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.45)
+                SetTextColour(100, 100, 255, 255)
+                SetTextCentre(true)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(1, 0, 0, 0, 255)
+                SetTextEntry("STRING")
+                AddTextComponentString("SCREENSHOT VIEWER")
+                DrawText(ssX, ssY - (ssH / 2) + 0.02)
+                
+                -- Screenshot info
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.30)
+                SetTextColour(200, 200, 200, 255)
+                SetTextCentre(true)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString(currentScreenshotIndex .. " / " .. #currentPlayerInfo.screenshots .. " - " .. ss.reason)
+                DrawText(ssX, ssY - (ssH / 2) + 0.055)
+                
+                -- Screenshot placeholder (you'd load the actual image here)
+                DrawRect(ssX, ssY + 0.02, ssW - 0.04, ssH - 0.18, 30, 30, 35, 255)
+                
+                -- Image URL text
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.25)
+                SetTextColour(150, 150, 150, 255)
+                SetTextCentre(true)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString("URL: " .. (ss.url or "No URL"))
+                DrawText(ssX, ssY + (ssH / 2) - 0.08)
+                
+                -- Date
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.25)
+                SetTextColour(150, 150, 150, 255)
+                SetTextCentre(true)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString("Date: " .. (ss.date or "Unknown"))
+                DrawText(ssX, ssY + (ssH / 2) - 0.055)
+                
+                -- Navigation instructions
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.28)
+                SetTextColour(100, 100, 255, 255)
+                SetTextCentre(true)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString("~b~← →~s~ Navigate | ~b~C~s~ Close Viewer | ~b~ESC~s~ Exit")
+                DrawText(ssX, ssY + (ssH / 2) - 0.025)
+            end
+            end) -- End of pcall
+            
+            if not success then
+                print('[ERROR] Player Info UI draw error: ' .. tostring(err))
+                playerInfoUIActive = false
+                currentPlayerInfo = nil
+            end
+        end
+        print('[DEBUG] UI draw thread ended')
+    end)
+end)

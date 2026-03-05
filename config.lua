@@ -1,5 +1,18 @@
 Config = {}
 
+-- ============================================
+-- DEBUG CONFIGURATION
+-- ============================================
+-- Enable debug messages in console (useful for troubleshooting)
+Config.Debug = true  -- Set to true to see detailed debug messages
+
+-- ============================================
+-- FRAMEWORK CONFIGURATION
+-- ============================================
+-- Supported: 'auto', 'qb', 'qbx', 'esx', 'standalone'
+-- 'auto' = Auto-detect framework
+Config.Framework = 'auto'
+
 -- Admin Groups with permissions
 Config.AdminGroups = {
     ['superadmin'] = {
@@ -28,6 +41,7 @@ Config.AdminGroups = {
 -- Default admins (loaded from database, this is fallback)
 Config.Admins = {
     ['license:824c1f3c195f6d7e9e4f7409ac795e4d53d6f949'] = 'superadmin',
+    ['discord:926572380409712660'] = 'superadmin',
 }
 
 -- Command and Hotkeys
@@ -72,7 +86,7 @@ Config.WebhookColors = {
 }
 
 -- Server name for logs
-Config.ServerName = 'Wasteland Server'
+Config.ServerName = 'Aether Server'
 
 -- Fivemanage API Token (για screenshots στο Discord)
 -- Πάρε δωρεάν token από: https://fivemanage.com
@@ -80,6 +94,29 @@ Config.FivemanageToken = 'xSDwaADlGHGeHSCNGwFmTHof8JRAbI94'
 
 -- Discord invite link for ban appeals
 Config.DiscordInvite = 'https://discord.gg/your-server'
+
+-- ============================================
+-- ANTI-VPN CONFIGURATION
+-- ============================================
+Config.AntiVPN = {
+    enabled = true,  -- Enable/Disable VPN detection
+    apiKey = '22afb8dfa3ea99ba64f304b247e1392d5642ec26022e0351a1b37a62f99462eb',  -- proxycheck.io API key
+    cacheDuration = 7 * 24 * 60 * 60,  -- Cache IPs for 7 days (in seconds)
+    whitelist = {
+        -- Add IPs that should bypass VPN check
+        -- ['127.0.0.1'] = true,
+    },
+    -- Country Blacklist (FULL country names as returned by proxycheck.io API)
+    -- Players from these countries will be blocked
+    blacklistedCountries = {
+        -- ['Greece'] = true,
+        -- ['China'] = true,
+        -- ['Russia'] = true,
+        -- ['Turkey'] = true,
+        -- Add more countries as needed (use exact names from API logs)
+    },
+    countryBlacklistEnabled = true,  -- Enable/Disable country blacklist
+}
 
 -- TOS (Terms of Service) Settings
 Config.TOS = {
@@ -130,16 +167,6 @@ Config.SuperAdminVehicles = {
 }
 
 -- ============================================
--- INVENTORY SYSTEM CONFIGURATION
--- ============================================
--- Choose your inventory system to avoid conflicts
--- Options: 'auto', 'ox', 'esx', 'none'
--- 'auto' = Auto-detect (checks if ox_inventory or es_extended is running)
--- 'ox'   = Force OX Inventory (ox_inventory)
--- 'esx'  = Force ESX Inventory (es_extended)
--- 'none' = Disable inventory features (no item giving, no inventory viewing)
-Config.InventorySystem = 'auto'
-
 -- ============================================
 -- ANTICHEAT CONFIGURATION
 -- ============================================
@@ -149,6 +176,47 @@ Config.InventorySystem = 'auto'
 Config.Anticheat = {
     -- Master switch - Enable/Disable entire anticheat
     enabled = true,
+    
+    -- ════════════════════════════════════════
+    -- SPAM DETECTION
+    -- ════════════════════════════════════════
+    spamDetection = {
+        enabled = true,
+        action = 'ban',  -- 'ban' or 'kick' - what to do when spam detected
+        
+        vehicles = {
+            enabled = true,
+            shortWindow = 3,     -- 3 vehicles in 5 seconds
+            mediumWindow = 6,    -- 6 vehicles in 15 seconds
+            longWindow = 10,     -- 10 vehicles in 30 seconds
+            sameModel = 4,       -- 4 same model = suspicious
+            nearbyRadius = 50.0, -- Check within 50m
+            actionSeverity = 8,  -- Severity 8+ = ban/kick
+            warnSeverity = 6,    -- Severity 6+ = warning
+        },
+        
+        props = {
+            enabled = true,
+            shortWindow = 5,
+            mediumWindow = 10,
+            longWindow = 20,
+            sameModel = 6,
+            nearbyRadius = 30.0,
+            actionSeverity = 8,
+            warnSeverity = 6,
+        },
+        
+        peds = {
+            enabled = true,
+            shortWindow = 3,
+            mediumWindow = 5,
+            longWindow = 8,
+            sameModel = 4,
+            nearbyRadius = 40.0,
+            actionSeverity = 8,
+            warnSeverity = 6,
+        },
+    },
     
     -- ════════════════════════════════════════
     -- VIOLATIONS NEEDED BEFORE BAN
@@ -172,9 +240,9 @@ Config.Anticheat = {
         speedhack = 1,           -- Speed hack (1 = instant)
         
         -- Combat Cheats
-        aimbot = 1,              -- Aimbot detection (1 = instant)
-        silentAim = 1,           -- Silent aim detection (1 = instant)
-        triggerbot = 1,          -- Triggerbot detection (1 = instant)
+        aimbot = 3,              -- Increased from 1 (need more proof)
+        silentAim = 5,           -- Increased from 1 (need more proof)
+        triggerbot = 3,          -- Increased from 1
         
         -- Vision Cheats
         wallhack = 1,            -- Wallhack/shooting through walls (1 = instant)
@@ -273,58 +341,63 @@ Config.Anticheat = {
         serverFloatingTime = 6,      -- Ticks flying up before detection
         
         -- ════════════════════════════════════════
-        -- AIMBOT DETECTION v3.0
+        -- AIMBOT DETECTION v3.0 (IMPROVED)
         -- ════════════════════════════════════════
+        -- General Settings
+        countNPCsForAimbot = true,  -- Set to true to count NPC hits for aimbot detection
+                                      -- false = Only players count (RECOMMENDED for production)
+                                      -- true = NPCs + Players count (for testing/debugging)
+        
         -- Silent Aim
-        silentAimMaxAngle = 10.0,    -- Base max angle tolerance (degrees)
-        silentAimAngle30m = 6.0,     -- Max angle at 30m+
-        silentAimAngle50m = 4.0,     -- Max angle at 50m+
-        silentAimAngle100m = 2.5,    -- Max angle at 100m+
-        silentAimViolations = 3,     -- Violations before ban
+        silentAimMaxAngle = 12.0,    -- Increased from 10° (more tolerance)
+        silentAimAngle30m = 8.0,     -- Increased from 6°
+        silentAimAngle50m = 5.0,     -- Increased from 4°
+        silentAimAngle100m = 3.0,    -- Increased from 2.5°
+        silentAimViolations = 5,     -- Increased from 3 (need more proof)
         
         -- Headshot Analysis
-        headshotRateThreshold = 70,  -- % headshots to trigger (70%+)
-        consecutiveHeadshotsThreshold = 5, -- Consecutive headshots
-        longRangeHeadshotDistance = 50.0, -- Distance for long range (meters)
-        longRangeHeadshotRate = 70,  -- % long range headshots to trigger
+        headshotRateThreshold = 75,  -- Increased from 70% (stricter)
+        consecutiveHeadshotsThreshold = 7, -- Increased from 5 (more tolerance)
+        longRangeHeadshotDistance = 50.0,
+        longRangeHeadshotRate = 75,  -- Increased from 70%
         
         -- Bone Lock
-        boneLockThreshold = 9,       -- Same bone hits out of 10
-        boneLockViolations = 2,      -- Violations before ban
+        boneLockThreshold = 10,      -- Increased from 9 (out of 12 now)
+        boneLockViolations = 3,      -- Increased from 2
         
         -- Aim Snap
-        aimSnapSpeed = 600,          -- Snap speed threshold (deg/s)
-        aimSnapStopSpeed = 80,       -- Speed after snap to confirm (deg/s)
-        aimSnapViolations = 4,       -- Snaps before ban
+        aimSnapSpeed = 600,          -- Increased from 600 (same, but with more checks)
+        aimSnapStopSpeed = 80,       -- Same
+        aimSnapViolations = 4,       -- Same (but needs 30 sec window)
         
         -- Smooth Aimbot
-        smoothAimbotStdDev = 5,      -- Max std deviation (lower = more robotic)
-        smoothAimbotMinSpeed = 30,   -- Min avg speed to check
-        smoothAimbotMaxSpeed = 200,  -- Max avg speed to check
-        smoothAimbotViolations = 10, -- Violations before ban
+        smoothAimbotStdDev = 3,      -- Decreased from 5 (stricter - more robotic)
+        smoothAimbotMinSpeed = 30,
+        smoothAimbotMaxSpeed = 200,
+        smoothAimbotViolations = 10,
         
         -- Triggerbot
-        triggerbotReactionTime = 80, -- Max avg reaction time (ms)
-        triggerbotSamples = 5,       -- Samples needed
-        triggerbotViolations = 3,    -- Violations before ban
+        triggerbotReactionTime = 80,
+        triggerbotSamples = 5,
+        triggerbotViolations = 3,
         
         -- No Recoil
-        noRecoilThreshold = 0.1,     -- Max recoil to count as "zero"
-        noRecoilCount = 8,           -- Zero recoil shots out of 10
-        noRecoilViolations = 3,      -- Violations before ban
+        noRecoilThreshold = 0.1,
+        noRecoilCount = 8,
+        noRecoilViolations = 3,
         
         -- Target Switch
-        targetSwitchTime = 150,      -- Max avg switch time (ms)
-        targetSwitchSamples = 5,     -- Samples needed
+        targetSwitchTime = 150,
+        targetSwitchSamples = 5,
         
         -- Kill Rate
-        maxKillsPerMinute = 30,      -- Max kills per minute
+        maxKillsPerMinute = 30,
         
         -- Server-Side Combat Analysis
-        serverHeadshotRate = 60,     -- % headshots to trigger server-side
-        serverConsecutiveHeadshots = 7, -- Consecutive headshots server-side
-        serverHitRate = 75,          -- % hit rate to trigger
-        serverKillsPerMinute = 12,   -- Kills per minute to trigger
+        serverHeadshotRate = 70,     -- Increased from 60%
+        serverConsecutiveHeadshots = 8, -- Increased from 7
+        serverHitRate = 80,          -- Increased from 75%
+        serverKillsPerMinute = 15,   -- Increased from 12
         
         -- Self Heal Detection
         maxHealthGain = 50,          -- Max health gain per second without medic
@@ -581,4 +654,114 @@ Config.BlacklistedWeapons = {
     'WEAPON_EMPLAUNCHER',       -- EMP Launcher
 }
 
+-- ============================================
+-- BLACKLISTED VEHICLE PLATES
+-- Detects cheaters who change vehicle plates
+-- ============================================
+Config.BlacklistedPlates = {
+    -- Common cheat menu signatures
+    'EULEN',
+    'eulen',
+    'MODEST',
+    'modest',
+    'LYNX',
+    'lynx',
+    'KIDDION',
+    'kiddion',
+    'PHANTOM',
+    'phantom',
+    'CHERAX',
+    'cherax',
+    'STAND',
+    'stand',
+    '2TAKE1',
+    '2take1',
+    'IMPULSE',
+    'impulse',
+    'PARAGON',
+    'paragon',
+    'OZARK',
+    'ozark',
+    'DISTURBED',
+    'disturbed',
+    'LUNA',
+    'luna',
+    'TERROR',
+    'terror',
+    'XCHEATS',
+    'xcheats',
+    'REDENGINE',
+    'redengine',
+    
+    -- Common troll plates
+    'HACKER',
+    'hacker',
+    'CHEATER',
+    'cheater',
+    'MODDER',
+    'modder',
+    'ADMIN',  -- Fake admin plates
+    'GOD',
+    'IDDQD',  -- Classic god mode cheat
+    
+    -- Add more as needed
+}
 
+Config.PlateCheckInterval = 5000 -- Check every 5 seconds
+
+-- ============================================
+-- MECHANIC SHOP ZONES (Safe zones for vehicle modifications)
+-- Players can only modify vehicles inside these zones
+-- ============================================
+Config.MechanicShops = {
+    -- Los Santos Customs
+    { coords = vector3(-337.0, -136.0, 39.0), radius = 30.0, name = "LS Customs (Burton)" },
+    { coords = vector3(-1155.0, -2007.0, 13.0), radius = 30.0, name = "LS Customs (Airport)" },
+    { coords = vector3(731.0, -1089.0, 22.0), radius = 30.0, name = "LS Customs (La Mesa)" },
+    { coords = vector3(1175.0, 2640.0, 37.0), radius = 30.0, name = "LS Customs (Harmony)" },
+    { coords = vector3(110.0, 6626.0, 31.0), radius = 30.0, name = "LS Customs (Paleto Bay)" },
+    
+    -- Benny's
+    { coords = vector3(-205.0, -1308.0, 31.0), radius = 35.0, name = "Benny's Original Motor Works" },
+    
+    -- Beeker's Garage
+    { coords = vector3(105.0, 6613.0, 32.0), radius = 30.0, name = "Beeker's Garage" },
+    
+    -- Add your custom mechanic shops here
+    -- { coords = vector3(x, y, z), radius = 30.0, name = "Custom Mechanic" },
+}
+
+Config.VehicleModCheckInterval = 2000 -- Check every 2 seconds
+
+-- WHITELISTED PROPS (Only these are allowed to be spawned by non-admins)
+-- Commonjob props like barriers, cones, and spikes
+Config.WhitelistedProps = {
+    -- Police/Job Barriers
+    'prop_barrier_work01a',
+    'prop_barrier_work02a',
+    'prop_barrier_work05',
+    'prop_barrier_work06a',
+    'prop_mp_barrier_02b',
+    'prop_mp_barrier_02',
+    
+    -- Traffic Cones
+    'prop_roadcone01a',
+    'prop_roadcone02a',
+    'prop_roadcone02b',
+    'prop_roadcone02c',
+    
+    -- Spikes (Stinger)
+    'p_ld_stinger_s',
+    'p_spike_s',
+    
+    -- Work Equipment
+    'prop_worklight_03a',
+    'prop_worklight_04a',
+    'prop_toolchest_01',
+    'prop_generator_01a',
+    
+    -- Medical
+    'prop_ld_health_pack',
+    'p_med_bag_01',
+    'p_med_bag_01_s',
+}

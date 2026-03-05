@@ -1,7 +1,16 @@
 -- ============================================
--- WASTELAND ANTICHEAT - CLIENT SIDE v4.0
+-- aether ANTICHEAT - CLIENT SIDE v4.0
 -- Advanced Protection System
 -- ============================================
+
+-- ============================================
+-- DEBUG HELPER FUNCTION
+-- ============================================
+local function DebugPrint(message)
+    if Config and Config.Debug then
+        print(message)
+    end
+end
 
 -- ============================================
 -- FANCY CONSOLE OUTPUT
@@ -156,7 +165,7 @@ local blacklistedWeapons = {}
 
 -- ============================================
 -- SPAWN PROTECTION SYSTEM
--- Allows other scripts (wasteland_spawn) to temporarily disable checks
+-- Allows other scripts (aether_spawn) to temporarily disable checks
 -- ============================================
 local spawnProtection = {
     active = false,
@@ -210,7 +219,7 @@ local safezoneProtection = {
 }
 
 -- Export: Call this from any script when player enters/exits safezone
--- Usage: exports['wasteland_admin']:SetSafezoneProtection(true, 'greenzone')
+-- Usage: exports['aether_admin']:SetSafezoneProtection(true, 'greenzone')
 local function SetSafezoneProtection(enabled, zoneName)
     safezoneProtection.active = enabled
     safezoneProtection.zoneName = zoneName or 'safezone'
@@ -255,8 +264,8 @@ local function IsInSafezone()
     return safezoneProtection.active
 end
 
--- Export: Call this from wasteland_spawn when player spawns
--- Usage: exports['wasteland_admin']:SetSpawnProtection(true)
+-- Export: Call this from aether_spawn when player spawns
+-- Usage: exports['aether_admin']:SetSpawnProtection(true)
 local function SetSpawnProtection(enabled, duration)
     if enabled then
         spawnProtection.active = true
@@ -496,10 +505,10 @@ end)
 -- Admin check
 CreateThread(function()
     Wait(3000)
-    TriggerServerEvent('wasteland_admin:checkPermission')
+    TriggerServerEvent('aether_admin:checkPermission')
 end)
 
-RegisterNetEvent('wasteland_admin:permissionResult', function(result)
+RegisterNetEvent('aether_admin:permissionResult', function(result)
     isAdmin = result
 end)
 
@@ -3096,7 +3105,7 @@ local freecamData = {
     violations = 0,
     lastCamPos = nil,
     lastPlayerPos = nil,
-    maxViolations = 8 -- ULTRA STRICT: Fast detection
+    maxViolations = 20 -- Increased from 8 to reduce false positives
 }
 
 CreateThread(function()
@@ -3158,7 +3167,7 @@ CreateThread(function()
             end
 
             if distance > maxDist then
-                freecamData.violations = freecamData.violations + 2
+                freecamData.violations = freecamData.violations + 1 -- Reduced from 2
                 print('[ANTICHEAT] FREECAM! Dist: ' .. math.floor(distance) .. 'm (Max: ' .. maxDist .. 'm)')
             else
                 freecamData.violations = math.max(0, freecamData.violations - 0.5)
@@ -3192,8 +3201,8 @@ CreateThread(function()
                 local playerMoved = #(pedCoords - freecamData.lastPlayerPos)
                 
                 -- Player barely moved but camera flew across the map
-                if playerMoved < 2.0 and camMoved > 30.0 and not IsPedInAnyVehicle(ped, false) then
-                    freecamData.violations = freecamData.violations + 3
+                if playerMoved < 2.0 and camMoved > 50.0 and not IsPedInAnyVehicle(ped, false) then -- Increased from 30.0 to 50.0
+                    freecamData.violations = freecamData.violations + 2 -- Reduced from 3
                     print('[ANTICHEAT] SPECTATE MODE! Cam speed: ' .. math.floor(camMoved * 2.5) .. 'm/s')
                 end
             end
@@ -3263,7 +3272,7 @@ CreateThread(function()
                             local dot = forward.x * toOtherNorm.x + forward.y * toOtherNorm.y + forward.z * toOtherNorm.z
                             
                             if dot > 0.7 then -- Looking at them
-                                freecamData.violations = freecamData.violations + 4
+                                freecamData.violations = freecamData.violations + 2 -- Reduced from 4
                                 print('[ANTICHEAT] SPECTATING PLAYER! Dist to them: ' .. math.floor(distMeToOther) .. 'm')
                                 
                                 if freecamData.violations >= freecamData.maxViolations then
@@ -3284,3 +3293,391 @@ end)
 print('[ANTICHEAT] Anti-Freecam/Spectate System loaded!')
 
 
+
+
+
+-- ============================================
+-- ANTI-BLACKLISTED PLATES
+-- Detects cheaters who change vehicle plates to known cheat signatures
+-- ============================================
+
+if Config and Config.Anticheat and Config.Anticheat.enabled and Config.BlacklistedPlates then
+    CreateThread(function()
+        Wait(20000) -- Wait for player to fully load
+        print('[ANTICHEAT] Anti-Blacklisted Plates System Active')
+        
+        local checkInterval = Config.PlateCheckInterval or 5000
+        local checkedVehicles = {} -- Cache to avoid spam
+        
+        while true do
+            Wait(checkInterval)
+            
+            local ped = PlayerPedId()
+            if not IsPedInAnyVehicle(ped, false) then
+                goto continuePlateCheck
+            end
+            
+            local vehicle = GetVehiclePedIsIn(ped, false)
+            if not vehicle or vehicle == 0 then
+                goto continuePlateCheck
+            end
+            
+            -- Get plate
+            local plate = GetVehicleNumberPlateText(vehicle)
+            if not plate or plate == '' then
+                goto continuePlateCheck
+            end
+            
+            -- Clean plate (remove spaces)
+            plate = string.gsub(plate, "%s+", "")
+            
+            -- Check if already checked this vehicle recently
+            if checkedVehicles[vehicle] and checkedVehicles[vehicle] == plate then
+                goto continuePlateCheck
+            end
+            
+            -- Check against blacklist
+            for _, blacklistedPlate in ipairs(Config.BlacklistedPlates) do
+                local cleanBlacklist = string.gsub(blacklistedPlate, "%s+", "")
+                
+                -- Case-insensitive check
+                if string.lower(plate) == string.lower(cleanBlacklist) or 
+                   string.find(string.lower(plate), string.lower(cleanBlacklist), 1, true) then
+                    
+                    print('[ANTICHEAT] [CLIENT] BLACKLISTED PLATE DETECTED!')
+                    print('[ANTICHEAT] [CLIENT] Plate: ' .. plate)
+                    print('[ANTICHEAT] [CLIENT] Matched: ' .. blacklistedPlate)
+                    print('[ANTICHEAT] [CLIENT] Vehicle NetId: ' .. tostring(VehToNet(vehicle)))
+                    print('[ANTICHEAT] [CLIENT] Sending event to server...')
+                    
+                    -- Report to server
+                    TriggerServerEvent('anticheat:blacklistedPlate', plate, blacklistedPlate, VehToNet(vehicle))
+                    
+                    print('[ANTICHEAT] [CLIENT] Event sent!')
+                    
+                    -- Mark as checked to avoid spam
+                    checkedVehicles[vehicle] = plate
+                    
+                    break
+                end
+            end
+            
+            -- Cache this vehicle as checked
+            checkedVehicles[vehicle] = plate
+            
+            ::continuePlateCheck::
+        end
+    end)
+end
+
+print('[ANTICHEAT] Anti-Blacklisted Plates loaded!')
+
+
+-- ============================================
+-- ANTI-ILLEGAL VEHICLE MODIFICATIONS
+-- Detects when players modify vehicles outside mechanic shops
+-- ============================================
+
+if Config and Config.Anticheat and Config.Anticheat.enabled and Config.MechanicShops then
+    CreateThread(function()
+        Wait(25000)
+        DebugPrint('[ANTICHEAT] Anti-Illegal Vehicle Modifications Active')
+        
+        local checkInterval = Config.VehicleModCheckInterval or 2000
+        local lastVehicleData = {}
+        
+        -- Helper: Check if player is in a mechanic shop
+        local function IsInMechanicShop()
+            local ped = PlayerPedId()
+            local coords = GetEntityCoords(ped)
+            
+            for _, shop in ipairs(Config.MechanicShops) do
+                local distance = #(coords - shop.coords)
+                if distance <= shop.radius then
+                    return true, shop.name
+                end
+            end
+            
+            return false, nil
+        end
+        
+        -- Helper: Get vehicle mod data
+        local function GetVehicleModData(vehicle)
+            return {
+                engine = GetVehicleMod(vehicle, 11), -- Engine
+                brakes = GetVehicleMod(vehicle, 12), -- Brakes
+                transmission = GetVehicleMod(vehicle, 13), -- Transmission
+                suspension = GetVehicleMod(vehicle, 15), -- Suspension
+                armor = GetVehicleMod(vehicle, 16), -- Armor
+                turbo = IsToggleModOn(vehicle, 18), -- Turbo
+                primaryColor = GetVehicleColours(vehicle),
+                customPrimaryColor = GetIsVehiclePrimaryColourCustom(vehicle),
+                livery = GetVehicleLivery(vehicle),
+                windowTint = GetVehicleWindowTint(vehicle),
+            }
+        end
+        
+        -- Helper: Compare vehicle data
+        local function HasVehicleChanged(oldData, newData)
+            if not oldData then return false end
+            
+            -- Check performance mods
+            if oldData.engine ~= newData.engine then return true, "Engine Level" end
+            if oldData.brakes ~= newData.brakes then return true, "Brakes" end
+            if oldData.transmission ~= newData.transmission then return true, "Transmission" end
+            if oldData.suspension ~= newData.suspension then return true, "Suspension" end
+            if oldData.armor ~= newData.armor then return true, "Armor" end
+            if oldData.turbo ~= newData.turbo then return true, "Turbo" end
+            
+            -- Check visual mods
+            if oldData.primaryColor ~= newData.primaryColor then return true, "Primary Color" end
+            if oldData.customPrimaryColor ~= newData.customPrimaryColor then return true, "Custom Color" end
+            if oldData.livery ~= newData.livery then return true, "Livery" end
+            if oldData.windowTint ~= newData.windowTint then return true, "Window Tint" end
+            
+            return false, nil
+        end
+        
+        while true do
+            Wait(checkInterval)
+            
+            local ped = PlayerPedId()
+            if not IsPedInAnyVehicle(ped, false) then
+                lastVehicleData = {}
+                goto continueModCheck
+            end
+            
+            local vehicle = GetVehiclePedIsIn(ped, false)
+            if not vehicle or vehicle == 0 then
+                goto continueModCheck
+            end
+            
+            -- Get current vehicle data
+            local currentData = GetVehicleModData(vehicle)
+            
+            -- Check if vehicle has changed
+            if lastVehicleData[vehicle] then
+                local hasChanged, modType = HasVehicleChanged(lastVehicleData[vehicle], currentData)
+                
+                if hasChanged then
+                    -- Check if in mechanic shop
+                    local inShop, shopName = IsInMechanicShop()
+                    
+                    if not inShop then
+                        print('[ANTICHEAT] [CLIENT] ILLEGAL VEHICLE MODIFICATION DETECTED!')
+                        print('[ANTICHEAT] [CLIENT] Type: ' .. tostring(modType))
+                        print('[ANTICHEAT] [CLIENT] Vehicle NetId: ' .. tostring(VehToNet(vehicle)))
+                        print('[ANTICHEAT] [CLIENT] Sending event to server...')
+                        
+                        -- Report to server
+                        local coords = GetEntityCoords(ped)
+                        TriggerServerEvent('anticheat:illegalVehicleMod', modType, coords, VehToNet(vehicle))
+                        
+                        print('[ANTICHEAT] [CLIENT] Event sent!')
+                        
+                        -- Clear cache to avoid spam
+                        lastVehicleData[vehicle] = nil
+                        
+                        goto continueModCheck
+                    else
+                        -- In shop, update cache silently
+                        lastVehicleData[vehicle] = currentData
+                    end
+                end
+            else
+                -- First time seeing this vehicle, cache it
+                lastVehicleData[vehicle] = currentData
+            end
+            
+            ::continueModCheck::
+        end
+    end)
+end
+
+DebugPrint('[ANTICHEAT] Anti-Illegal Vehicle Modifications loaded!')
+
+
+-- ============================================
+-- AC INFO UI - Minimal & Beautiful
+-- ============================================
+local infoUIActive = false
+
+RegisterNetEvent('anticheat:showInfo', function()
+    if infoUIActive then return end
+    
+    infoUIActive = true
+    
+    -- Disable controls while UI is open
+    CreateThread(function()
+        while infoUIActive do
+            Wait(0)
+            
+            -- Disable all controls except ESC and Enter
+            DisableAllControlActions(0)
+            EnableControlAction(0, 322, true) -- ESC
+            EnableControlAction(0, 18, true)  -- Enter
+            EnableControlAction(0, 191, true) -- Enter (alternative)
+            
+            -- Check for Enter key to close
+            if IsControlJustPressed(0, 18) or IsControlJustPressed(0, 191) then
+                infoUIActive = false
+                PlaySoundFrontend(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
+            end
+        end
+    end)
+    
+    -- Draw the UI
+    CreateThread(function()
+        local startTime = GetGameTimer()
+        local fadeInDuration = 300
+        
+        while infoUIActive do
+            Wait(0)
+            
+            -- Calculate fade in alpha
+            local elapsed = GetGameTimer() - startTime
+            local fadeAlpha = math.min(255, (elapsed / fadeInDuration) * 255)
+            
+            -- Background overlay
+            DrawRect(0.5, 0.5, 1.0, 1.0, 0, 0, 0, math.floor(180 * (fadeAlpha / 255)))
+            
+            -- Main panel background (minimal dark)
+            local panelX = 0.5
+            local panelY = 0.5
+            local panelW = 0.35
+            local panelH = 0.55  -- Increased from 0.45 to 0.55
+            
+            DrawRect(panelX, panelY, panelW, panelH, 15, 15, 20, math.floor(fadeAlpha))
+            
+            -- Top accent line (cyan)
+            DrawRect(panelX, panelY - (panelH / 2) + 0.002, panelW, 0.004, 0, 200, 255, math.floor(fadeAlpha))
+            
+            -- Title
+            SetTextFont(4)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.55)
+            SetTextColour(0, 200, 255, math.floor(fadeAlpha))
+            SetTextDropshadow(0, 0, 0, 0, 255)
+            SetTextEdge(1, 0, 0, 0, 255)
+            SetTextCentre(true)
+            SetTextEntry("STRING")
+            AddTextComponentString("AETHER ANTICHEAT")
+            DrawText(panelX, panelY - (panelH / 2) + 0.025)
+            
+            -- Version
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.35)
+            SetTextColour(150, 150, 150, math.floor(fadeAlpha))
+            SetTextCentre(true)
+            SetTextEntry("STRING")
+            AddTextComponentString("Version 4.5")
+            DrawText(panelX, panelY - (panelH / 2) + 0.065)
+            
+            -- Separator line
+            DrawRect(panelX, panelY - (panelH / 2) + 0.095, panelW - 0.04, 0.001, 100, 100, 100, math.floor(fadeAlpha))
+            
+            -- Info sections
+            local startY = panelY - (panelH / 2) + 0.12
+            local lineHeight = 0.04
+            
+            -- Developer
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(200, 200, 200, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("Developer:")
+            DrawText(panelX - (panelW / 2) + 0.03, startY)
+            
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(255, 255, 255, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("konpep")
+            DrawText(panelX + 0.05, startY)
+            
+            -- Protection Level
+            startY = startY + lineHeight
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(200, 200, 200, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("Protection Level:")
+            DrawText(panelX - (panelW / 2) + 0.03, startY)
+            
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.32)
+            SetTextColour(0, 255, 100, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("Advanced")
+            DrawText(panelX + 0.05, startY)
+            
+            -- Features title
+            startY = startY + lineHeight + 0.02
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.35)
+            SetTextColour(0, 200, 255, math.floor(fadeAlpha))
+            SetTextCentre(false)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("FEATURES")
+            DrawText(panelX - (panelW / 2) + 0.03, startY)
+            
+            -- Feature list
+            local features = {
+                "Godmode Detection",
+                "Noclip Detection",
+                "Teleport Detection",
+                "Weapon/Vehicle Spawn",
+                "Blacklisted Plates",
+                "Illegal Vehicle Mods",
+                "Resource Protection",
+                "Screenshot System"
+            }
+            
+            startY = startY + 0.035
+            for i, feature in ipairs(features) do
+                SetTextFont(0)
+                SetTextProportional(1)
+                SetTextScale(0.0, 0.30)
+                SetTextColour(180, 180, 180, math.floor(fadeAlpha))
+                SetTextCentre(false)
+                SetTextDropshadow(0, 0, 0, 0, 0)
+                SetTextEdge(0, 0, 0, 0, 0)
+                SetTextEntry("STRING")
+                AddTextComponentString("~c~• ~s~" .. feature)
+                DrawText(panelX - (panelW / 2) + 0.03, startY + ((i - 1) * 0.035))
+            end
+            
+            -- Bottom instruction
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.30)
+            SetTextColour(100, 100, 100, math.floor(fadeAlpha))
+            SetTextCentre(true)
+            SetTextDropshadow(0, 0, 0, 0, 0)
+            SetTextEdge(0, 0, 0, 0, 0)
+            SetTextEntry("STRING")
+            AddTextComponentString("Press ~b~ENTER~s~ to close")
+            DrawText(panelX, panelY + (panelH / 2) - 0.025)
+        end
+    end)
+end)
