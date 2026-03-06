@@ -1,5 +1,5 @@
 -- ============================================
--- AETHER ANTICHEAT v1.5 - ANTI-TAMPER
+-- AETHER ANTICHEAT v4.5 - ANTI-TAMPER
 -- Simple & Effective Protection
 -- Coded by konpep
 -- ============================================
@@ -106,3 +106,4 @@ end)
 -- Exports
 exports('IsProtected', function() return _0x8d4c and not _0x2e5f end)
 exports('IsTampered', function() return _0x2e5f end)
+
