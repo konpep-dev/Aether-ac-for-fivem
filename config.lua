@@ -100,7 +100,7 @@ Config.DiscordInvite = 'https://discord.gg/your-server'
 -- ============================================
 Config.AntiVPN = {
     enabled = true,  -- Enable/Disable VPN detection
-    apiKey = '22afb8dfa3ea99ba64f304b247e1392d5642ec26022e0351a1b37a62f99462eb',  -- proxycheck.io API key
+    apiKey = 'xxx.xxx.xxx',  -- proxycheck.io API key
     cacheDuration = 7 * 24 * 60 * 60,  -- Cache IPs for 7 days (in seconds)
     whitelist = {
         -- Add IPs that should bypass VPN check
@@ -765,5 +765,6 @@ Config.WhitelistedProps = {
     'p_med_bag_01',
     'p_med_bag_01_s',
 }
+
 
 
