@@ -44,7 +44,7 @@ local function PrintFancyBanner()
     print(colors.cyan .. "║" .. colors.yellow .. "     ██║  ██║██║ ╚████║   ██║   ██║╚██████╗██║  ██║███████╗██║  ██║   ██║   " .. colors.cyan .. "║")
     print(colors.cyan .. "║" .. colors.yellow .. "     ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   " .. colors.cyan .. "║")
     print(colors.cyan .. "╠═══════════════════════════════════════════════════════════════════════════╣")
-    print(colors.cyan .. "║" .. colors.white .. "                    ADVANCED PROTECTION SYSTEM v4.0                       " .. colors.cyan .. "║")
+    print(colors.cyan .. "║" .. colors.white .. "                    ADVANCED PROTECTION SYSTEM v4.5                       " .. colors.cyan .. "║")
     print(colors.cyan .. "║" .. colors.green .. "                         Coded by konpep                                  " .. colors.cyan .. "║")
     print(colors.cyan .. "╚═══════════════════════════════════════════════════════════════════════════╝" .. colors.reset)
     print("")
@@ -3681,3 +3681,4 @@ RegisterNetEvent('anticheat:showInfo', function()
         end
     end)
 end)
+
