@@ -68,6 +68,9 @@
 - **Press C** - View screenshots in player info
 
 ### 🛡️ Enhanced Anticheat
+- **Global Ban System** - External protected banlist integration
+- **Anti-Bypass System** - Advanced identifier tracking (Tokens, Discord, HWID)
+- **Fix debug logs** - Hidden anticheat debug logs from F8 console
 - **Blacklisted plates** - Detects cheat signature plates
 - **Illegal vehicle mods** - Blocks modifications outside mechanic shops
 - **Debug mode** - Toggle debug messages with `Config.Debug`
@@ -746,6 +749,8 @@ The script automatically checks for updates every 30 minutes:
 - ✅ Executor detection
 - ✅ VPN/Proxy connections
 - ✅ Blacklisted countries
+- ✅ Global Ban list check
+- ✅ Advanced identifier tracking
 
 ### Protection Systems
 - ✅ Spawn protection
@@ -757,6 +762,8 @@ The script automatically checks for updates every 30 minutes:
 - ✅ Discord logging
 - ✅ IP caching
 - ✅ Anti-tamper
+- ✅ Global Ban System
+- ✅ Hidden Debug Console
 
 ---
 
