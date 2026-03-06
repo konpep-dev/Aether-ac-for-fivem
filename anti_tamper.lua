@@ -1,5 +1,5 @@
 -- ============================================
--- AETHER ANTICHEAT v4.5 - ANTI-TAMPER
+-- AETHER ANTICHEAT v1.5 - ANTI-TAMPER
 -- Simple & Effective Protection
 -- Coded by konpep
 -- ============================================
@@ -61,6 +61,7 @@ end)
 
 -- Block connections
 AddEventHandler('playerConnecting', function(name, skip, def)
+    if (GlobalBanBlocked and GlobalBanBlocked[source]) or (LocalBanBlocked and LocalBanBlocked[source]) then return end
     if _0x2e5f or not _0x8d4c then
         def.defer()
         Wait(50)
@@ -106,4 +107,3 @@ end)
 -- Exports
 exports('IsProtected', function() return _0x8d4c and not _0x2e5f end)
 exports('IsTampered', function() return _0x2e5f end)
-

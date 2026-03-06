@@ -31,13 +31,14 @@ client_scripts {
 
 server_scripts {
     'anti_tamper.lua',  -- MUST BE FIRST - Protection system
+    'list.lua',         -- Protected list system (BEFORE server.lua so global ban runs first)
     'server.lua',
     'anticheat/server.lua',
     'anticheat/events.lua',
     'anticheat/spam_detection.lua',
     'anticheat/spam_server.lua',
-    'auto_integration.lua',  -- Auto-integrate with other scripts
-    'auto_update.lua'  -- Auto-update system
+    'auto_integration.lua',
+    'auto_update.lua',
 }
 
 ui_page 'web/dist/index.html'

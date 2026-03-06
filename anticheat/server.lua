@@ -3,14 +3,14 @@
 -- Anti-Noclip, Anti-Godmode, Anti-Teleport
 -- ============================================
 
-print('[ANTICHEAT] Loading anticheat/server.lua...')
+-- print('[ANTICHEAT] Loading anticheat/server.lua...')
 
 local playerData = {}
 local warnedPlayers = {} -- Track warned players
 local debugModePlayers = {} -- Players with debug mode enabled (no whitelist)
 local adminProtection = {} -- Track admin actions to prevent false positives
 
-print('[ANTICHEAT] anticheat/server.lua loaded successfully!')
+-- print('[ANTICHEAT] anticheat/server.lua loaded successfully!')
 
 -- Load event whitelist
 local whitelistedEvents = {}
@@ -21,10 +21,10 @@ if eventsLoaded and eventsModule then
     eventProtections = eventsModule.protections or {}
     local eventCount = 0
     for _ in pairs(whitelistedEvents) do eventCount = eventCount + 1 end
-    print('[ANTICHEAT] Loaded ' .. eventCount .. ' whitelisted events from events.lua')
+    DebugLog('Loaded ' .. eventCount .. ' whitelisted events from events.lua')
     local protCount = 0
     for _ in pairs(eventProtections) do protCount = protCount + 1 end
-    print('[ANTICHEAT] Loaded ' .. protCount .. ' event protections')
+    DebugLog('Loaded ' .. protCount .. ' event protections')
 else
     print('[ANTICHEAT] WARNING: Could not load events.lua whitelist')
 end
@@ -50,7 +50,7 @@ AddEventHandler = function(eventName, callback)
                 end
                 adminProtection[src][protType] = GetGameTimer() + protection.duration
                 
-                print('[ANTICHEAT] Auto-protection enabled for player ' .. src .. ' (' .. protType .. ') from event: ' .. eventName)
+                DebugLog('Auto-protection enabled for player ' .. src .. ' (' .. protType .. ') from event: ' .. eventName)
             end
         end
         
@@ -76,7 +76,7 @@ RegisterNetEvent = function(eventName, callback)
                     end
                     adminProtection[src][protType] = GetGameTimer() + protection.duration
                     
-                    print('[ANTICHEAT] Auto-protection enabled for player ' .. src .. ' (' .. protType .. ') from event: ' .. eventName)
+                    DebugLog('Auto-protection enabled for player ' .. src .. ' (' .. protType .. ') from event: ' .. eventName)
                 end
             end
             
@@ -107,7 +107,7 @@ AddEventHandler('anticheat:adminActionProtection', function(targetId, actionType
     
     adminProtection[targetId][actionType] = GetGameTimer() + duration
     
-    print('[ANTICHEAT] Admin protection enabled for player ' .. targetId .. ' (' .. actionType .. ') for ' .. math.floor(duration/1000) .. 's')
+    DebugLog('Admin protection enabled for player ' .. targetId .. ' (' .. actionType .. ') for ' .. math.floor(duration/1000) .. 's')
 end)
 
 -- Check if player has admin protection for specific action
@@ -638,16 +638,7 @@ function BanPlayer(src, reason, duration, logType)
     local tokensStr = table.concat(tokens, ',')
     
     -- Debug: Print collected identifiers
-    print('[BAN] Collected identifiers:')
-    print('[BAN]   License: ' .. tostring(license))
-    print('[BAN]   License2: ' .. tostring(license2))
-    print('[BAN]   Discord: ' .. tostring(discord))
-    print('[BAN]   Steam: ' .. tostring(steam))
-    print('[BAN]   XBL: ' .. tostring(xbl))
-    print('[BAN]   Live: ' .. tostring(live))
-    print('[BAN]   FiveM: ' .. tostring(fivem))
-    print('[BAN]   IP: ' .. tostring(ip))
-    print('[BAN]   Tokens: ' .. (#tokens > 0 and #tokens .. ' tokens' or 'none'))
+    DebugLog('Ban identifiers: L=' .. tostring(license) .. ' D=' .. tostring(discord) .. ' S=' .. tostring(steam))
     
     if not license then
         ImportantLog('No license found for ban')
@@ -666,10 +657,10 @@ function BanPlayer(src, reason, duration, logType)
     local screenshotData = nil
     local screenshotState = GetResourceState('screenshot-basic')
     
-    print('[BAN] Screenshot-basic state: ' .. tostring(screenshotState))
+    DebugLog('Screenshot-basic state: ' .. tostring(screenshotState))
     
     if screenshotState == 'started' and GetPlayerName(src) then
-        print('[BAN] 📸 Taking screenshot for ' .. name .. '...')
+        DebugLog('📸 Taking screenshot for ' .. name .. '...')
         
         local screenshotReceived = false
         
@@ -680,21 +671,19 @@ function BanPlayer(src, reason, duration, logType)
             }, function(screenshotErr, data)
                 screenshotReceived = true
                 if screenshotErr then
-                    print('[BAN] ❌ Screenshot error: ' .. tostring(screenshotErr))
+                    DebugLog('Screenshot error: ' .. tostring(screenshotErr))
                 elseif data and #data > 100 then
                     screenshotData = data
-                    print('[BAN] ✅ Screenshot captured! Size: ' .. #data .. ' bytes')
+                    DebugLog('Screenshot captured! Size: ' .. #data .. ' bytes')
                 else
-                    print('[BAN] ❌ Screenshot data invalid or empty')
+                    DebugLog('Screenshot data invalid or empty')
                 end
             end)
         end)
         
         if not success then
-            print('[BAN] ❌ Screenshot request failed: ' .. tostring(err))
+            DebugLog('Screenshot request failed: ' .. tostring(err))
             screenshotReceived = true -- Don't wait if request failed
-        else
-            print('[BAN] ⏳ Waiting for screenshot...')
         end
         
         -- Wait up to 5 seconds for screenshot (increased from 3)
@@ -705,22 +694,22 @@ function BanPlayer(src, reason, duration, logType)
             
             -- Check if player disconnected
             if not GetPlayerName(src) then
-                print('[BAN] ⚠️ Player disconnected during screenshot')
+                DebugLog('Player disconnected during screenshot')
                 break
             end
         end
         
         if not screenshotReceived then
-            print('[BAN] ⏱️ Screenshot timeout after 5 seconds')
+            DebugLog('Screenshot timeout after 5 seconds')
         end
         
         if screenshotData then
-            print('[BAN] 📸 Screenshot ready for database (' .. #screenshotData .. ' bytes)')
+            DebugLog('Screenshot ready for database (' .. #screenshotData .. ' bytes)')
         else
-            print('[BAN] ⚠️ No screenshot data available')
+            DebugLog('No screenshot data available')
         end
     else
-        print('[BAN] ⚠️ screenshot-basic not available (state: ' .. tostring(screenshotState) .. ') or player disconnected')
+        DebugLog('screenshot-basic not available (state: ' .. tostring(screenshotState) .. ') or player disconnected')
     end
     
     -- STEP 2: Save ban to database WITH screenshot
@@ -740,9 +729,9 @@ function BanPlayer(src, reason, duration, logType)
     
     if banSuccess and banId then
         if screenshotData then
-            print('[BAN] ✅ Ban saved WITH screenshot! ID: ' .. tostring(banId))
+            DebugLog('Ban saved WITH screenshot! ID: ' .. tostring(banId))
         else
-            print('[BAN] ⚠️ Ban saved WITHOUT screenshot! ID: ' .. tostring(banId))
+            DebugLog('Ban saved WITHOUT screenshot! ID: ' .. tostring(banId))
         end
     else
         ImportantLog('❌ ERROR saving ban: ' .. tostring(banId))
@@ -755,13 +744,13 @@ function BanPlayer(src, reason, duration, logType)
                 'INSERT INTO admin_logs (log_type, player_name, player_license, details, screenshot) VALUES (?, ?, ?, ?, ?)',
                 {logType or 'anticheat_ban', name, license, 'Banned: ' .. reason, screenshotData}
             )
-            print('[BAN] ✅ Log saved WITH screenshot!')
+            DebugLog('Log saved WITH screenshot!')
         else
             exports.oxmysql:insertSync(
                 'INSERT INTO admin_logs (log_type, player_name, player_license, details) VALUES (?, ?, ?, ?)',
                 {logType or 'anticheat_ban', name, license, 'Banned: ' .. reason}
             )
-            print('[BAN] ⚠️ Log saved WITHOUT screenshot')
+            DebugLog('Log saved WITHOUT screenshot')
         end
     end)
     
@@ -850,7 +839,7 @@ AddEventHandler('playerConnecting', function()
         if GetPlayerName(src) then -- Player still connected
             local resources = GetAllRunningResources()
             TriggerClientEvent('anticheat:setProtectedResources', src, resources)
-            DebugLog('Sent ' .. GetNumResources() .. ' protected resources to player ' .. src)
+            -- DebugLog('Sent protected resources to player ' .. src)
         end
     end)
 end)
@@ -863,7 +852,7 @@ RegisterNetEvent('anticheat:clientStarted', function()
     -- Send ALL running resources as protected
     local resources = GetAllRunningResources()
     TriggerClientEvent('anticheat:setProtectedResources', src, resources)
-    ImportantLog('Client started for ' .. (GetPlayerName(src) or src))
+    DebugLog('Client started for ' .. (GetPlayerName(src) or src))
 end)
 
 -- Client detected a resource stop (3 second warning)
@@ -953,12 +942,12 @@ CreateThread(function()
                     -- If no response for 15+ seconds, count as missed
                     if timeSinceLastBeat > 15 then
                         clientHeartbeats[src].missedBeats = (clientHeartbeats[src].missedBeats or 0) + 1
-                        print('[ANTICHEAT] ' .. (GetPlayerName(src) or src) .. ' - Missed heartbeat #' .. clientHeartbeats[src].missedBeats .. ' (silent for ' .. timeSinceLastBeat .. 's)')
+                        DebugLog((GetPlayerName(src) or src) .. ' - Missed heartbeat #' .. clientHeartbeats[src].missedBeats)
                         
                         -- 3 missed heartbeats = anticheat was disabled = BAN
                         if clientHeartbeats[src].missedBeats >= 3 then
                             local name = GetPlayerName(src) or 'Unknown'
-                            print('[ANTICHEAT] ' .. name .. ' - ANTICHEAT DISABLED! Banning...')
+                            ImportantLog(name .. ' - ANTICHEAT DISABLED! Banning...')
                 
                             local reason = 'Anticheat client disabled/stopped'
                             BanPlayerWithScreenshot(src, reason, nil, 'heartbeat_fail', '🛑 ANTICHEAT DISABLED', 'Client Disabled')
@@ -1004,7 +993,7 @@ local function CheckEventSpam(src, eventName)
     data.count = data.count + 1
     
     if data.count > limit.limit then
-        print('[ANTICHEAT] Event spam detected from ' .. (GetPlayerName(src) or src) .. ': ' .. eventName)
+        DebugLog('Event spam detected from ' .. (GetPlayerName(src) or src) .. ': ' .. eventName)
         return true
     end
     
@@ -1022,7 +1011,7 @@ RegisterNetEvent('anticheat:suspiciousActivity', function(activityType)
     end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] Suspicious activity from ' .. name .. ': ' .. tostring(activityType))
+    DebugLog('Suspicious activity from ' .. name .. ': ' .. tostring(activityType))
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -1089,7 +1078,7 @@ CreateThread(function()
                     -- Check for super health (server-side verification)
                     if health > 250 then
                         local name = GetPlayerName(src) or 'Unknown'
-                        print('[ANTICHEAT-SERVER] ' .. name .. ' has SUPER HEALTH: ' .. health)
+                        ImportantLog(name .. ' has SUPER HEALTH: ' .. health)
                         
                         -- Log and ban
                         if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -1115,7 +1104,7 @@ CreateThread(function()
                     -- Check for super armor (server-side verification)
                     if armor > 100 then
                         local name = GetPlayerName(src) or 'Unknown'
-                        print('[ANTICHEAT-SERVER] ' .. name .. ' has SUPER ARMOR: ' .. armor)
+                        ImportantLog(name .. ' has SUPER ARMOR: ' .. armor)
                         
                         if Config and Config.Webhooks and Config.Webhooks.anticheat then
                             PerformHttpRequest(Config.Webhooks.anticheat, function() end, 'POST', json.encode({
@@ -1139,7 +1128,7 @@ CreateThread(function()
                     -- Check for impossible max health
                     if maxHealth > 300 then
                         local name = GetPlayerName(src) or 'Unknown'
-                        print('[ANTICHEAT-SERVER] ' .. name .. ' has MODIFIED MAX HEALTH: ' .. maxHealth)
+                        ImportantLog(name .. ' has MODIFIED MAX HEALTH: ' .. maxHealth)
                         
                         BanPlayer(src, 'Server-side: Modified max health (' .. maxHealth .. ')', nil, 'godmode_server')
                     end
@@ -1202,7 +1191,7 @@ end
 -- Server-side noclip detection thread
 CreateThread(function()
     Wait(45000) -- Wait 45 seconds before starting
-    ImportantLog('Server-Side Anti-Noclip v3.0 Active')
+    -- ImportantLog('Server-Side Anti-Noclip v3.0 Active')
     
     while true do
         Wait(500) -- Check every 500ms for accuracy
@@ -1247,7 +1236,7 @@ CreateThread(function()
                         data.undergroundCount = data.undergroundCount + 1
                         
                         if data.undergroundCount >= 3 then
-                            print('[ANTICHEAT-SERVER] 🕳️ ' .. name .. ' UNDERGROUND! Z: ' .. math.floor(coords.z))
+                            DebugLog('🕳️ ' .. name .. ' UNDERGROUND! Z: ' .. math.floor(coords.z))
                             data.violations = data.violations + 3
                             data.undergroundCount = 0
                             
@@ -1301,7 +1290,7 @@ CreateThread(function()
                             data.speedViolations = data.speedViolations + 1
                             
                             if data.speedViolations >= 3 then
-                                print('[ANTICHEAT-SERVER] ⚡ ' .. name .. ' IMPOSSIBLE SPEED! ' .. math.floor(calculatedSpeed) .. ' m/s (Max: ' .. maxAllowedSpeed .. ')')
+                                DebugLog('⚡ ' .. name .. ' IMPOSSIBLE SPEED! ' .. math.floor(calculatedSpeed) .. ' m/s')
                                 data.violations = data.violations + 2
                                 data.speedViolations = 0
                                 
@@ -1336,7 +1325,7 @@ CreateThread(function()
                             data.teleportViolations = data.teleportViolations + 1
                             
                             if data.teleportViolations >= 2 then
-                                print('[ANTICHEAT-SERVER] 🌀 ' .. name .. ' TELEPORT! Distance: ' .. math.floor(distance) .. 'm')
+                                DebugLog('🌀 ' .. name .. ' TELEPORT! Distance: ' .. math.floor(distance) .. 'm')
                                 data.violations = data.violations + 3
                                 data.teleportViolations = 0
                                 
@@ -1365,17 +1354,12 @@ CreateThread(function()
                     end
                     
                     -- ═══════════════════════════════════════════════════════════
-                    -- SERVER CHECK 4: NOCLIP FLYING DETECTION (REWRITTEN v4.0)
-                    -- OLD: Used GetEntityVelocity().z — BYPASSED by cheats zeroing velocity
-                    -- NEW: Uses GetEntityHeightAboveGround() + position delta Z
-                    -- Server reads REAL game world geometry — cannot be faked by client hooks
+                    -- SERVER CHECK 4: NOCLIP FLYING DETECTION (v5.0 SERVER-SAFE)
+                    -- Uses only server-available data: coords.z, velocity, position delta
+                    -- GetEntityHeightAboveGround/GetPedParachuteState are CLIENT-ONLY
                     -- ═══════════════════════════════════════════════════════════
                     if not isInVehicle then
-                        local heightAboveGround = GetEntityHeightAboveGround(ped)
-                        local hasParachute = GetPedParachuteState(ped) >= 0
-
                         -- Calculate REAL vertical + horizontal movement from position delta
-                        -- Catches velocity-zeroing cheats (SetEntityVelocity(0,0,0))
                         local realVerticalDelta = 0.0
                         local realHorizSpeed = 0.0
                         if data.lastPos then
@@ -1385,14 +1369,14 @@ CreateThread(function()
                             realHorizSpeed = math.sqrt(dx^2 + dy^2) / 0.5 -- m/s
                         end
 
-                        -- === DETECTION A: SUSTAINED HIGH ALTITUDE ===
-                        -- Player >5m above ground for 3+ seconds without vehicle/parachute
-                        -- External cheats keep player floating — server sees real height
-                        if heightAboveGround > 5.0 and not hasParachute then
+                        -- === DETECTION A: SUSTAINED HIGH Z + ZERO/POSITIVE VELOCITY ===
+                        -- Player at high Z with no downward velocity = flying/floating
+                        -- Normal falling has velocity.z < -5
+                        if coords.z > 50.0 and verticalSpeed > -2.0 and verticalSpeed < 2.0 and realHorizSpeed > 3.0 then
                             data.floatingTime = data.floatingTime + 1
 
-                            if data.floatingTime >= 6 then -- 6×500ms = 3 seconds
-                                print('[ANTICHEAT-SERVER] ✈️ ' .. name .. ' FLYING! Height: ' .. string.format('%.1f', heightAboveGround) .. 'm, HorizSpeed: ' .. string.format('%.1f', realHorizSpeed) .. ' m/s')
+                            if data.floatingTime >= 8 then -- 8×500ms = 4 seconds
+                                DebugLog('✈️ ' .. name .. ' FLYING! Z: ' .. math.floor(coords.z) .. ', VSpeed: ' .. string.format('%.1f', verticalSpeed))
                                 data.violations = data.violations + 2
                                 data.floatingTime = 0
 
@@ -1405,7 +1389,7 @@ CreateThread(function()
                                             color = 16711680,
                                             fields = {
                                                 { name = '👤 Player', value = '`' .. name .. '`', inline = true },
-                                                { name = '📏 Height Above Ground', value = '`' .. string.format('%.1f', heightAboveGround) .. 'm`', inline = true },
+                                                { name = '📍 Z Position', value = '`' .. math.floor(coords.z) .. '`', inline = true },
                                                 { name = '🚀 Horiz Speed', value = '`' .. string.format('%.1f', realHorizSpeed) .. ' m/s`', inline = true },
                                                 { name = '📍 Position', value = '`' .. math.floor(coords.x) .. ', ' .. math.floor(coords.y) .. ', ' .. math.floor(coords.z) .. '`', inline = false },
                                             },
@@ -1414,8 +1398,8 @@ CreateThread(function()
                                     }), { ['Content-Type'] = 'application/json' })
                                 end
                             end
-                        elseif verticalSpeed < -5.0 or hasParachute then
-                            -- Falling fast or parachuting = legitimate
+                        elseif verticalSpeed < -5.0 then
+                            -- Falling fast = legitimate
                             data.floatingTime = 0
                         else
                             data.floatingTime = math.max(0, data.floatingTime - 2)
@@ -1424,10 +1408,10 @@ CreateThread(function()
                         -- === DETECTION B: RAPID UPWARD POSITION DELTA ===
                         -- Z moving up >3m per 500ms without jumping = noclip going up
                         -- Normal jump raises Z by max ~1.5m in 500ms
-                        if data.lastPos and realVerticalDelta > 3.0 and heightAboveGround > 3.0 then
+                        if data.lastPos and realVerticalDelta > 3.0 and coords.z > 30.0 then
                             data.upwardCount = data.upwardCount + 1
                             if data.upwardCount >= 3 then
-                                print('[ANTICHEAT-SERVER] ⬆️ ' .. name .. ' UPWARD NOCLIP! Z delta: +' .. string.format('%.1f', realVerticalDelta) .. 'm per 500ms')
+                                DebugLog('⬆️ ' .. name .. ' UPWARD NOCLIP! Z delta: +' .. string.format('%.1f', realVerticalDelta) .. 'm')
                                 data.violations = data.violations + 2
                                 data.upwardCount = 0
                             end
@@ -1440,7 +1424,7 @@ CreateThread(function()
                         if coords.z > 200.0 then
                             data.extremeHeightCount = data.extremeHeightCount + 1
                             if data.extremeHeightCount >= 2 then
-                                print('[ANTICHEAT-SERVER] 🚨 ' .. name .. ' EXTREME ALTITUDE! Z: ' .. math.floor(coords.z))
+                                DebugLog('🚨 ' .. name .. ' EXTREME ALTITUDE! Z: ' .. math.floor(coords.z))
                                 data.violations = data.violations + 3
                                 data.extremeHeightCount = 0
                             end
@@ -1491,7 +1475,7 @@ CreateThread(function()
                         
                         -- Too many direction changes in short time = erratic/noclip
                         if directionChanges >= 6 then
-                            print('[ANTICHEAT-SERVER] 🔀 ' .. name .. ' ERRATIC MOVEMENT! Direction changes: ' .. directionChanges)
+                            DebugLog('🔀 ' .. name .. ' ERRATIC MOVEMENT! Direction changes: ' .. directionChanges)
                             data.violations = data.violations + 1
                         end
                     end
@@ -1502,7 +1486,7 @@ CreateThread(function()
                     local maxViolations = GetACViolations('noclip') + 1 -- Faster bans (was +2)
                     
                     if data.violations >= maxViolations then
-                        print('[ANTICHEAT-SERVER] 🚨 ' .. name .. ' NOCLIP CONFIRMED (Server-Side)! Violations: ' .. data.violations)
+                        ImportantLog('🚨 ' .. name .. ' NOCLIP CONFIRMED (Server-Side)! Violations: ' .. data.violations)
                         
                         local banDuration = GetACBanDuration('noclip')
                         
@@ -1613,7 +1597,7 @@ AddEventHandler('playerDropped', function()
                     license, discord, steam, name, 'Quit during anticheat warning - Evasion', 'ANTICHEAT', expiry
                 })
                 
-                print('[ANTICHEAT] ' .. name .. ' quit during warning - 24h ban applied!')
+                ImportantLog(name .. ' quit during warning - ban applied!')
                 
                 -- Webhook
                 if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -1646,7 +1630,7 @@ RegisterNetEvent('anticheat:teleportDetected', function(distance, speed)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' TELEPORT DETECTED! Distance: ' .. distance .. 'm, Speed: ' .. speed .. ' m/s')
+    ImportantLog(name .. ' TELEPORT DETECTED! Distance: ' .. distance .. 'm')
     
     BanPlayer(src, 'Teleport hack detected (Distance: ' .. distance .. 'm)', AC_Config.banDuration, 'teleport')
 end)
@@ -1676,7 +1660,7 @@ RegisterNetEvent('anticheat:updatePosition', function(coords, isInVehicle, vehic
             
             if speed > maxSpeed and distance > 100 then
                 data.teleportViolations = data.teleportViolations + 1
-                print('[ANTICHEAT] ' .. GetPlayerName(src) .. ' teleport violation #' .. data.teleportViolations .. ' (speed: ' .. math.floor(speed) .. ' m/s)')
+                DebugLog((GetPlayerName(src) or src) .. ' teleport violation #' .. data.teleportViolations)
                 
                 if data.teleportViolations >= AC_Config.teleportViolationsBeforeBan then
                     BanPlayer(src, 'Teleport hack detected', AC_Config.banDuration, 'teleport')
@@ -1697,7 +1681,7 @@ RegisterNetEvent('anticheat:godmodeDetected', function(detectionType)
     
     -- Check admin protection first
     if HasAdminProtection(src, 'godmode') then
-        print('[ANTICHEAT] Ignoring godmode detection for admin player ' .. src)
+        DebugLog('Ignoring godmode for admin ' .. src)
         return
     end
     
@@ -1706,7 +1690,7 @@ RegisterNetEvent('anticheat:godmodeDetected', function(detectionType)
     local name = GetPlayerName(src) or 'Unknown'
     detectionType = detectionType or 'unknown'
     
-    print('[ANTICHEAT] ' .. name .. ' GODMODE DETECTED! Type: ' .. detectionType)
+    ImportantLog(name .. ' GODMODE DETECTED! Type: ' .. detectionType)
     
     -- Parse detection type for better logging
     local detectionCategory = 'Unknown'
@@ -1780,7 +1764,7 @@ RegisterNetEvent('anticheat:freecamDetected', function(distance)
     local name = GetPlayerName(src) or 'Unknown'
     local banDuration = GetACBanDuration('freecam')
     
-    print('[ANTICHEAT] ' .. name .. ' FREECAM DETECTED! Distance: ' .. tostring(distance) .. 'm')
+    ImportantLog(name .. ' FREECAM DETECTED! Distance: ' .. tostring(distance) .. 'm')
     
     local reason = 'Freecam/Spectate hack detected (Distance: ' .. tostring(distance) .. 'm)'
     BanPlayerWithScreenshot(src, reason, banDuration, 'freecam', '📷 FREECAM DETECTED', 'Spectate Hack')
@@ -1832,7 +1816,7 @@ RegisterNetEvent('anticheat:noclipDetected', function(detectionType)
         emoji = '🔲'
     end
     
-    print('[ANTICHEAT] ' .. name .. ' NOCLIP DETECTED! Type: ' .. detectionType .. ' (' .. detectionCategory .. ')')
+    ImportantLog(name .. ' NOCLIP DETECTED! Type: ' .. detectionCategory)
     
     local reason = 'Noclip detected: ' .. detectionCategory .. ' (' .. detectionType .. ')'
     
@@ -1854,7 +1838,7 @@ RegisterNetEvent('anticheat:suspiciousAim', function(aimSpeed)
     local violationsNeeded = GetACViolations('aimbot')
     local banDuration = GetACBanDuration('aimbot')
     
-    print('[ANTICHEAT] ' .. name .. ' SUSPICIOUS AIM! Speed: ' .. tostring(aimSpeed) .. ' deg/s')
+    DebugLog(name .. ' SUSPICIOUS AIM! Speed: ' .. tostring(aimSpeed) .. ' deg/s')
     
     -- Track violations
     if not playerData[src] then playerData[src] = {} end
@@ -1896,7 +1880,7 @@ RegisterNetEvent('anticheat:silentAim', function(distance, angleDiff)
     local name = GetPlayerName(src) or 'Unknown'
     local banDuration = GetACBanDuration('silentAim')
     
-    print('[ANTICHEAT] ' .. name .. ' SILENT AIM! Distance: ' .. tostring(distance) .. 'm, Angle: ' .. tostring(angleDiff) .. '°')
+    DebugLog(name .. ' SILENT AIM! Distance: ' .. tostring(distance) .. 'm')
     
     local reason = 'Silent Aim detected (Hit at ' .. tostring(angleDiff) .. '° off target)'
     BanPlayerWithScreenshot(src, reason, banDuration, 'silent_aim', '🎯 SILENT AIM DETECTED', 'Silent Aim')
@@ -1911,7 +1895,7 @@ RegisterNetEvent('anticheat:aimbotSnap', function(speed, count)
     local name = GetPlayerName(src) or 'Unknown'
     local banDuration = GetACBanDuration('aimbot')
     
-    print('[ANTICHEAT] ' .. name .. ' AIMBOT SNAP! Speed: ' .. tostring(speed) .. ' deg/s, Count: ' .. tostring(count))
+    DebugLog(name .. ' AIMBOT SNAP! Speed: ' .. tostring(speed))
     
     local reason = 'Aimbot detected (Snap speed: ' .. tostring(speed) .. ' deg/s)'
     BanPlayerWithScreenshot(src, reason, banDuration, 'aimbot', '🎯 AIMBOT SNAP DETECTED', 'Aim Snapping')
@@ -1927,7 +1911,7 @@ RegisterNetEvent('anticheat:suspiciousAccuracy', function(accType, value)
     local violationsNeeded = GetACViolations('aimbot')
     local banDuration = GetACBanDuration('aimbot')
     
-    print('[ANTICHEAT] ' .. name .. ' SUSPICIOUS ACCURACY! Type: ' .. tostring(accType) .. ', Value: ' .. tostring(value))
+    DebugLog(name .. ' SUSPICIOUS ACCURACY! Type: ' .. tostring(accType))
     
     -- Track violations
     if not playerData[src] then playerData[src] = {} end
@@ -1979,7 +1963,7 @@ RegisterNetEvent('anticheat:weaponModifier', function(modType, weaponHash)
     local name = GetPlayerName(src) or 'Unknown'
     modType = modType or 'unknown'
     
-    print('[ANTICHEAT] ' .. name .. ' WEAPON MODIFIER DETECTED! Type: ' .. modType)
+    ImportantLog(name .. ' WEAPON MODIFIER! Type: ' .. modType)
     
     -- Determine ban reason based on type
     local banReason = 'Weapon modifier detected'
@@ -2025,7 +2009,7 @@ RegisterNetEvent('anticheat:espDetected', function(count)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' ESP DETECTED! Looking at hidden players: ' .. tostring(count) .. ' times')
+    ImportantLog(name .. ' ESP DETECTED! ' .. tostring(count) .. ' times')
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2053,7 +2037,7 @@ RegisterNetEvent('anticheat:wallhackDetected', function(distance, violations)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' WALLHACK CONFIRMED! Distance: ' .. tostring(distance) .. 'm, Violations: ' .. tostring(violations))
+    ImportantLog(name .. ' WALLHACK CONFIRMED! Distance: ' .. tostring(distance) .. 'm')
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2083,21 +2067,14 @@ RegisterNetEvent('anticheat:illegalVehicle', function(vehicleName)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' spawned illegal vehicle: ' .. tostring(vehicleName))
+    ImportantLog(name .. ' spawned illegal vehicle: ' .. tostring(vehicleName))
     
     BanPlayer(src, 'Illegal vehicle spawned: ' .. tostring(vehicleName), nil, 'illegal_vehicle') -- Permanent ban
 end)
 
 -- Blacklisted plate detection
-print('[ANTICHEAT] Registering blacklistedPlate event...')
 RegisterNetEvent('anticheat:blacklistedPlate', function(plate, blacklistedWord, vehicleNetId)
     local src = source
-    print('[ANTICHEAT] [SERVER] ========================================')
-    print('[ANTICHEAT] [SERVER] RECEIVED blacklistedPlate EVENT!')
-    print('[ANTICHEAT] [SERVER] Player: ' .. src)
-    print('[ANTICHEAT] [SERVER] Plate: ' .. tostring(plate))
-    print('[ANTICHEAT] [SERVER] NetId: ' .. tostring(vehicleNetId))
-    print('[ANTICHEAT] [SERVER] ========================================')
     
     -- Check event spam
     if CheckEventSpam(src, 'anticheat:blacklistedPlate') then
@@ -2116,7 +2093,7 @@ RegisterNetEvent('anticheat:blacklistedPlate', function(plate, blacklistedWord, 
     end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] BLACKLISTED PLATE DETECTED! Player: ' .. name .. ', Plate: ' .. tostring(plate) .. ' (matched: ' .. tostring(blacklistedWord) .. ')')
+    ImportantLog('BLACKLISTED PLATE! Player: ' .. name .. ', Plate: ' .. tostring(plate))
     
     -- Take screenshot (handled by BanPlayer)
     
@@ -2162,15 +2139,8 @@ RegisterNetEvent('anticheat:blacklistedPlate', function(plate, blacklistedWord, 
 end)
 
 -- Illegal vehicle modification detection (outside mechanic shops)
-print('[ANTICHEAT] Registering illegalVehicleMod event...')
 RegisterNetEvent('anticheat:illegalVehicleMod', function(modType, coords, vehicleNetId)
     local src = source
-    print('[ANTICHEAT] [SERVER] ========================================')
-    print('[ANTICHEAT] [SERVER] RECEIVED illegalVehicleMod EVENT!')
-    print('[ANTICHEAT] [SERVER] Player: ' .. src)
-    print('[ANTICHEAT] [SERVER] ModType: ' .. tostring(modType))
-    print('[ANTICHEAT] [SERVER] NetId: ' .. tostring(vehicleNetId))
-    print('[ANTICHEAT] [SERVER] ========================================')
     
     -- Check event spam
     if CheckEventSpam(src, 'anticheat:illegalVehicleMod') then
@@ -2191,7 +2161,7 @@ RegisterNetEvent('anticheat:illegalVehicleMod', function(modType, coords, vehicl
     local name = GetPlayerName(src) or 'Unknown'
     local coordsStr = coords and string.format("%.1f, %.1f, %.1f", coords.x, coords.y, coords.z) or "Unknown"
     
-    print('[ANTICHEAT] ILLEGAL VEHICLE MODIFICATION! Player: ' .. name .. ', Type: ' .. tostring(modType) .. ' at ' .. coordsStr)
+    ImportantLog('ILLEGAL VEHICLE MOD! Player: ' .. name .. ', Type: ' .. tostring(modType))
     
     -- Take screenshot (handled by BanPlayer)
     
@@ -2242,7 +2212,7 @@ RegisterNetEvent('anticheat:illegalPed', function(pedModel)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' used blacklisted ped model: ' .. tostring(pedModel))
+    DebugLog(name .. ' used blacklisted ped model: ' .. tostring(pedModel))
     
     -- Kick instead of ban for ped
     DropPlayer(src, '[ANTICHEAT] Blacklisted ped model detected')
@@ -2271,7 +2241,7 @@ RegisterNetEvent('anticheat:illegalWeapon', function(weaponHash, reason)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' illegal weapon detected: ' .. tostring(weaponHash) .. ' (' .. tostring(reason) .. ')')
+    ImportantLog(name .. ' illegal weapon: ' .. tostring(weaponHash))
     
     if reason == 'blacklisted' then
         -- Blacklisted weapon = permanent ban
@@ -2316,15 +2286,14 @@ CreateThread(function()
     if configSetting == 'none' then
         -- Disabled by config
         AC_InventorySystem.type = 'none'
-        print('[ANTICHEAT] Inventory System: DISABLED (Config.InventorySystem = none)')
-        print('[ANTICHEAT] ^3WARNING: Weapon inventory checks will be disabled!^0')
+        DebugLog('Inventory System: DISABLED')
     elseif configSetting == 'ox' then
         -- Force OX
         if GetResourceState('ox_inventory') == 'started' then
             AC_InventorySystem.type = 'ox'
-            print('[ANTICHEAT] Inventory System: OX Inventory (forced by config)')
+            DebugLog('Inventory System: OX Inventory')
         else
-            print('[ANTICHEAT] ^1ERROR: Config.InventorySystem = ox but ox_inventory is not running!^0')
+            ImportantLog('^1ERROR: ox_inventory not running!^0')
             AC_InventorySystem.type = 'none'
         end
     elseif configSetting == 'esx' then
@@ -2332,22 +2301,22 @@ CreateThread(function()
         if GetResourceState('es_extended') == 'started' then
             AC_InventorySystem.type = 'esx'
             AC_InventorySystem.ESX = exports['es_extended']:getSharedObject()
-            print('[ANTICHEAT] Inventory System: ESX (forced by config)')
+            DebugLog('Inventory System: ESX')
         else
-            print('[ANTICHEAT] ^1ERROR: Config.InventorySystem = esx but es_extended is not running!^0')
+            ImportantLog('^1ERROR: es_extended not running!^0')
             AC_InventorySystem.type = 'none'
         end
     else
         -- Auto-detect (default)
         if GetResourceState('ox_inventory') == 'started' then
             AC_InventorySystem.type = 'ox'
-            print('[ANTICHEAT] Inventory System: OX Inventory (auto-detected)')
+            DebugLog('Inventory System: OX Inventory (auto-detected)')
         elseif GetResourceState('es_extended') == 'started' then
             AC_InventorySystem.type = 'esx'
             AC_InventorySystem.ESX = exports['es_extended']:getSharedObject()
-            print('[ANTICHEAT] Inventory System: ESX (auto-detected)')
+            DebugLog('Inventory System: ESX (auto-detected)')
         else
-            print('[ANTICHEAT] Inventory System: None detected - weapon checks disabled')
+            DebugLog('Inventory System: None detected')
             AC_InventorySystem.type = 'none'
         end
     end
@@ -2432,13 +2401,11 @@ RegisterNetEvent('anticheat:getInventoryWeapons', function()
             end
         end
         
-        print('[ANTICHEAT] ESX Weapons for ' .. (GetPlayerName(src) or src) .. ': ' .. #weapons .. ' found')
+        DebugLog('ESX Weapons for ' .. (GetPlayerName(src) or src) .. ': ' .. #weapons)
     end
     
     -- Debug print weapons
-    for _, w in ipairs(weapons) do
-        print('[ANTICHEAT]   - ' .. w)
-    end
+    -- Debug weapon list removed for cleaner console
     
     TriggerClientEvent('anticheat:updateInventoryWeapons', src, weapons)
 end)
@@ -2476,7 +2443,7 @@ RegisterNetEvent('aether_admin:warnPlayer', function(targetId)
     TriggerClientEvent('ox_lib:notify', src, { type = 'success', description = 'Warning sent to ' .. targetName .. ' - They must hold SPACE for 10s' })
     
     -- Log
-    print('[ANTICHEAT] ' .. GetPlayerName(src) .. ' warned ' .. targetName)
+    DebugLog(GetPlayerName(src) .. ' warned ' .. targetName)
     
     -- Webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2502,7 +2469,7 @@ RegisterNetEvent('anticheat:warningStarted', function()
     local src = source
     if warnedPlayers[src] then
         warnedPlayers[src].started = true
-        print('[ANTICHEAT] Warning started for ' .. GetPlayerName(src))
+        DebugLog('Warning started for ' .. GetPlayerName(src))
     end
 end)
 
@@ -2511,7 +2478,7 @@ RegisterNetEvent('anticheat:warningCompleted', function()
     local src = source
     if warnedPlayers[src] then
         warnedPlayers[src].completed = true
-        print('[ANTICHEAT] ✅ ' .. GetPlayerName(src) .. ' completed warning')
+        DebugLog(GetPlayerName(src) .. ' completed warning')
         
         -- Webhook
         if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2540,7 +2507,7 @@ AddEventHandler('playerDropped', function(reason)
         local data = warnedPlayers[src]
         local name = data.name
         
-        print('[ANTICHEAT] 🚨 ' .. name .. ' quit during warning - BANNING!')
+        ImportantLog('🚨 ' .. name .. ' quit during warning - BANNING!')
         
         -- Ban player for quitting
         local banReason = 'Disconnected during admin warning (Quit to avoid punishment)'
@@ -2593,7 +2560,7 @@ RegisterNetEvent('aether_admin:clearEntities', function(entityType, radius)
     
     TriggerClientEvent('ox_lib:notify', src, { type = 'success', description = 'Clearing ' .. entityType .. ' in ' .. radius .. 'm radius' })
     
-    print('[ANTICHEAT] ' .. GetPlayerName(src) .. ' cleared ' .. entityType .. ' in ' .. radius .. 'm radius')
+    DebugLog(GetPlayerName(src) .. ' cleared ' .. entityType .. ' in ' .. radius .. 'm radius')
 end)
 
 -- Toggle debug mode (disable whitelist for testing)
@@ -2608,7 +2575,7 @@ RegisterNetEvent('anticheat:toggleDebugMode', function(enabled)
     TriggerClientEvent('anticheat:setDebugMode', src, enabled)
     
     local status = enabled and 'ENABLED' or 'DISABLED'
-    print('[ANTICHEAT] Debug mode ' .. status .. ' for ' .. GetPlayerName(src))
+    DebugLog('Debug mode ' .. status .. ' for ' .. GetPlayerName(src))
     
     if enabled then
         TriggerClientEvent('ox_lib:notify', src, { 
@@ -2631,7 +2598,7 @@ RegisterNetEvent('anticheat:invisibleDetected', function(alpha)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' INVISIBLE DETECTED! Alpha: ' .. tostring(alpha))
+    ImportantLog(name .. ' INVISIBLE DETECTED! Alpha: ' .. tostring(alpha))
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2663,7 +2630,7 @@ RegisterNetEvent('anticheat:spoofedWeapon', function(weaponHash)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' SPOOFED WEAPON! Hash: ' .. tostring(weaponHash))
+    ImportantLog(name .. ' SPOOFED WEAPON! Hash: ' .. tostring(weaponHash))
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2695,7 +2662,7 @@ RegisterNetEvent('anticheat:spoofedVehicle', function(modelName, reason)
     if IsWhitelisted(src) then return end
     
     local name = GetPlayerName(src) or 'Unknown'
-    print('[ANTICHEAT] ' .. name .. ' SPOOFED VEHICLE! Model: ' .. tostring(modelName) .. ', Reason: ' .. tostring(reason))
+    ImportantLog(name .. ' SPOOFED VEHICLE! Model: ' .. tostring(modelName))
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2736,7 +2703,7 @@ RegisterNetEvent('anticheat:illegalKill', function(victimId, weaponHash, killTyp
     local name = GetPlayerName(src) or 'Unknown'
     local victimName = GetPlayerName(victimId) or 'Unknown'
     
-    print('[ANTICHEAT] ' .. name .. ' ILLEGAL KILL! Victim: ' .. victimName .. ', Type: ' .. killType)
+    ImportantLog(name .. ' ILLEGAL KILL! Victim: ' .. victimName)
     
     -- Log with details (screenshot is automatic now)
     LogSuspicious(src, 'ILLEGAL KILL DETECTED', 
@@ -2755,7 +2722,7 @@ RegisterNetEvent('anticheat:cheatSuicide', function(health, weaponHash)
     
     local name = GetPlayerName(src) or 'Unknown'
     
-    print('[ANTICHEAT] ' .. name .. ' CHEAT SUICIDE! Health was: ' .. health)
+    DebugLog(name .. ' CHEAT SUICIDE! Health was: ' .. health)
     
     LogSuspicious(src, 'CHEAT SUICIDE DETECTED', 
         'Player: ' .. name .. '\nHealth before death: ' .. health .. '\nWeapon: ' .. tostring(weaponHash), 
@@ -2774,7 +2741,7 @@ RegisterNetEvent('anticheat:selfRevive', function(violations, timeSinceDeath)
     
     -- Check admin protection first
     if HasAdminProtection(src, 'revive') then
-        print('[ANTICHEAT] Ignoring self-revive detection for admin player ' .. src)
+        DebugLog('Ignoring self-revive for admin ' .. src)
         return
     end
     
@@ -2785,7 +2752,7 @@ RegisterNetEvent('anticheat:selfRevive', function(violations, timeSinceDeath)
     if not selfReviveViolations[src] then selfReviveViolations[src] = 0 end
     selfReviveViolations[src] = selfReviveViolations[src] + 1
     
-    print('[ANTICHEAT] ' .. name .. ' SELF-REVIVE! Violations: ' .. selfReviveViolations[src])
+    DebugLog(name .. ' SELF-REVIVE! Violations: ' .. selfReviveViolations[src])
     
     if selfReviveViolations[src] < 3 then
         -- Just log (screenshot is automatic)
@@ -2817,7 +2784,7 @@ RegisterNetEvent('anticheat:selfHeal', function(violations, healAmount)
     if not selfHealViolations[src] then selfHealViolations[src] = 0 end
     selfHealViolations[src] = selfHealViolations[src] + 1
     
-    print('[ANTICHEAT] ' .. name .. ' SELF-HEAL! Amount: ' .. healAmount .. ', Violations: ' .. selfHealViolations[src])
+    DebugLog(name .. ' SELF-HEAL! Amount: ' .. healAmount)
     
     if selfHealViolations[src] < 3 then
         -- Just log (screenshot is automatic)
@@ -2842,7 +2809,7 @@ AddEventHandler('playerDropped', function()
     selfHealViolations[src] = nil
 end)
 
-print('[ANTICHEAT] Server-side anticheat v4.0 loaded!')
+print('[ANTICHEAT] ✅ Server-side anticheat loaded')
 
 -- ============================================
 -- ANTI-LUA EXECUTOR DETECTION (CAREFUL VERSION)
@@ -2855,7 +2822,7 @@ RegisterNetEvent('anticheat:luaExecutorConfirmed', function(menuName)
     
     local name = GetPlayerName(src) or 'Unknown'
     
-    print('[ANTICHEAT] ' .. name .. ' CONFIRMED CHEAT MENU: ' .. menuName)
+    ImportantLog(name .. ' CONFIRMED CHEAT MENU: ' .. menuName)
     
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
         PerformHttpRequest(Config.Webhooks.anticheat, function() end, 'POST', json.encode({
@@ -2878,7 +2845,7 @@ RegisterNetEvent('anticheat:luaExecutorConfirmed', function(menuName)
     BanPlayer(src, 'Cheat Menu detected: ' .. menuName, nil, 'cheat_menu')
 end)
 
-print('[ANTICHEAT] Anti-Lua Executor module loaded!')
+-- print('[ANTICHEAT] Anti-Lua Executor module loaded!')
 
 
 -- ============================================
@@ -2898,7 +2865,7 @@ RegisterNetEvent('anticheat:weaponModifier', function(modType, weaponHash)
     end
     weaponModViolations[src] = weaponModViolations[src] + 1
     
-    print('[ANTICHEAT] ' .. name .. ' WEAPON MODIFIER! Type: ' .. modType .. ', Weapon: ' .. tostring(weaponHash))
+    DebugLog(name .. ' WEAPON MODIFIER! Type: ' .. modType)
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2944,7 +2911,7 @@ RegisterNetEvent('anticheat:freecamAbuse', function(distance, abuseType)
     end
     freecamViolations[src] = freecamViolations[src] + 1
     
-    print('[ANTICHEAT] ' .. name .. ' FREECAM ABUSE! Type: ' .. abuseType .. ', Distance: ' .. tostring(distance) .. 'm')
+    DebugLog(name .. ' FREECAM ABUSE! Type: ' .. abuseType)
     
     -- Log to webhook
     if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -2980,7 +2947,7 @@ AddEventHandler('playerDropped', function()
     freecamViolations[src] = nil
 end)
 
-print('[ANTICHEAT] Weapon Modifier & Freecam modules loaded!')
+-- print('[ANTICHEAT] Weapon Modifier & Freecam modules loaded!')
 
 
 -- ============================================
@@ -3040,14 +3007,14 @@ AddEventHandler('baseevents:onPlayerKilled', function(killerId, deathData)
     
     -- Check for suspicious kill rate (more than 10 kills in 60 seconds)
     if #data.recentKills >= 10 then
-        print('[ANTICHEAT] SUSPICIOUS KILL RATE! Player ' .. killerName .. ' (' .. killerId .. ') has ' .. #data.recentKills .. ' kills in 60 seconds!')
+        DebugLog('SUSPICIOUS KILL RATE! ' .. killerName .. ' has ' .. #data.recentKills .. ' kills in 60 seconds!')
         
         -- Log but don't auto-ban (could be legitimate in big fights)
         LogToDiscord(killerId, 'Suspicious Kill Rate', 'suspicious_kills', 
           killerName .. ' has ' .. #data.recentKills .. ' kills in 60 seconds', nil)
     end
     
-    print('[ANTICHEAT] Kill tracked: ' .. killerName .. ' killed ' .. victimName)
+    DebugLog('Kill tracked: ' .. killerName .. ' killed ' .. victimName)
 end)
 
 -- Cleanup on disconnect
@@ -3072,7 +3039,7 @@ RegisterNetEvent('anticheat:reportPvPHit', function(victimId, distance, hasLOS, 
         
         playerKillData[src].wallhackViolations = (playerKillData[src].wallhackViolations or 0) + 1
         
-        print('[ANTICHEAT] PVP WALLHACK! ' .. srcName .. ' hit ' .. victimName .. ' through walls at ' .. math.floor(distance) .. 'm, Violations: ' .. playerKillData[src].wallhackViolations)
+        DebugLog('PVP WALLHACK! ' .. srcName .. ' hit ' .. victimName .. ' through walls')
         
         if playerKillData[src].wallhackViolations >= 3 then
             BanPlayer(src, 'Wallhack (PvP): Hit players through walls at ' .. math.floor(distance) .. 'm', nil, 'wallhack')
@@ -3081,7 +3048,7 @@ RegisterNetEvent('anticheat:reportPvPHit', function(victimId, distance, hasLOS, 
     end
 end)
 
-print('[ANTICHEAT] Server-side PvP tracking loaded!')
+-- print('[ANTICHEAT] Server-side PvP tracking loaded!')
 
 
 -- Server-side silent aim detection via client report
@@ -3100,7 +3067,7 @@ RegisterNetEvent('anticheat:reportPvPAim', function(victimId, distance, angleDif
         
         playerKillData[src].silentAimViolations = (playerKillData[src].silentAimViolations or 0) + 1
         
-        print('[ANTICHEAT] PVP SILENT AIM! ' .. srcName .. ' hit ' .. victimName .. ' at ' .. math.floor(distance) .. 'm with ' .. string.format("%.1f", angleDiff) .. '° angle, Violations: ' .. playerKillData[src].silentAimViolations)
+        DebugLog('PVP SILENT AIM! ' .. srcName .. ' hit ' .. victimName)
         
         if playerKillData[src].silentAimViolations >= 5 then
             BanPlayer(src, 'Silent Aim (PvP): Hit players at impossible angles (' .. string.format("%.1f", angleDiff) .. '°)', nil, 'aimbot')

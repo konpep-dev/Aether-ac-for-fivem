@@ -4,7 +4,7 @@ Config = {}
 -- DEBUG CONFIGURATION
 -- ============================================
 -- Enable debug messages in console (useful for troubleshooting)
-Config.Debug = true  -- Set to true to see detailed debug messages
+Config.Debug = false  -- Set to true to see detailed debug messages
 
 -- ============================================
 -- FRAMEWORK CONFIGURATION
@@ -61,17 +61,17 @@ Config.Webhooks = {
     -- Main log channel (all logs go here)
     main = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
     -- Specific action webhooks (optional, falls back to main)
-    bans = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxxx',
-    kicks = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxx',
-    reports = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxx',
-    permissions = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxx',
+    bans = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    kicks = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    reports = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    permissions = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
     -- New webhooks
-    kills = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxxx',
-    connects = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxx',
-    screenshots = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxx',
-    spawn = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxxxx',
-    teleport = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxx',
-    anticheat = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxx',
+    kills = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    connects = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    screenshots = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    spawn = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    teleport = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    anticheat = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
 }
 
 -- Webhook colors (decimal)
@@ -90,7 +90,7 @@ Config.ServerName = 'Aether Server'
 
 -- Fivemanage API Token (για screenshots στο Discord)
 -- Πάρε δωρεάν token από: https://fivemanage.com
-Config.FivemanageToken = 'xxx.xxx.xxx'
+Config.FivemanageToken = 'xSDwaADlGHGeHSCNGwFmTHof8JRAbI94'
 
 -- Discord invite link for ban appeals
 Config.DiscordInvite = 'https://discord.gg/your-server'
@@ -100,7 +100,7 @@ Config.DiscordInvite = 'https://discord.gg/your-server'
 -- ============================================
 Config.AntiVPN = {
     enabled = true,  -- Enable/Disable VPN detection
-    apiKey = 'xxx.xxx.xxx',  -- proxycheck.io API key
+    apiKey = '22afb8dfa3ea99ba64f304b247e1392d5642ec26022e0351a1b37a62f99462eb',  -- proxycheck.io API key
     cacheDuration = 7 * 24 * 60 * 60,  -- Cache IPs for 7 days (in seconds)
     whitelist = {
         -- Add IPs that should bypass VPN check
@@ -116,6 +116,14 @@ Config.AntiVPN = {
         -- Add more countries as needed (use exact names from API logs)
     },
     countryBlacklistEnabled = true,  -- Enable/Disable country blacklist
+}
+
+-- ============================================
+-- PROTECTED LIST SYSTEM
+-- ============================================
+Config.ProtectedList = {
+    enabled = true,  -- Enable/Disable protected list
+    -- URL and token are encrypted inside list.lua for security
 }
 
 -- TOS (Terms of Service) Settings
@@ -692,10 +700,6 @@ Config.BlacklistedPlates = {
     'xcheats',
     'REDENGINE',
     'redengine',
-    '420_services',
-    '420_cheats',
-    'keyser',
-    'susano',
     
     -- Common troll plates
     'HACKER',
@@ -769,7 +773,3 @@ Config.WhitelistedProps = {
     'p_med_bag_01',
     'p_med_bag_01_s',
 }
-
-
-
-

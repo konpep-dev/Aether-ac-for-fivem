@@ -32,6 +32,7 @@ end)
 
 -- Block connections if protection not verified
 AddEventHandler('playerConnecting', function(playerName, setKickReason, deferrals)
+    if (GlobalBanBlocked and GlobalBanBlocked[source]) or (LocalBanBlocked and LocalBanBlocked[source]) then return end
     if not protectionVerified then
         deferrals.defer()
         Wait(100)
@@ -343,22 +344,46 @@ CreateThread(function()
         )
     ]])
     
-    -- Create bans table
+    -- Create bans table with ALL identifiers
     MySQL_Query([[
         CREATE TABLE IF NOT EXISTS ]] .. Config.BanTable .. [[ (
             id INT AUTO_INCREMENT PRIMARY KEY,
             license VARCHAR(100) NOT NULL,
+            license2 VARCHAR(100),
             discord VARCHAR(100),
             steam VARCHAR(100),
+            xbl VARCHAR(100),
+            live VARCHAR(100),
+            fivem VARCHAR(100),
+            ip VARCHAR(50),
+            tokens TEXT,
             name VARCHAR(100),
             reason TEXT,
             admin VARCHAR(100),
             expiry BIGINT,
+            screenshot_url TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX (license),
+            INDEX (license2),
             INDEX (discord),
-            INDEX (steam)
+            INDEX (steam),
+            INDEX (xbl),
+            INDEX (live),
+            INDEX (fivem),
+            INDEX (ip)
         )
+    ]])
+    
+    -- Add missing columns to existing table (for upgrades)
+    MySQL_Query([[
+        ALTER TABLE ]] .. Config.BanTable .. [[ 
+        ADD COLUMN IF NOT EXISTS license2 VARCHAR(100) AFTER license,
+        ADD COLUMN IF NOT EXISTS xbl VARCHAR(100) AFTER steam,
+        ADD COLUMN IF NOT EXISTS live VARCHAR(100) AFTER xbl,
+        ADD COLUMN IF NOT EXISTS fivem VARCHAR(100) AFTER live,
+        ADD COLUMN IF NOT EXISTS ip VARCHAR(50) AFTER fivem,
+        ADD COLUMN IF NOT EXISTS tokens TEXT AFTER ip,
+        ADD COLUMN IF NOT EXISTS screenshot_url TEXT AFTER expiry
     ]])
     
     -- Create logs table
@@ -1130,9 +1155,20 @@ local function CheckPlayerBanned(src, callback)
     end)
 end
 
+-- Global flag tables so handlers can cooperate
+GlobalBanBlocked = GlobalBanBlocked or {}
+LocalBanBlocked = LocalBanBlocked or {}
+
 -- Connect/Disconnect Logging
 AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
     local src = source
+    
+    -- Check if player was already blocked by any ban system
+    if (GlobalBanBlocked and GlobalBanBlocked[src]) or (LocalBanBlocked and LocalBanBlocked[src]) then
+        print('[BAN CHECK] ⛔ Player already blocked, letting the responsible script handle the card...')
+        return
+    end
+    
     deferrals.defer()
     Wait(0)
     deferrals.update('🔍 Collecting identifiers...')
@@ -1149,84 +1185,85 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
     Wait(100)
     
     -- ADVANCED BAN CHECK - Check ALL identifiers (anti-bypass)
+    local banCheckDone = false
     local ban = nil
-    local success, err = pcall(function()
-        print('[BAN CHECK] ========================================')
-        print('[BAN CHECK] Player: ' .. name)
-        print('[BAN CHECK] License: ' .. tostring(ids.license))
-        print('[BAN CHECK] License2: ' .. tostring(ids.license2))
-        print('[BAN CHECK] Discord: ' .. tostring(ids.discord))
-        print('[BAN CHECK] Steam: ' .. tostring(ids.steam))
-        print('[BAN CHECK] FiveM: ' .. tostring(ids.fivem))
-        print('[BAN CHECK] IP: ' .. tostring(ids.ip))
-        
-        -- Build query to check ALL identifiers
-        local query = [[
-            SELECT id, license, discord, steam, name, reason, admin, expiry, screenshot_url, created_at 
-            FROM admin_bans 
-            WHERE (expiry IS NULL OR expiry > ?)
-            AND (
-                license = ? OR
-                license2 = ? OR
-                discord = ? OR
-                steam = ? OR
-                xbl = ? OR
-                live = ? OR
-                fivem = ? OR
-                ip = ?
-        ]]
-        
-        -- Add token checking if available
-        local tokens = {}
-        for i = 0, GetNumPlayerTokens(src) - 1 do
-            table.insert(tokens, GetPlayerToken(src, i))
+    
+    print('[BAN CHECK] ========================================')
+    print('[BAN CHECK] Player: ' .. name)
+    print('[BAN CHECK] License: ' .. tostring(ids.license))
+    
+    -- Build query to check ALL identifiers
+    local query = [[
+        SELECT id, license, discord, steam, name, reason, admin, expiry, screenshot_url, created_at 
+        FROM admin_bans 
+        WHERE (expiry IS NULL OR expiry > ?)
+        AND (
+            license = ? OR
+            license2 = ? OR
+            discord = ? OR
+            steam = ? OR
+            xbl = ? OR
+            live = ? OR
+            fivem = ? OR
+            ip = ?
+    ]]
+    
+    -- Add token checking if available
+    local tokens = {}
+    for i = 0, GetNumPlayerTokens(src) - 1 do
+        table.insert(tokens, GetPlayerToken(src, i))
+    end
+    
+    if #tokens > 0 then
+        for i = 1, #tokens do
+            query = query .. " OR tokens LIKE ?"
         end
-        
-        if #tokens > 0 then
-            for i = 1, #tokens do
-                query = query .. " OR tokens LIKE ?"
-            end
-        end
-        
-        query = query .. ") ORDER BY id DESC LIMIT 1"
-        
-        -- Build parameters
-        local params = {
-            os.time(), -- Current time for expiry check
-            ids.license or '',
-            ids.license2 or '',
-            ids.discord or '',
-            ids.steam or '',
-            ids.xbl or '',
-            ids.live or '',
-            ids.fivem or '',
-            ids.ip or ''
-        }
-        
-        -- Add token parameters
-        for _, token in ipairs(tokens) do
-            table.insert(params, '%' .. token .. '%')
-        end
-        
-        local testBan = exports.oxmysql:singleSync(query, params)
-        
+    end
+    
+    query = query .. ") ORDER BY id DESC LIMIT 1"
+    
+    -- Build parameters
+    local params = {
+        os.time(), -- Current time for expiry check
+        ids.license or '',
+        ids.license2 or '',
+        ids.discord or '',
+        ids.steam or '',
+        ids.xbl or '',
+        ids.live or '',
+        ids.fivem or '',
+        ids.ip or ''
+    }
+    
+    -- Add token parameters
+    for _, token in ipairs(tokens) do
+        table.insert(params, '%' .. token .. '%')
+    end
+    
+    exports.oxmysql:single(query, params, function(testBan)
         if testBan then
             print('[BAN CHECK] 🚨 BANNED PLAYER DETECTED!')
             print('[BAN CHECK] Ban ID: ' .. tostring(testBan.id))
-            print('[BAN CHECK] Ban Reason: ' .. tostring(testBan.reason))
-            print('[BAN CHECK] Ban Expiry: ' .. tostring(testBan.expiry))
             ban = testBan
+            LocalBanBlocked[src] = true
         else
             print('[BAN CHECK] ✅ No active bans found')
         end
-        
-        print('[BAN CHECK] ========================================')
+        banCheckDone = true
     end)
     
-    if not success then
-        print('[BAN CHECK] ❌ DATABASE ERROR: ' .. tostring(err))
-        -- Continue anyway - don't block player for DB error
+    -- Wait for async check (max 5 seconds)
+    local dbTimeout = 0
+    while not banCheckDone and dbTimeout < 50 do
+        dbTimeout = dbTimeout + 1
+        Wait(100)
     end
+    
+    if not banCheckDone then
+        print('[BAN CHECK] ❌ DATABASE TIMEOUT - Proceeding for safety')
+    end
+    
+    print('[BAN CHECK] ========================================')
     
     if ban then
         -- UPDATE BAN WITH NEW IDENTIFIERS (Anti-Bypass)
@@ -1282,22 +1319,16 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
                         {name = '🌐 IP', value = '```' .. tostring(ids.ip or 'N/A') .. '```', inline = true}
                     },
                     footer = {
-                        text = '🛡️ Aether Anticheat v4.0',
+                        text = '🛡️ Aether Anticheat v4.5.0',
                         icon_url = 'https://i.imgur.com/AfFp7pu.png'
                     },
                     timestamp = os.date('!%Y-%m-%dT%H:%M:%SZ')
                 }}
-            }), {['Content-Type'] = 'application/json'})
+            }), {['Content-Type'] = 'application/json' })
         end
         
         -- Get screenshot URL ONLY (don't use LONGBLOB - too slow)
         local screenshotUrl = ban.screenshot_url
-        
-        if screenshotUrl then
-            print('[BAN CARD] ✅ Using screenshot URL: ' .. screenshotUrl)
-        else
-            print('[BAN CARD] ⚠️ No screenshot URL yet (will be added automatically)')
-        end
         
         -- Generate ban card with screenshot
         local banCard = GenerateBanCard(
@@ -1310,8 +1341,14 @@ AddEventHandler('playerConnecting', function(name, setKickReason, deferrals)
             screenshotUrl
         )
         
+        print('[BAN CARD] 🛡️ Presenting local ban card to ' .. name)
         deferrals.presentCard(banCard, function(data, rawData)
             deferrals.done('You are banned from this server.')
+        end)
+        
+        -- Cleanup flag after a delay to release the slot
+        SetTimeout(30000, function()
+            LocalBanBlocked[src] = nil
         end)
         return
     end
@@ -1684,15 +1721,25 @@ RegisterNetEvent('aether_admin:banPlayer', function(targetId, reason, duration)
     if not HasPermission(src, 'ban') then return end
     
     local targetName = GetPlayerName(targetId) or 'Unknown'
-    local license = GetPlayerLicense(targetId)
-    local discord = GetPlayerDiscord(targetId)
-    local steam = GetPlayerSteam(targetId)
+    
+    -- Get ALL identifiers
+    local ids = GetAllIdentifiers(targetId)
+    local license = ids.license
+    local license2 = ids.license2
+    local discord = ids.discord
+    local steam = ids.steam
+    local xbl = ids.xbl
+    local live = ids.live
+    local fivem = ids.fivem
+    local ip = ids.ip
+    local tokens = table.concat(ids.tokens or {}, ',')
     
     if license then
         local expiry = duration and duration > 0 and (os.time() + duration * 60) or nil
         
-        MySQL_Insert('INSERT INTO ' .. Config.BanTable .. ' (license, discord, steam, name, reason, admin, expiry) VALUES (?, ?, ?, ?, ?, ?, ?)', {
-            license, discord, steam, targetName, reason or 'No reason', GetPlayerName(src), expiry
+        -- Insert ban with ALL identifiers
+        MySQL_Insert('INSERT INTO ' .. Config.BanTable .. ' (license, license2, discord, steam, xbl, live, fivem, ip, tokens, name, reason, admin, expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', {
+            license, license2, discord, steam, xbl, live, fivem, ip, tokens, targetName, reason or 'No reason', GetPlayerName(src), expiry
         })
         
         LogToDatabase('ban', src, targetId, reason or 'No reason')
@@ -1704,6 +1751,8 @@ RegisterNetEvent('aether_admin:banPlayer', function(targetId, reason, duration)
             { name = '⏱️ Duration', value = durationText, inline = true },
             { name = '📝 Reason', value = reason or 'No reason', inline = false },
             { name = '🔑 License', value = license or 'N/A', inline = false },
+            { name = '💬 Discord', value = discord or 'N/A', inline = true },
+            { name = '🎮 Steam', value = steam or 'N/A', inline = true },
         })
     end
 end)

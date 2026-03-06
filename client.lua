@@ -723,11 +723,11 @@ local screenshotViewerActive = false
 local currentScreenshotIndex = 1
 
 RegisterNetEvent('admin:showPlayerInfo', function(playerInfo)
-    print('[DEBUG] Received admin:showPlayerInfo event')
-    print('[DEBUG] Player Info:', json.encode(playerInfo))
+    -- DebugPrint('[DEBUG] Received admin:showPlayerInfo event')
+    -- DebugPrint('[DEBUG] Player Info:', json.encode(playerInfo))
     
     if playerInfoUIActive then 
-        print('[DEBUG] UI already active, ignoring')
+        -- DebugPrint('[DEBUG] UI already active, ignoring')
         return 
     end
     
@@ -788,7 +788,7 @@ RegisterNetEvent('admin:showPlayerInfo', function(playerInfo)
         local startTime = GetGameTimer()
         local fadeInDuration = 300
         
-        print('[DEBUG] Starting UI draw thread')
+        -- DebugPrint('[DEBUG] Starting UI draw thread')
         
         while playerInfoUIActive and currentPlayerInfo do
             Wait(0)
@@ -1043,6 +1043,6 @@ RegisterNetEvent('admin:showPlayerInfo', function(playerInfo)
                 currentPlayerInfo = nil
             end
         end
-        print('[DEBUG] UI draw thread ended')
+        -- DebugPrint('[DEBUG] UI draw thread ended')
     end)
 end)

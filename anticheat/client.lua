@@ -1,5 +1,5 @@
 -- ============================================
--- aether ANTICHEAT - CLIENT SIDE v4.0
+-- aether ANTICHEAT - CLIENT SIDE v4.5.0
 -- Advanced Protection System
 -- ============================================
 
@@ -28,26 +28,26 @@ local function PrintFancyBanner()
         reset = "^0"
     }
     
-    print("")
-    print(colors.cyan .. "╔═══════════════════════════════════════════════════════════════════════════╗")
-    print(colors.cyan .. "║" .. colors.purple .. "      █████╗ ███████╗████████╗██╗  ██╗███████╗██████╗                      " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.purple .. "     ██╔══██╗██╔════╝╚══██╔══╝██║  ██║██╔════╝██╔══██╗                     " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.purple .. "     ███████║█████╗     ██║   ███████║█████╗  ██████╔╝                     " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.purple .. "     ██╔══██║██╔══╝     ██║   ██╔══██║██╔══╝  ██╔══██╗                     " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.purple .. "     ██║  ██║███████╗   ██║   ██║  ██║███████╗██║  ██║                     " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.purple .. "     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝                     " .. colors.cyan .. "║")
-    print(colors.cyan .. "╠═══════════════════════════════════════════════════════════════════════════╣")
-    print(colors.cyan .. "║" .. colors.yellow .. "      █████╗ ███╗   ██╗████████╗██╗ ██████╗██╗  ██╗███████╗ █████╗ ████████╗" .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.yellow .. "     ██╔══██╗████╗  ██║╚══██╔══╝██║██╔════╝██║  ██║██╔════╝██╔══██╗╚══██╔══╝" .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.yellow .. "     ███████║██╔██╗ ██║   ██║   ██║██║     ███████║█████╗  ███████║   ██║   " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.yellow .. "     ██╔══██║██║╚██╗██║   ██║   ██║██║     ██╔══██║██╔══╝  ██╔══██║   ██║   " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.yellow .. "     ██║  ██║██║ ╚████║   ██║   ██║╚██████╗██║  ██║███████╗██║  ██║   ██║   " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.yellow .. "     ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   " .. colors.cyan .. "║")
-    print(colors.cyan .. "╠═══════════════════════════════════════════════════════════════════════════╣")
-    print(colors.cyan .. "║" .. colors.white .. "                    ADVANCED PROTECTION SYSTEM v4.5                       " .. colors.cyan .. "║")
-    print(colors.cyan .. "║" .. colors.green .. "                         Coded by konpep                                  " .. colors.cyan .. "║")
-    print(colors.cyan .. "╚═══════════════════════════════════════════════════════════════════════════╝" .. colors.reset)
-    print("")
+    DebugPrint("")
+    DebugPrint(colors.cyan .. "╔═══════════════════════════════════════════════════════════════════════════╗")
+    DebugPrint(colors.cyan .. "║" .. colors.purple .. "      █████╗ ███████╗████████╗██╗  ██╗███████╗██████╗                      " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.purple .. "     ██╔══██╗██╔════╝╚══██╔══╝██║  ██║██╔════╝██╔══██╗                     " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.purple .. "     ███████║█████╗     ██║   ███████║█████╗  ██████╔╝                     " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.purple .. "     ██╔══██║██╔══╝     ██║   ██╔══██║██╔══╝  ██╔══██╗                     " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.purple .. "     ██║  ██║███████╗   ██║   ██║  ██║███████╗██║  ██║                     " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.purple .. "     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝                     " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "╠═══════════════════════════════════════════════════════════════════════════╣")
+    DebugPrint(colors.cyan .. "║" .. colors.yellow .. "      █████╗ ███╗   ██╗████████╗██╗ ██████╗██╗  ██╗███████╗ █████╗ ████████╗" .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.yellow .. "     ██╔══██╗████╗  ██║╚══██╔══╝██║██╔════╝██║  ██║██╔════╝██╔══██╗╚══██╔══╝" .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.yellow .. "     ███████║██╔██╗ ██║   ██║   ██║██║     ███████║█████╗  ███████║   ██║   " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.yellow .. "     ██╔══██║██║╚██╗██║   ██║   ██║██║     ██╔══██║██╔══╝  ██╔══██║   ██║   " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.yellow .. "     ██║  ██║██║ ╚████║   ██║   ██║╚██████╗██║  ██║███████╗██║  ██║   ██║   " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.yellow .. "     ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "╠═══════════════════════════════════════════════════════════════════════════╣")
+    DebugPrint(colors.cyan .. "║" .. colors.white .. "                    ADVANCED PROTECTION SYSTEM v4.5.0                     " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "║" .. colors.green .. "                         Coded by konpep                                  " .. colors.cyan .. "║")
+    DebugPrint(colors.cyan .. "╚═══════════════════════════════════════════════════════════════════════════╝" .. colors.reset)
+    DebugPrint("")
 end
 
 local function PrintProtectionStatus()
@@ -66,66 +66,68 @@ local function PrintProtectionStatus()
     local check = colors.green .. "✓" .. colors.reset
     local shield = colors.cyan .. "🛡️" .. colors.reset
     
-    print(colors.purple .. "┌─────────────────────────────────────────────────────────────────┐")
-    print(colors.purple .. "│" .. colors.yellow .. "                    ⚡ PROTECTION MODULES LOADED ⚡               " .. colors.purple .. "│")
-    print(colors.purple .. "├─────────────────────────────────────────────────────────────────┤")
-    print(colors.purple .. "│                                                                 │")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Godmode v5.0 (8 Methods)   " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Invincible Flag Detection" .. colors.purple .. "                                │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Super Health/Armor Detection" .. colors.purple .. "                             │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Fall Damage Immunity Detection" .. colors.purple .. "                           │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Bullet Immunity Detection" .. colors.purple .. "                                │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Explosion Immunity Detection" .. colors.purple .. "                             │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Fire Immunity Detection" .. colors.purple .. "                                  │")
-    print(colors.purple .. "│    " .. colors.cyan .. "└─ Drowning Immunity Detection" .. colors.purple .. "                              │")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Teleport Detection         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Noclip v3.0 (6 Methods)    " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Wall Passing Detection (Multi-Raycast)" .. colors.purple .. "                    │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Impossible Acceleration Detection" .. colors.purple .. "                         │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Floating in Air Detection" .. colors.purple .. "                                 │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Phase Through Objects Detection" .. colors.purple .. "                           │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Swimming in Air Detection" .. colors.purple .. "                                 │")
-    print(colors.purple .. "│    " .. colors.cyan .. "└─ Velocity/Animation Mismatch Detection" .. colors.purple .. "                     │")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Freecam Detection          " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Invisible Detection        " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Aimbot v3.0 (10 Methods)   " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Silent Aim Detection" .. colors.purple .. "                                      │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Headshot Rate Analysis" .. colors.purple .. "                                    │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Bone Lock Detection" .. colors.purple .. "                                       │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Aim Snap Detection" .. colors.purple .. "                                        │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Smooth Aimbot Detection" .. colors.purple .. "                                   │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ Triggerbot Detection" .. colors.purple .. "                                      │")
-    print(colors.purple .. "│    " .. colors.cyan .. "├─ No Recoil Detection" .. colors.purple .. "                                       │")
-    print(colors.purple .. "│    " .. colors.cyan .. "└─ Target Switch Speed Analysis" .. colors.purple .. "                              │")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Silent Aim Detection       " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Wallhack Detection         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-ESP Detection              " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Resource Stop              " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Self Heal/Revive           " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Spoofed Weapons            " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Spoofed Vehicles           " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Anti-Illegal Peds               " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Heartbeat System                " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Spawn Protection System         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Admin Action Protection         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│  " .. check .. colors.white .. " Safezone Protection             " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
-    print(colors.purple .. "│                                                                 │")
-    print(colors.purple .. "├─────────────────────────────────────────────────────────────────┤")
-    print(colors.purple .. "│" .. colors.cyan .. "              ALL SYSTEMS OPERATIONAL - YOU ARE PROTECTED        " .. colors.purple .. "│")
-    print(colors.purple .. "└─────────────────────────────────────────────────────────────────┘" .. colors.reset)
-    print("")
-    print(colors.cyan .. "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" .. colors.reset)
-    print(colors.green .. "  🎮 Aether Anticheat v4.0 - Client Initialized Successfully!")
-    print(colors.purple .. "  💜 Coded by konpep")
-    print(colors.cyan .. "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" .. colors.reset)
-    print("")
+    DebugPrint(colors.purple .. "┌─────────────────────────────────────────────────────────────────┐")
+    DebugPrint(colors.purple .. "│" .. colors.yellow .. "                    ⚡ PROTECTION MODULES LOADED ⚡               " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "├─────────────────────────────────────────────────────────────────┤")
+    DebugPrint(colors.purple .. "│                                                                 │")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Godmode v5.0 (8 Methods)   " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Invincible Flag Detection" .. colors.purple .. "                                │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Super Health/Armor Detection" .. colors.purple .. "                             │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Fall Damage Immunity Detection" .. colors.purple .. "                           │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Bullet Immunity Detection" .. colors.purple .. "                                │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Explosion Immunity Detection" .. colors.purple .. "                             │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Fire Immunity Detection" .. colors.purple .. "                                  │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "└─ Drowning Immunity Detection" .. colors.purple .. "                              │")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Teleport Detection         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Noclip v3.0 (6 Methods)    " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Wall Passing Detection (Multi-Raycast)" .. colors.purple .. "                    │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Impossible Acceleration Detection" .. colors.purple .. "                         │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Floating in Air Detection" .. colors.purple .. "                                 │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Phase Through Objects Detection" .. colors.purple .. "                           │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Swimming in Air Detection" .. colors.purple .. "                                 │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "└─ Velocity/Animation Mismatch Detection" .. colors.purple .. "                     │")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Freecam Detection          " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Invisible Detection        " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Aimbot v3.0 (10 Methods)   " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Silent Aim Detection" .. colors.purple .. "                                      │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Headshot Rate Analysis" .. colors.purple .. "                                    │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Bone Lock Detection" .. colors.purple .. "                                       │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Aim Snap Detection" .. colors.purple .. "                                        │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Smooth Aimbot Detection" .. colors.purple .. "                                   │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ Triggerbot Detection" .. colors.purple .. "                                      │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "├─ No Recoil Detection" .. colors.purple .. "                                       │")
+    DebugPrint(colors.purple .. "│    " .. colors.cyan .. "└─ Target Switch Speed Analysis" .. colors.purple .. "                              │")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Silent Aim Detection       " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Wallhack Detection         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-ESP Detection              " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Resource Stop              " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Self Heal/Revive           " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Spoofed Weapons            " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Spoofed Vehicles           " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Anti-Illegal Peds               " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Heartbeat System                " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Spawn Protection System         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Admin Action Protection         " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│  " .. check .. colors.white .. " Safezone Protection             " .. colors.green .. "[ACTIVE]" .. colors.white .. "   " .. shield .. "              " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "│                                                                 │")
+    DebugPrint(colors.purple .. "├─────────────────────────────────────────────────────────────────┤")
+    DebugPrint(colors.purple .. "│" .. colors.cyan .. "              ALL SYSTEMS OPERATIONAL - YOU ARE PROTECTED        " .. colors.purple .. "│")
+    DebugPrint(colors.purple .. "└─────────────────────────────────────────────────────────────────┘" .. colors.reset)
+    DebugPrint("")
+    DebugPrint(colors.cyan .. "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" .. colors.reset)
+    DebugPrint(colors.green .. "  🎮 Aether Anticheat v4.5.0 - Client Initialized Successfully!")
+    DebugPrint(colors.purple .. "  💜 Coded by konpep")
+    DebugPrint(colors.cyan .. "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" .. colors.reset)
+    DebugPrint("")
 end
 
--- Print banner on load
+-- Print banner on load (only if debug is on)
 CreateThread(function()
-    Wait(500)
-    PrintFancyBanner()
-    PrintProtectionStatus()
+    Wait(2000) -- Wait for config to load
+    if Config and Config.Debug then
+        PrintFancyBanner()
+        PrintProtectionStatus()
+    end
 end)
 
 local isAdmin = false
@@ -194,7 +196,7 @@ RegisterNetEvent('anticheat:adminActionProtection', function(actionType, duratio
     selfHealData.wasDeadRecently = false
     teleportViolations = 0
     godmodeViolations = 0
-    print('[ANTICHEAT] Admin action protection ENABLED: ' .. adminActionProtection.reason .. ' for ' .. (duration or 5000) .. 'ms')
+    DebugPrint('[ANTICHEAT] Admin action protection ENABLED: ' .. adminActionProtection.reason .. ' for ' .. (duration or 5000) .. 'ms')
 end)
 
 -- Check if admin action protection is active
@@ -202,7 +204,7 @@ local function IsAdminActionProtected()
     if not adminActionProtection.active then return false end
     if GetGameTimer() > adminActionProtection.endTime then
         adminActionProtection.active = false
-        print('[ANTICHEAT] Admin action protection EXPIRED')
+        DebugPrint('[ANTICHEAT] Admin action protection EXPIRED')
         return false
     end
     return true
@@ -226,9 +228,9 @@ local function SetSafezoneProtection(enabled, zoneName)
     if enabled then
         -- Reset godmode violations when entering safezone
         godmodeViolations = 0
-        print('[ANTICHEAT] Safezone protection ENABLED: ' .. safezoneProtection.zoneName)
+        DebugPrint('[ANTICHEAT] Safezone protection ENABLED: ' .. safezoneProtection.zoneName)
     else
-        print('[ANTICHEAT] Safezone protection DISABLED')
+        DebugPrint('[ANTICHEAT] Safezone protection DISABLED')
     end
 end
 
@@ -275,10 +277,10 @@ local function SetSpawnProtection(enabled, duration)
         selfHealData.wasDeadRecently = false
         teleportViolations = 0
         godmodeViolations = 0
-        print('[ANTICHEAT] Spawn protection ENABLED for ' .. (duration or spawnProtection.duration) .. 'ms')
+        DebugPrint('[ANTICHEAT] Spawn protection ENABLED for ' .. (duration or spawnProtection.duration) .. 'ms')
     else
         spawnProtection.active = false
-        print('[ANTICHEAT] Spawn protection DISABLED')
+        DebugPrint('[ANTICHEAT] Spawn protection DISABLED')
     end
 end
 
@@ -295,7 +297,7 @@ local function IsSpawnProtected()
     if not spawnProtection.active then return false end
     if GetGameTimer() > spawnProtection.endTime then
         spawnProtection.active = false
-        print('[ANTICHEAT] Spawn protection EXPIRED')
+        DebugPrint('[ANTICHEAT] Spawn protection EXPIRED')
         return false
     end
     return true
@@ -323,13 +325,13 @@ local resourceStopPending = {} -- Track pending stops for 3 second ban
 -- Receive all protected resources from server
 RegisterNetEvent('anticheat:setProtectedResources', function(resources)
     protectedResources = resources or {}
-    print('[ANTICHEAT] Protected ' .. (resources and #resources or 0) .. ' server resources')
+    DebugPrint('[ANTICHEAT] Protected ' .. (resources and #resources or 0) .. ' server resources')
 end)
 
 -- Admin is restarting a resource (temporary allow)
 RegisterNetEvent('anticheat:allowResourceStop', function(resourceName)
     allowedToStop[resourceName] = true
-    print('[ANTICHEAT] Temporarily allowing stop for: ' .. resourceName)
+    DebugPrint('[ANTICHEAT] Temporarily allowing stop for: ' .. resourceName)
     -- Remove after 10 seconds
     SetTimeout(10000, function()
         allowedToStop[resourceName] = nil
@@ -343,7 +345,7 @@ AddEventHandler('onResourceStop', function(resourceName)
     
     -- Skip if admin is legitimately restarting this resource
     if allowedToStop[resourceName] then 
-        print('[ANTICHEAT] Allowed resource stop: ' .. resourceName)
+        DebugPrint('[ANTICHEAT] Allowed resource stop: ' .. resourceName)
         return 
     end
     
@@ -352,7 +354,7 @@ AddEventHandler('onResourceStop', function(resourceName)
         return
     end
     
-    print('[ANTICHEAT] ⚠️ RESOURCE STOP DETECTED: ' .. resourceName)
+    DebugPrint('[ANTICHEAT] ⚠️ RESOURCE STOP DETECTED: ' .. resourceName)
     
     -- Track this stop - if not cancelled in 3 seconds = BAN
     resourceStopPending[resourceName] = GetGameTimer()
@@ -363,7 +365,7 @@ AddEventHandler('onResourceStop', function(resourceName)
     -- After 3 seconds, if still pending = CONFIRMED CHEAT = BAN
     SetTimeout(3000, function()
         if resourceStopPending[resourceName] then
-            print('[ANTICHEAT] 🚨 CONFIRMED CHEAT - Resource stop not cancelled: ' .. resourceName)
+            DebugPrint('[ANTICHEAT] 🚨 CONFIRMED CHEAT - Resource stop not cancelled: ' .. resourceName)
             TriggerServerEvent('anticheat:resourceStopped', resourceName, 'cheat_confirmed')
             resourceStopPending[resourceName] = nil
         end
@@ -373,7 +375,7 @@ end)
 -- If resource starts again within 3 seconds, cancel the ban (was legit restart)
 AddEventHandler('onResourceStart', function(resourceName)
     if resourceStopPending[resourceName] then
-        print('[ANTICHEAT] Resource restarted - cancelling ban: ' .. resourceName)
+        DebugPrint('[ANTICHEAT] Resource restarted - cancelling ban: ' .. resourceName)
         resourceStopPending[resourceName] = nil
     end
 end)
@@ -410,7 +412,7 @@ RegisterNetEvent('anticheat:serverHealthCheck', function()
     -- Check invincible flag (server can't check this directly)
     local isInvincible = GetPlayerInvincible(playerId)
     if isInvincible then
-        print('[ANTICHEAT] Server health check: Invincible flag detected!')
+        DebugPrint('[ANTICHEAT] Server health check: Invincible flag detected!')
         TriggerServerEvent('anticheat:godmodeDetected', 'server_check_invincible')
     end
     
@@ -420,17 +422,17 @@ RegisterNetEvent('anticheat:serverHealthCheck', function()
     local maxHealth = GetEntityMaxHealth(ped)
     
     if health > 250 then
-        print('[ANTICHEAT] Server health check: Super health detected! ' .. health)
+        DebugPrint('[ANTICHEAT] Server health check: Super health detected! ' .. health)
         TriggerServerEvent('anticheat:godmodeDetected', 'server_check_health_' .. health)
     end
     
     if armor > 100 then
-        print('[ANTICHEAT] Server health check: Super armor detected! ' .. armor)
+        DebugPrint('[ANTICHEAT] Server health check: Super armor detected! ' .. armor)
         TriggerServerEvent('anticheat:godmodeDetected', 'server_check_armor_' .. armor)
     end
     
     if maxHealth > 300 then
-        print('[ANTICHEAT] Server health check: Modified max health! ' .. maxHealth)
+        DebugPrint('[ANTICHEAT] Server health check: Modified max health! ' .. maxHealth)
         TriggerServerEvent('anticheat:godmodeDetected', 'server_check_maxhealth_' .. maxHealth)
     end
 end)
@@ -498,8 +500,8 @@ CreateThread(function()
     
     -- Notify server that anticheat started
     TriggerServerEvent('anticheat:clientStarted')
-    print('[ANTICHEAT] Client v3.0 initialized')
-    print('[ANTICHEAT] Blacklisted vehicles: ' .. #(Config.BlacklistedVehicles or {}))
+    DebugPrint('[ANTICHEAT] Client v3.0 initialized')
+    DebugPrint('[ANTICHEAT] Blacklisted vehicles: ' .. #(Config.BlacklistedVehicles or {}))
 end)
 
 -- Admin check
@@ -640,10 +642,10 @@ CreateThread(function()
             local isInvincible = GetPlayerInvincible(playerId)
             if isInvincible then
                 godmodeData.invincibleCount = godmodeData.invincibleCount + 1
-                print('[ANTICHEAT] Invincible flag ON! Count: ' .. godmodeData.invincibleCount .. '/' .. violationsNeeded)
+                DebugPrint('[ANTICHEAT] Invincible flag ON! Count: ' .. godmodeData.invincibleCount .. '/' .. violationsNeeded)
                 
                 if godmodeData.invincibleCount >= violationsNeeded then
-                    print('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Invincible flag!')
+                    DebugPrint('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Invincible flag!')
                     TriggerServerEvent('anticheat:godmodeDetected', 'invincible_flag')
                     godmodeData.invincibleCount = 0
                 end
@@ -655,7 +657,7 @@ CreateThread(function()
             -- METHOD 2: Check super armor (instant)
             -- ═══════════════════════════════════════════
             if armor > maxArmor then
-                print('[ANTICHEAT] 🚨 SUPER ARMOR DETECTED: ' .. armor)
+                DebugPrint('[ANTICHEAT] 🚨 SUPER ARMOR DETECTED: ' .. armor)
                 TriggerServerEvent('anticheat:godmodeDetected', 'super_armor_' .. armor)
             end
             
@@ -663,7 +665,7 @@ CreateThread(function()
             -- METHOD 3: Check super health (instant)
             -- ═══════════════════════════════════════════
             if health > maxHealth then
-                print('[ANTICHEAT] 🚨 SUPER HEALTH DETECTED: ' .. health)
+                DebugPrint('[ANTICHEAT] 🚨 SUPER HEALTH DETECTED: ' .. health)
                 TriggerServerEvent('anticheat:godmodeDetected', 'super_health_' .. health)
             end
             
@@ -728,10 +730,10 @@ CreateThread(function()
                         -- If fell and took less than minimum damage = suspicious
                         if damageTaken < fallMinDamage and not IsEntityDead(ped) then
                             godmodeData.fallDamageViolations = godmodeData.fallDamageViolations + 1
-                            print('[ANTICHEAT] ⚠️ NO FALL DAMAGE! Fell ' .. math.floor(fallDistance) .. 'm, Damage: ' .. damageTaken .. ', Violations: ' .. godmodeData.fallDamageViolations .. '/' .. violationsNeeded)
+                            DebugPrint('[ANTICHEAT] ⚠️ NO FALL DAMAGE! Fell ' .. math.floor(fallDistance) .. 'm, Damage: ' .. damageTaken .. ', Violations: ' .. godmodeData.fallDamageViolations .. '/' .. violationsNeeded)
                             
                             if godmodeData.fallDamageViolations >= violationsNeeded then
-                                print('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Fall damage immunity!')
+                                DebugPrint('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Fall damage immunity!')
                                 TriggerServerEvent('anticheat:godmodeDetected', 'fall_damage_immune_' .. math.floor(fallDistance) .. 'm')
                                 godmodeData.fallDamageViolations = 0
                             end
@@ -815,10 +817,10 @@ CreateThread(function()
                         -- If received enough shots but lost less than minimum damage = suspicious
                         if shotsReceived >= bulletMinShots and healthLost < bulletMinDamage and not IsEntityDead(ped) then
                             godmodeData.bulletImmuneViolations = godmodeData.bulletImmuneViolations + 1
-                            print('[ANTICHEAT] ⚠️ BULLET IMMUNITY! Shots: ' .. shotsReceived .. ', Damage: ' .. healthLost .. ', Violations: ' .. godmodeData.bulletImmuneViolations .. '/' .. violationsNeeded)
+                            DebugPrint('[ANTICHEAT] ⚠️ BULLET IMMUNITY! Shots: ' .. shotsReceived .. ', Damage: ' .. healthLost .. ', Violations: ' .. godmodeData.bulletImmuneViolations .. '/' .. violationsNeeded)
                             
                             if godmodeData.bulletImmuneViolations >= violationsNeeded then
-                                print('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Bullet immunity!')
+                                DebugPrint('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Bullet immunity!')
                                 TriggerServerEvent('anticheat:godmodeDetected', 'bullet_immune_' .. shotsReceived .. '_shots')
                                 godmodeData.bulletImmuneViolations = 0
                             end
@@ -887,10 +889,10 @@ CreateThread(function()
                     -- If near explosion and took less than minimum damage = suspicious
                     if damageTaken < explosionMinDamage and not IsEntityDead(ped) and not IsPedInAnyVehicle(ped, false) then
                         godmodeData.noDamageViolations = godmodeData.noDamageViolations + 1
-                        print('[ANTICHEAT] ⚠️ EXPLOSION IMMUNITY! Damage: ' .. damageTaken .. ', Violations: ' .. godmodeData.noDamageViolations .. '/' .. violationsNeeded)
+                        DebugPrint('[ANTICHEAT] ⚠️ EXPLOSION IMMUNITY! Damage: ' .. damageTaken .. ', Violations: ' .. godmodeData.noDamageViolations .. '/' .. violationsNeeded)
                         
                         if godmodeData.noDamageViolations >= violationsNeeded then
-                            print('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Explosion immunity!')
+                            DebugPrint('[ANTICHEAT] 🚨 GODMODE CONFIRMED - Explosion immunity!')
                             TriggerServerEvent('anticheat:godmodeDetected', 'explosion_immune')
                             godmodeData.noDamageViolations = 0
                         end
@@ -946,7 +948,7 @@ CreateThread(function()
                         -- If on fire and took less than minimum damage = suspicious
                         if damageTaken < fireMinDamage and not IsEntityDead(ped) then
                             fireViolations = fireViolations + 1
-                            print('[ANTICHEAT] ⚠️ FIRE IMMUNITY! Duration: ' .. math.floor(fireDuration/1000) .. 's, Damage: ' .. damageTaken .. ', Violations: ' .. fireViolations .. '/' .. violationsNeeded)
+                            DebugPrint('[ANTICHEAT] ⚠️ FIRE IMMUNITY! Duration: ' .. math.floor(fireDuration/1000) .. 's, Damage: ' .. damageTaken .. ', Violations: ' .. fireViolations .. '/' .. violationsNeeded)
                             
                             if fireViolations >= violationsNeeded then
                                 TriggerServerEvent('anticheat:godmodeDetected', 'fire_immune_' .. math.floor(fireDuration/1000) .. 's')
@@ -1016,7 +1018,7 @@ CreateThread(function()
                         -- If underwater too long and took less than minimum damage = suspicious
                         if damageTaken < drownMinDamage and not IsEntityDead(ped) then
                             drownViolations = drownViolations + 1
-                            print('[ANTICHEAT] ⚠️ DROWNING IMMUNITY! Duration: ' .. math.floor(underwaterDurationNow/1000) .. 's, Damage: ' .. damageTaken .. ', Violations: ' .. drownViolations .. '/' .. violationsNeeded)
+                            DebugPrint('[ANTICHEAT] ⚠️ DROWNING IMMUNITY! Duration: ' .. math.floor(underwaterDurationNow/1000) .. 's, Damage: ' .. damageTaken .. ', Violations: ' .. drownViolations .. '/' .. violationsNeeded)
                             
                             if drownViolations >= violationsNeeded then
                                 TriggerServerEvent('anticheat:godmodeDetected', 'drown_immune_' .. math.floor(underwaterDurationNow/1000) .. 's')
@@ -1072,7 +1074,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
                 -- Killed with weapon NOT in inventory = cheating
                 if not hasWeaponInInventory and GetResourceState('ox_inventory') == 'started' then
                     local victimId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(victim))
-                    print('[ANTICHEAT] KILL WITHOUT INVENTORY WEAPON! Weapon: ' .. currentWeapon)
+                    DebugPrint('[ANTICHEAT] KILL WITHOUT INVENTORY WEAPON! Weapon: ' .. currentWeapon)
                     TriggerServerEvent('anticheat:illegalKill', victimId, currentWeapon, 'weapon_not_in_inventory')
                 end
             else
@@ -1082,7 +1084,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
                 if distance > 5.0 then
                     -- Killed from distance while unarmed = impossible
                     local victimId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(victim))
-                    print('[ANTICHEAT] KILL WHILE UNARMED FROM DISTANCE! Dist: ' .. math.floor(distance))
+                    DebugPrint('[ANTICHEAT] KILL WHILE UNARMED FROM DISTANCE! Dist: ' .. math.floor(distance))
                     TriggerServerEvent('anticheat:illegalKill', victimId, 0, 'unarmed_distance_kill')
                 end
             end
@@ -1113,7 +1115,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
             
             -- If we were healthy and suddenly died by our own hand = cheat suicide
             if health > 150 then
-                print('[ANTICHEAT] CHEAT SUICIDE DETECTED! Was at ' .. health .. ' health')
+                DebugPrint('[ANTICHEAT] CHEAT SUICIDE DETECTED! Was at ' .. health .. ' health')
                 TriggerServerEvent('anticheat:cheatSuicide', health, weaponHash)
             end
         end
@@ -1163,7 +1165,7 @@ CreateThread(function()
                 -- If revived within 2 seconds of death = suspicious
                 if timeSinceDeath < 2000 then
                     selfHealData.violations = selfHealData.violations + 1
-                    print('[ANTICHEAT] SELF-REVIVE DETECTED! Violations: ' .. selfHealData.violations)
+                    DebugPrint('[ANTICHEAT] SELF-REVIVE DETECTED! Violations: ' .. selfHealData.violations)
                     TriggerServerEvent('anticheat:selfRevive', selfHealData.violations, timeSinceDeath)
                 end
                 
@@ -1177,7 +1179,7 @@ CreateThread(function()
                 -- If health increased by more than 50 in 1 second = suspicious
                 if healthGain > 50 then
                     selfHealData.violations = selfHealData.violations + 1
-                    print('[ANTICHEAT] SELF-HEAL DETECTED! Gained ' .. healthGain .. ' HP, Violations: ' .. selfHealData.violations)
+                    DebugPrint('[ANTICHEAT] SELF-HEAL DETECTED! Gained ' .. healthGain .. ' HP, Violations: ' .. selfHealData.violations)
                     TriggerServerEvent('anticheat:selfHeal', selfHealData.violations, healthGain)
                 end
                 
@@ -1185,7 +1187,7 @@ CreateThread(function()
                 local armorGain = armor - selfHealData.lastArmor
                 if armorGain > 50 then
                     selfHealData.violations = selfHealData.violations + 1
-                    print('[ANTICHEAT] SELF-ARMOR DETECTED! Gained ' .. armorGain .. ' armor, Violations: ' .. selfHealData.violations)
+                    DebugPrint('[ANTICHEAT] SELF-ARMOR DETECTED! Gained ' .. armorGain .. ' armor, Violations: ' .. selfHealData.violations)
                     TriggerServerEvent('anticheat:selfHeal', selfHealData.violations, armorGain)
                 end
             end
@@ -1233,7 +1235,7 @@ CreateThread(function()
                 
                 if speed > maxSpeed and distance > 50 then
                     teleportViolations = teleportViolations + 1
-                    print('[ANTICHEAT] Teleport! Speed: ' .. math.floor(speed) .. ' m/s, Dist: ' .. math.floor(distance) .. 'm')
+                    DebugPrint('[ANTICHEAT] Teleport! Speed: ' .. math.floor(speed) .. ' m/s, Dist: ' .. math.floor(distance) .. 'm')
                     
                     if teleportViolations >= 3 then
                         TriggerServerEvent('anticheat:teleportDetected', math.floor(distance), math.floor(speed))
@@ -1311,7 +1313,7 @@ CreateThread(function()
                 -- If invisible for more than 2 seconds = suspicious
                 if invisibleDuration > 2000 then
                     invisibleViolations = invisibleViolations + 1
-                    print('[ANTICHEAT] INVISIBLE! Reason: ' .. invisibleReason .. ', Duration: ' .. math.floor(invisibleDuration/1000) .. 's, Violations: ' .. invisibleViolations)
+                    DebugPrint('[ANTICHEAT] INVISIBLE! Reason: ' .. invisibleReason .. ', Duration: ' .. math.floor(invisibleDuration/1000) .. 's, Violations: ' .. invisibleViolations)
                 end
                 
                 -- If invisible for more than 5 seconds = definitely cheating
@@ -1329,13 +1331,13 @@ CreateThread(function()
             local alphaDiff = math.abs(alpha - invisibleData.lastAlpha)
             if alphaDiff > 100 and alpha < 200 then
                 invisibleViolations = invisibleViolations + 2
-                print('[ANTICHEAT] INSTANT ALPHA CHANGE! From ' .. invisibleData.lastAlpha .. ' to ' .. alpha)
+                DebugPrint('[ANTICHEAT] INSTANT ALPHA CHANGE! From ' .. invisibleData.lastAlpha .. ' to ' .. alpha)
             end
             invisibleData.lastAlpha = alpha
             
             -- Ban threshold
             if invisibleViolations >= 4 then
-                print('[ANTICHEAT] INVISIBLE CONFIRMED! Banning...')
+                DebugPrint('[ANTICHEAT] INVISIBLE CONFIRMED! Banning...')
                 TriggerServerEvent('anticheat:invisibleDetected', alpha)
                 invisibleViolations = 0
             end
@@ -1364,7 +1366,7 @@ CreateThread(function()
                 Wait(100)
                 if not IsEntityVisible(ped) then
                     invisibleViolations = invisibleViolations + 2
-                    print('[ANTICHEAT] FORCED INVISIBLE - Cannot fix!')
+                    DebugPrint('[ANTICHEAT] FORCED INVISIBLE - Cannot fix!')
                 end
             end
             
@@ -1377,7 +1379,7 @@ CreateThread(function()
                 local newAlpha = GetEntityAlpha(ped)
                 if newAlpha < 200 then
                     invisibleViolations = invisibleViolations + 2
-                    print('[ANTICHEAT] FORCED LOW ALPHA - Cannot fix!')
+                    DebugPrint('[ANTICHEAT] FORCED LOW ALPHA - Cannot fix!')
                 end
             end
         end
@@ -1492,11 +1494,11 @@ end
 
 CreateThread(function()
     Wait(8000)
-    print('[ANTICHEAT] Advanced Anti-Noclip v3.1 Active (BALANCED MODE)')
-    print('[ANTICHEAT] ├─ Wall Passing Detection (Multi-Raycast)')
-    print('[ANTICHEAT] ├─ Impossible Acceleration Detection')
-    print('[ANTICHEAT] └─ Floating in Air Detection')
-    print('[ANTICHEAT] └─ Fall Protection: ENABLED')
+    DebugPrint('[ANTICHEAT] Advanced Anti-Noclip v3.1 Active (BALANCED MODE)')
+    DebugPrint('[ANTICHEAT] ├─ Wall Passing Detection (Multi-Raycast)')
+    DebugPrint('[ANTICHEAT] ├─ Impossible Acceleration Detection')
+    DebugPrint('[ANTICHEAT] └─ Floating in Air Detection')
+    DebugPrint('[ANTICHEAT] └─ Fall Protection: ENABLED')
     
     while true do
         Wait(150) -- Even faster checks
@@ -1541,7 +1543,7 @@ CreateThread(function()
                 -- If fell from high, give longer grace period
                 if noclipData.lastAirHeight > 10.0 then
                     noclipData.lastHighFallTime = currentTime
-                    print('[ANTICHEAT] High fall detected - grace period active (height: ' .. math.floor(noclipData.lastAirHeight) .. 'm)')
+                    DebugPrint('[ANTICHEAT] High fall detected - grace period active (height: ' .. math.floor(noclipData.lastAirHeight) .. 'm)')
                 end
                 noclipData.wasInAir = false
                 noclipData.lastAirHeight = 0
@@ -1594,12 +1596,12 @@ CreateThread(function()
                         noclipData.consecutiveWallHits = noclipData.consecutiveWallHits + 1
                         noclipData.wallPassCount = noclipData.wallPassCount + wallHits
                         
-                        print('[ANTICHEAT] 🧱 WALL PASS! Rays: ' .. wallHits .. ', Consecutive: ' .. noclipData.consecutiveWallHits .. ', Total: ' .. noclipData.wallPassCount)
+                        DebugPrint('[ANTICHEAT] 🧱 WALL PASS! Rays: ' .. wallHits .. ', Consecutive: ' .. noclipData.consecutiveWallHits .. ', Total: ' .. noclipData.wallPassCount)
                         
                         -- Need 3 consecutive OR 10 total (increased thresholds)
                         if noclipData.consecutiveWallHits >= 3 or noclipData.wallPassCount >= 10 then
                             noclipData.violations = noclipData.violations + 3
-                            print('[ANTICHEAT] 🚨 WALL NOCLIP CONFIRMED!')
+                            DebugPrint('[ANTICHEAT] 🚨 WALL NOCLIP CONFIRMED!')
                             noclipData.wallPassCount = 0
                             noclipData.consecutiveWallHits = 0
                         end
@@ -1614,7 +1616,7 @@ CreateThread(function()
                         -- Need 3 consecutive detections to confirm
                         if noclipData.solidGeoCount >= 3 then
                             noclipData.violations = noclipData.violations + 2
-                            print('[ANTICHEAT] 🚨 INSIDE SOLID GEOMETRY!')
+                            DebugPrint('[ANTICHEAT] 🚨 INSIDE SOLID GEOMETRY!')
                             noclipData.solidGeoCount = 0
                         end
                     else
@@ -1663,7 +1665,7 @@ CreateThread(function()
                         -- Need MORE consistent high acceleration to trigger
                         if highAccelCount >= 5 then
                             noclipData.violations = noclipData.violations + 2
-                            print('[ANTICHEAT] ⚡ IMPOSSIBLE ACCELERATION! ' .. math.floor(acceleration) .. ' m/s² (Count: ' .. highAccelCount .. ')')
+                            DebugPrint('[ANTICHEAT] ⚡ IMPOSSIBLE ACCELERATION! ' .. math.floor(acceleration) .. ' m/s² (Count: ' .. highAccelCount .. ')')
                         end
                     end
                     
@@ -1678,7 +1680,7 @@ CreateThread(function()
                         -- Dot product < -0.5 means almost opposite direction
                         if dotProduct < -0.5 and deltaTime < 0.3 then
                             noclipData.violations = noclipData.violations + 1
-                            print('[ANTICHEAT] ↩️ INSTANT DIRECTION CHANGE! Dot: ' .. string.format('%.2f', dotProduct))
+                            DebugPrint('[ANTICHEAT] ↩️ INSTANT DIRECTION CHANGE! Dot: ' .. string.format('%.2f', dotProduct))
                         end
                     end
                 end
@@ -1713,7 +1715,7 @@ CreateThread(function()
                         -- 6 seconds of being completely still in air (increased from 5)
                         if noclipData.stationaryAirTime >= 30 then
                             noclipData.violations = noclipData.violations + 3
-                            print('[ANTICHEAT] 🎈 FLOATING IN AIR! Height: ' .. string.format('%.1f', heightAboveGround) .. 'm')
+                            DebugPrint('[ANTICHEAT] 🎈 FLOATING IN AIR! Height: ' .. string.format('%.1f', heightAboveGround) .. 'm')
                             noclipData.stationaryAirTime = 0
                         end
                     -- Moving horizontally while VERY high up - even stricter
@@ -1723,7 +1725,7 @@ CreateThread(function()
                         -- 7 seconds of horizontal flight (increased from 6)
                         if noclipData.floatingTime >= 35 then
                             noclipData.violations = noclipData.violations + 3
-                            print('[ANTICHEAT] ✈️ FLYING! Height: ' .. string.format('%.1f', heightAboveGround) .. 'm, Speed: ' .. string.format('%.1f', speed))
+                            DebugPrint('[ANTICHEAT] ✈️ FLYING! Height: ' .. string.format('%.1f', heightAboveGround) .. 'm, Speed: ' .. string.format('%.1f', speed))
                             noclipData.floatingTime = 0
                         end
                     else
@@ -1735,7 +1737,7 @@ CreateThread(function()
                     -- Detect upward movement - only if going UP very fast
                     if verticalVelocity > 15.0 and not isJumping and not isClimbing and heightAboveGround > 15.0 then
                         noclipData.violations = noclipData.violations + 1
-                        print('[ANTICHEAT] ⬆️ UPWARD NOCLIP! Vertical speed: ' .. string.format('%.1f', verticalVelocity))
+                        DebugPrint('[ANTICHEAT] ⬆️ UPWARD NOCLIP! Vertical speed: ' .. string.format('%.1f', verticalVelocity))
                     end
                 else
                     -- Player is on ground or falling - reset counters fast
@@ -1757,14 +1759,14 @@ CreateThread(function()
             -- Underground detection
             if coords.z < -50.0 then
                 noclipData.violations = noclipData.violations + 3
-                print('[ANTICHEAT] 🕳️ UNDERGROUND! Z: ' .. math.floor(coords.z))
+                DebugPrint('[ANTICHEAT] 🕳️ UNDERGROUND! Z: ' .. math.floor(coords.z))
             end
             
             -- Invisible movement detection
             if not IsEntityVisible(ped) and not isInVehicle then
                 if speed > 5.0 then
                     noclipData.violations = noclipData.violations + 1
-                    print('[ANTICHEAT] 👻 INVISIBLE NOCLIP! Speed: ' .. math.floor(speed))
+                    DebugPrint('[ANTICHEAT] 👻 INVISIBLE NOCLIP! Speed: ' .. math.floor(speed))
                 end
             end
             
@@ -1773,7 +1775,7 @@ CreateThread(function()
                 local moved = #(coords - noclipData.lastPos)
                 if moved > 5.0 then
                     noclipData.violations = noclipData.violations + 2
-                    print('[ANTICHEAT] 🧊 FROZEN ENTITY MOVING! Dist: ' .. math.floor(moved))
+                    DebugPrint('[ANTICHEAT] 🧊 FROZEN ENTITY MOVING! Dist: ' .. math.floor(moved))
                 end
             end
             
@@ -1803,7 +1805,7 @@ CreateThread(function()
                         noclipData.phaseCount = (noclipData.phaseCount or 0) + 1
                         if noclipData.phaseCount >= 5 then
                             noclipData.violations = noclipData.violations + 2
-                            print('[ANTICHEAT] 💨 PHASE THROUGH OBJECT! Distance to surface: ' .. string.format('%.2f', distToHit))
+                            DebugPrint('[ANTICHEAT] 💨 PHASE THROUGH OBJECT! Distance to surface: ' .. string.format('%.2f', distToHit))
                             noclipData.phaseCount = 0
                         end
                     else
@@ -1824,7 +1826,7 @@ CreateThread(function()
                     noclipData.swimAirCount = (noclipData.swimAirCount or 0) + 1
                     if noclipData.swimAirCount >= 5 then
                         noclipData.violations = noclipData.violations + 2
-                        print('[ANTICHEAT] 🏊 SWIMMING IN AIR!')
+                        DebugPrint('[ANTICHEAT] 🏊 SWIMMING IN AIR!')
                         noclipData.swimAirCount = 0
                     end
                 else
@@ -1846,7 +1848,7 @@ CreateThread(function()
                     noclipData.animMismatchCount = (noclipData.animMismatchCount or 0) + 1
                     if noclipData.animMismatchCount >= 10 then -- Increased from 8
                         noclipData.violations = noclipData.violations + 2
-                        print('[ANTICHEAT] 🎭 VELOCITY/ANIMATION MISMATCH! Speed: ' .. string.format('%.1f', speed) .. ' but no movement anim')
+                        DebugPrint('[ANTICHEAT] 🎭 VELOCITY/ANIMATION MISMATCH! Speed: ' .. string.format('%.1f', speed) .. ' but no movement anim')
                         noclipData.animMismatchCount = 0
                     end
                 else
@@ -1860,7 +1862,7 @@ CreateThread(function()
             -- VIOLATION CHECK & BAN
             -- ═══════════════════════════════════════════════════════════
             if noclipData.violations >= noclipData.maxViolations then
-                print('[ANTICHEAT] 🚨 NOCLIP CONFIRMED! Total violations: ' .. noclipData.violations)
+                DebugPrint('[ANTICHEAT] 🚨 NOCLIP CONFIRMED! Total violations: ' .. noclipData.violations)
                 TriggerServerEvent('anticheat:noclipDetected', 'noclip_v3_' .. noclipData.violations)
                 noclipData.violations = 0
                 noclipData.wallPassCount = 0
@@ -1919,7 +1921,7 @@ CreateThread(function()
                 if not isNetworked then
                     local model = GetEntityModel(vehicle)
                     local modelName = GetDisplayNameFromVehicleModel(model):lower()
-                    print('[ANTICHEAT] CLIENT-SIDE VEHICLE DETECTED! Model: ' .. modelName)
+                    DebugPrint('[ANTICHEAT] CLIENT-SIDE VEHICLE DETECTED! Model: ' .. modelName)
                     TriggerServerEvent('anticheat:spoofedVehicle', modelName, 'not_networked')
                     DeleteEntity(vehicle)
                 end
@@ -2012,7 +2014,7 @@ CreateThread(function()
                     
                     if not hasWeapon then
                         spoofedWeaponViolations = spoofedWeaponViolations + 1
-                        print('[ANTICHEAT] SPOOFED WEAPON! Hash: ' .. weapon .. ', Violations: ' .. spoofedWeaponViolations .. ', Inventory weapons: ' .. #playerWeapons)
+                        DebugPrint('[ANTICHEAT] SPOOFED WEAPON! Hash: ' .. weapon .. ', Violations: ' .. spoofedWeaponViolations .. ', Inventory weapons: ' .. #playerWeapons)
                         
                         -- Need 5 violations (more tolerance)
                         if spoofedWeaponViolations >= 5 then
@@ -2173,7 +2175,7 @@ CreateThread(function()
                             
                             if afterSnapSpeed < 50 then -- Stopped immediately = suspicious
                                 suspiciousAimCount = suspiciousAimCount + 1
-                                print('[ANTICHEAT] Snap aim detected! Speed: ' .. math.floor(aimSpeed) .. ' deg/s')
+                                DebugPrint('[ANTICHEAT] Snap aim detected! Speed: ' .. math.floor(aimSpeed) .. ' deg/s')
                                 
                                 if suspiciousAimCount >= 5 then
                                     TriggerServerEvent('anticheat:suspiciousAim', math.floor(aimSpeed))
@@ -2239,7 +2241,7 @@ CreateThread(function()
                                 -- Looking at someone through walls!
                                 lookingAtHidden = true
                                 lookingAtHiddenPlayers = lookingAtHiddenPlayers + 1
-                                print('[ANTICHEAT] Looking at hidden player! Distance: ' .. math.floor(distance) .. 'm, LOS: false')
+                                DebugPrint('[ANTICHEAT] Looking at hidden player! Distance: ' .. math.floor(distance) .. 'm, LOS: false')
                             end
                         end
                     end
@@ -2314,11 +2316,11 @@ AddEventHandler('gameEventTriggered', function(name, args)
                         wallhackData.firstViolationTime = currentTime
                     end
                     
-                    print('[ANTICHEAT] WALLHACK! Damage through walls! Distance: ' .. math.floor(distance) .. 'm, Violations: ' .. wallhackData.violations .. '/2, IsPlayer: ' .. tostring(isPlayer))
+                    DebugPrint('[ANTICHEAT] WALLHACK! Damage through walls! Distance: ' .. math.floor(distance) .. 'm, Violations: ' .. wallhackData.violations .. '/2, IsPlayer: ' .. tostring(isPlayer))
                     
                     -- 2 violations in 20 seconds = BAN
                     if wallhackData.violations >= 2 then
-                        print('[ANTICHEAT] WALLHACK CONFIRMED! Banning...')
+                        DebugPrint('[ANTICHEAT] WALLHACK CONFIRMED! Banning...')
                         TriggerServerEvent('anticheat:wallhackDetected', math.floor(distance), wallhackData.violations)
                         wallhackData.violations = 0
                     end
@@ -2455,10 +2457,10 @@ AddEventHandler('gameEventTriggered', function(name, args)
             -- ═══════════════════════════════════════════════════════════
             if angleDiff > maxAngle and distance > 10 then
                 aimbotData.silentAimViolations = aimbotData.silentAimViolations + 1
-                print('[ANTICHEAT] 🎯 SILENT AIM! Angle: ' .. string.format("%.1f", angleDiff) .. '° at ' .. math.floor(distance) .. 'm')
+                DebugPrint('[ANTICHEAT] 🎯 SILENT AIM! Angle: ' .. string.format("%.1f", angleDiff) .. '° at ' .. math.floor(distance) .. 'm')
                 
                 if aimbotData.silentAimViolations >= 3 then
-                    print('[ANTICHEAT] 🚨 SILENT AIM CONFIRMED!')
+                    DebugPrint('[ANTICHEAT] 🚨 SILENT AIM CONFIRMED!')
                     TriggerServerEvent('anticheat:silentAim', math.floor(distance), string.format("%.1f", angleDiff))
                     aimbotData.silentAimViolations = 0
                 end
@@ -2488,7 +2490,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
                 end
                 
                 if aimbotData.consecutiveHeadshots >= 5 then
-                    print('[ANTICHEAT] 🎯 ' .. aimbotData.consecutiveHeadshots .. ' CONSECUTIVE HEADSHOTS!')
+                    DebugPrint('[ANTICHEAT] 🎯 ' .. aimbotData.consecutiveHeadshots .. ' CONSECUTIVE HEADSHOTS!')
                     TriggerServerEvent('anticheat:suspiciousAccuracy', 'consecutive_headshots', aimbotData.consecutiveHeadshots)
                 end
             else
@@ -2530,7 +2532,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
                 
                 if maxCount >= 9 then
                     aimbotData.boneLockCount = aimbotData.boneLockCount + 1
-                    print('[ANTICHEAT] 🔒 BONE LOCK! ' .. maxCount .. '/10 on bone ' .. tostring(maxBone))
+                    DebugPrint('[ANTICHEAT] 🔒 BONE LOCK! ' .. maxCount .. '/10 on bone ' .. tostring(maxBone))
                     
                     if aimbotData.boneLockCount >= 2 then
                         TriggerServerEvent('anticheat:suspiciousAccuracy', 'bone_lock', maxCount .. '/10')
@@ -2554,20 +2556,20 @@ AddEventHandler('gameEventTriggered', function(name, args)
                 end
                 
                 if recentHeadshots >= 11 then
-                    print('[ANTICHEAT] 🎯 AIMBOT! ' .. recentHeadshots .. '/15 headshots!')
+                    DebugPrint('[ANTICHEAT] 🎯 AIMBOT! ' .. recentHeadshots .. '/15 headshots!')
                     TriggerServerEvent('anticheat:suspiciousAccuracy', 'headshot_rate', recentHeadshots .. '/15')
                 end
                 
                 local angleStdDev = CalculateStdDev(angles)
                 if angleStdDev < 0.5 and #angles >= 10 then
-                    print('[ANTICHEAT] 🤖 ROBOTIC AIM! StdDev: ' .. string.format("%.2f", angleStdDev))
+                    DebugPrint('[ANTICHEAT] 🤖 ROBOTIC AIM! StdDev: ' .. string.format("%.2f", angleStdDev))
                     TriggerServerEvent('anticheat:suspiciousAccuracy', 'robotic_aim', string.format("%.2f", angleStdDev))
                 end
                 
                 if aimbotData.longRangeHits >= 10 then
                     local longRangeHsRate = aimbotData.longRangeHeadshots / aimbotData.longRangeHits
                     if longRangeHsRate > 0.7 then
-                        print('[ANTICHEAT] 🎯 LONG RANGE AIMBOT! ' .. math.floor(longRangeHsRate * 100) .. '%')
+                        DebugPrint('[ANTICHEAT] 🎯 LONG RANGE AIMBOT! ' .. math.floor(longRangeHsRate * 100) .. '%')
                         TriggerServerEvent('anticheat:suspiciousAccuracy', 'long_range_hs', math.floor(longRangeHsRate * 100) .. '%')
                         aimbotData.longRangeHits = 0
                         aimbotData.longRangeHeadshots = 0
@@ -2595,7 +2597,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
                         avgSwitch = avgSwitch / #aimbotData.targetSwitchTimes
                         
                         if avgSwitch < 150 then
-                            print('[ANTICHEAT] ⚡ INSTANT TARGET SWITCH! ' .. math.floor(avgSwitch) .. 'ms')
+                            DebugPrint('[ANTICHEAT] ⚡ INSTANT TARGET SWITCH! ' .. math.floor(avgSwitch) .. 'ms')
                             TriggerServerEvent('anticheat:suspiciousAccuracy', 'instant_switch', math.floor(avgSwitch) .. 'ms')
                             aimbotData.targetSwitchTimes = {}
                         end
@@ -2627,7 +2629,7 @@ AddEventHandler('gameEventTriggered', function(name, args)
                     local timeSpan = (currentTime - aimbotData.kills[1]) / 1000
                     local killsPerMinute = (#aimbotData.kills / timeSpan) * 60
                     if killsPerMinute > 30 then
-                        print('[ANTICHEAT] 💀 IMPOSSIBLE KILL RATE! ' .. math.floor(killsPerMinute) .. '/min')
+                        DebugPrint('[ANTICHEAT] 💀 IMPOSSIBLE KILL RATE! ' .. math.floor(killsPerMinute) .. '/min')
                         TriggerServerEvent('anticheat:suspiciousAccuracy', 'kill_rate', math.floor(killsPerMinute) .. '/min')
                     end
                 end
@@ -2641,7 +2643,7 @@ end)
 -- ============================================
 CreateThread(function()
     Wait(8000)
-    print('[ANTICHEAT] Anti-Aimbot v3.0 Active (10 Methods)')
+    DebugPrint('[ANTICHEAT] Anti-Aimbot v3.0 Active (10 Methods)')
     
     while true do
         Wait(33)
@@ -2677,7 +2679,7 @@ CreateThread(function()
                         
                         if afterSpeed < 80 then
                             aimbotData.aimSnapCount = aimbotData.aimSnapCount + 1
-                            print('[ANTICHEAT] ⚡ AIM SNAP! ' .. math.floor(rotSpeed) .. ' → ' .. math.floor(afterSpeed) .. ' deg/s')
+                            DebugPrint('[ANTICHEAT] ⚡ AIM SNAP! ' .. math.floor(rotSpeed) .. ' → ' .. math.floor(afterSpeed) .. ' deg/s')
                             
                             if aimbotData.aimSnapCount >= 4 then
                                 TriggerServerEvent('anticheat:aimbotSnap', math.floor(rotSpeed), aimbotData.aimSnapCount)
@@ -2699,7 +2701,7 @@ CreateThread(function()
                             aimbotData.smoothAimViolations = aimbotData.smoothAimViolations + 1
                             
                             if aimbotData.smoothAimViolations >= 10 then
-                                print('[ANTICHEAT] 🤖 SMOOTH AIMBOT! StdDev: ' .. string.format("%.1f", stdDev))
+                                DebugPrint('[ANTICHEAT] 🤖 SMOOTH AIMBOT! StdDev: ' .. string.format("%.1f", stdDev))
                                 TriggerServerEvent('anticheat:suspiciousAccuracy', 'smooth_aimbot', string.format("%.1f", stdDev))
                                 aimbotData.smoothAimViolations = 0
                                 aimbotData.aimSmoothness = {}
@@ -2768,7 +2770,7 @@ CreateThread(function()
                             
                             if avgReaction < 80 then
                                 triggerbotData.violations = triggerbotData.violations + 1
-                                print('[ANTICHEAT] 🔫 TRIGGERBOT! Avg: ' .. math.floor(avgReaction) .. 'ms')
+                                DebugPrint('[ANTICHEAT] 🔫 TRIGGERBOT! Avg: ' .. math.floor(avgReaction) .. 'ms')
                                 
                                 if triggerbotData.violations >= 3 then
                                     TriggerServerEvent('anticheat:suspiciousAccuracy', 'triggerbot', math.floor(avgReaction) .. 'ms')
@@ -2829,7 +2831,7 @@ CreateThread(function()
                         
                         if zeroRecoilCount >= 8 then
                             recoilData.noRecoilCount = recoilData.noRecoilCount + 1
-                            print('[ANTICHEAT] 🔫 NO RECOIL! ' .. zeroRecoilCount .. '/10 zero recoil')
+                            DebugPrint('[ANTICHEAT] 🔫 NO RECOIL! ' .. zeroRecoilCount .. '/10 zero recoil')
                             
                             if recoilData.noRecoilCount >= 3 then
                                 TriggerServerEvent('anticheat:suspiciousAccuracy', 'no_recoil', zeroRecoilCount .. '/10')
@@ -2934,7 +2936,7 @@ CreateThread(function()
                 if found and not luaExecutorData.confirmedMenus[globalName] then
                     luaExecutorData.confirmedMenus[globalName] = true
                     luaExecutorData.violations = luaExecutorData.violations + 1
-                    print('[ANTICHEAT] CONFIRMED CHEAT MENU: ' .. globalName)
+                    DebugPrint('[ANTICHEAT] CONFIRMED CHEAT MENU: ' .. globalName)
                     TriggerServerEvent('anticheat:luaExecutorConfirmed', globalName)
                 end
             end
@@ -2942,7 +2944,7 @@ CreateThread(function()
     end
 end)
 
-print('[ANTICHEAT] Anti-Lua Executor loaded (careful mode)!')
+DebugPrint('[ANTICHEAT] Anti-Lua Executor loaded (careful mode)!')
 
 
 -- ============================================
@@ -2976,7 +2978,7 @@ local fastWeapons = {
 
 CreateThread(function()
     Wait(15000)
-    print('[ANTICHEAT] Advanced Weapon Modifier Protection v3.0 Active')
+    DebugPrint('[ANTICHEAT] Advanced Weapon Modifier Protection v3.0 Active')
     
     while true do
         -- Optimize: Check less often when idle, every frame when shooting
@@ -3015,7 +3017,7 @@ CreateThread(function()
                             weaponData.infiniteAmmoCount = weaponData.infiniteAmmoCount + 1
                             
                             if weaponData.infiniteAmmoCount >= 3 then -- ULTRA STRICT: 3 shots = BAN
-                                print('[ANTICHEAT] INFINITE AMMO DETECTED! Stuck at ' .. currentAmmo)
+                                DebugPrint('[ANTICHEAT] INFINITE AMMO DETECTED! Stuck at ' .. currentAmmo)
                                 TriggerServerEvent('anticheat:weaponModifier', 'infinite_ammo', weapon)
                                 weaponData.infiniteAmmoCount = 0
                                 Wait(1000)
@@ -3028,7 +3030,7 @@ CreateThread(function()
                         
                         -- NO RELOAD CHECK: STRICT - only +2 tolerance
                         if weaponData.shotsInClip > (maxClip + 2) and maxClip > 5 then
-                            print('[ANTICHEAT] NO RELOAD DETECTED! Fired ' .. weaponData.shotsInClip .. ' shots (Max: ' .. maxClip .. ')')
+                            DebugPrint('[ANTICHEAT] NO RELOAD DETECTED! Fired ' .. weaponData.shotsInClip .. ' shots (Max: ' .. maxClip .. ')')
                             TriggerServerEvent('anticheat:weaponModifier', 'no_reload_clip', weapon)
                             weaponData.shotsInClip = 0
                             Wait(1000)
@@ -3051,7 +3053,7 @@ CreateThread(function()
                             
                             -- STRICT: 10 rapid shots = BAN
                             if weaponData.rapidFireCount >= 10 then
-                                print('[ANTICHEAT] RAPID FIRE DETECTED! Avg interval: ' .. timeDiff .. 'ms')
+                                DebugPrint('[ANTICHEAT] RAPID FIRE DETECTED! Avg interval: ' .. timeDiff .. 'ms')
                                 TriggerServerEvent('anticheat:weaponModifier', 'rapid_fire', weapon)
                                 weaponData.rapidFireCount = 0 
                                 Wait(1000)
@@ -3093,7 +3095,7 @@ CreateThread(function()
     end
 end)
 
-print('[ANTICHEAT] Anti-Weapon Modifier loaded!')
+DebugPrint('[ANTICHEAT] Anti-Weapon Modifier loaded!')
 
 
 -- ============================================
@@ -3110,7 +3112,7 @@ local freecamData = {
 
 CreateThread(function()
     Wait(20000)
-    print('[ANTICHEAT] Unified Anti-Freecam System v4.0 Active')
+    DebugPrint('[ANTICHEAT] Unified Anti-Freecam System v4.0 Active')
 
     while true do
         Wait(400)
@@ -3168,7 +3170,7 @@ CreateThread(function()
 
             if distance > maxDist then
                 freecamData.violations = freecamData.violations + 1 -- Reduced from 2
-                print('[ANTICHEAT] FREECAM! Dist: ' .. math.floor(distance) .. 'm (Max: ' .. maxDist .. 'm)')
+                DebugPrint('[ANTICHEAT] FREECAM! Dist: ' .. math.floor(distance) .. 'm (Max: ' .. maxDist .. 'm)')
             else
                 freecamData.violations = math.max(0, freecamData.violations - 0.5)
             end
@@ -3189,7 +3191,7 @@ CreateThread(function()
                 if hit and distance > 30.0 then
                     -- Camera is behind a wall AND far away
                     freecamData.violations = freecamData.violations + 1
-                    print('[ANTICHEAT] CAMERA THROUGH WALL! Dist: ' .. math.floor(distance) .. 'm')
+                    DebugPrint('[ANTICHEAT] CAMERA THROUGH WALL! Dist: ' .. math.floor(distance) .. 'm')
                 end
             end
 
@@ -3203,7 +3205,7 @@ CreateThread(function()
                 -- Player barely moved but camera flew across the map
                 if playerMoved < 2.0 and camMoved > 50.0 and not IsPedInAnyVehicle(ped, false) then -- Increased from 30.0 to 50.0
                     freecamData.violations = freecamData.violations + 2 -- Reduced from 3
-                    print('[ANTICHEAT] SPECTATE MODE! Cam speed: ' .. math.floor(camMoved * 2.5) .. 'm/s')
+                    DebugPrint('[ANTICHEAT] SPECTATE MODE! Cam speed: ' .. math.floor(camMoved * 2.5) .. 'm/s')
                 end
             end
             
@@ -3214,7 +3216,7 @@ CreateThread(function()
             -- CHECK BAN THRESHOLD
             -- ===========================
             if freecamData.violations >= freecamData.maxViolations then
-                print('[ANTICHEAT] FREECAM CONFIRMED! Banning...')
+                DebugPrint('[ANTICHEAT] FREECAM CONFIRMED! Banning...')
                 TriggerServerEvent('anticheat:freecamDetected', math.floor(distance))
                 freecamData.violations = 0
             end
@@ -3230,7 +3232,7 @@ end)
 -- ============================================
 CreateThread(function()
     Wait(25000)
-    print('[ANTICHEAT] Spectate Other Players Detection Active')
+    DebugPrint('[ANTICHEAT] Spectate Other Players Detection Active')
     
     while true do
         Wait(1500)
@@ -3273,7 +3275,7 @@ CreateThread(function()
                             
                             if dot > 0.7 then -- Looking at them
                                 freecamData.violations = freecamData.violations + 2 -- Reduced from 4
-                                print('[ANTICHEAT] SPECTATING PLAYER! Dist to them: ' .. math.floor(distMeToOther) .. 'm')
+                                DebugPrint('[ANTICHEAT] SPECTATING PLAYER! Dist to them: ' .. math.floor(distMeToOther) .. 'm')
                                 
                                 if freecamData.violations >= freecamData.maxViolations then
                                     TriggerServerEvent('anticheat:freecamDetected', math.floor(distMeToOther))
@@ -3290,7 +3292,7 @@ CreateThread(function()
     end
 end)
 
-print('[ANTICHEAT] Anti-Freecam/Spectate System loaded!')
+DebugPrint('[ANTICHEAT] Anti-Freecam/Spectate System loaded!')
 
 
 
@@ -3304,7 +3306,7 @@ print('[ANTICHEAT] Anti-Freecam/Spectate System loaded!')
 if Config and Config.Anticheat and Config.Anticheat.enabled and Config.BlacklistedPlates then
     CreateThread(function()
         Wait(20000) -- Wait for player to fully load
-        print('[ANTICHEAT] Anti-Blacklisted Plates System Active')
+        DebugPrint('[ANTICHEAT] Anti-Blacklisted Plates System Active')
         
         local checkInterval = Config.PlateCheckInterval or 5000
         local checkedVehicles = {} -- Cache to avoid spam
@@ -3344,16 +3346,16 @@ if Config and Config.Anticheat and Config.Anticheat.enabled and Config.Blacklist
                 if string.lower(plate) == string.lower(cleanBlacklist) or 
                    string.find(string.lower(plate), string.lower(cleanBlacklist), 1, true) then
                     
-                    print('[ANTICHEAT] [CLIENT] BLACKLISTED PLATE DETECTED!')
-                    print('[ANTICHEAT] [CLIENT] Plate: ' .. plate)
-                    print('[ANTICHEAT] [CLIENT] Matched: ' .. blacklistedPlate)
-                    print('[ANTICHEAT] [CLIENT] Vehicle NetId: ' .. tostring(VehToNet(vehicle)))
-                    print('[ANTICHEAT] [CLIENT] Sending event to server...')
+                    DebugPrint('[ANTICHEAT] [CLIENT] BLACKLISTED PLATE DETECTED!')
+                    DebugPrint('[ANTICHEAT] [CLIENT] Plate: ' .. plate)
+                    DebugPrint('[ANTICHEAT] [CLIENT] Matched: ' .. blacklistedPlate)
+                    DebugPrint('[ANTICHEAT] [CLIENT] Vehicle NetId: ' .. tostring(VehToNet(vehicle)))
+                    DebugPrint('[ANTICHEAT] [CLIENT] Sending event to server...')
                     
                     -- Report to server
                     TriggerServerEvent('anticheat:blacklistedPlate', plate, blacklistedPlate, VehToNet(vehicle))
                     
-                    print('[ANTICHEAT] [CLIENT] Event sent!')
+                    DebugPrint('[ANTICHEAT] [CLIENT] Event sent!')
                     
                     -- Mark as checked to avoid spam
                     checkedVehicles[vehicle] = plate
@@ -3370,7 +3372,7 @@ if Config and Config.Anticheat and Config.Anticheat.enabled and Config.Blacklist
     end)
 end
 
-print('[ANTICHEAT] Anti-Blacklisted Plates loaded!')
+DebugPrint('[ANTICHEAT] Anti-Blacklisted Plates loaded!')
 
 
 -- ============================================
@@ -3464,16 +3466,16 @@ if Config and Config.Anticheat and Config.Anticheat.enabled and Config.MechanicS
                     local inShop, shopName = IsInMechanicShop()
                     
                     if not inShop then
-                        print('[ANTICHEAT] [CLIENT] ILLEGAL VEHICLE MODIFICATION DETECTED!')
-                        print('[ANTICHEAT] [CLIENT] Type: ' .. tostring(modType))
-                        print('[ANTICHEAT] [CLIENT] Vehicle NetId: ' .. tostring(VehToNet(vehicle)))
-                        print('[ANTICHEAT] [CLIENT] Sending event to server...')
+                        DebugPrint('[ANTICHEAT] [CLIENT] ILLEGAL VEHICLE MODIFICATION DETECTED!')
+                        DebugPrint('[ANTICHEAT] [CLIENT] Type: ' .. tostring(modType))
+                        DebugPrint('[ANTICHEAT] [CLIENT] Vehicle NetId: ' .. tostring(VehToNet(vehicle)))
+                        DebugPrint('[ANTICHEAT] [CLIENT] Sending event to server...')
                         
                         -- Report to server
                         local coords = GetEntityCoords(ped)
                         TriggerServerEvent('anticheat:illegalVehicleMod', modType, coords, VehToNet(vehicle))
                         
-                        print('[ANTICHEAT] [CLIENT] Event sent!')
+                        DebugPrint('[ANTICHEAT] [CLIENT] Event sent!')
                         
                         -- Clear cache to avoid spam
                         lastVehicleData[vehicle] = nil
@@ -3681,4 +3683,3 @@ RegisterNetEvent('anticheat:showInfo', function()
         end
     end)
 end)
-
