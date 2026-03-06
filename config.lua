@@ -90,7 +90,7 @@ Config.ServerName = 'Aether Server'
 
 -- Fivemanage API Token (για screenshots στο Discord)
 -- Πάρε δωρεάν token από: https://fivemanage.com
-Config.FivemanageToken = 'xSDwaADlGHGeHSCNGwFmTHof8JRAbI94'
+Config.FivemanageToken = 'xxx.xxx.xxx'
 
 -- Discord invite link for ban appeals
 Config.DiscordInvite = 'https://discord.gg/your-server'
@@ -765,4 +765,5 @@ Config.WhitelistedProps = {
     'p_med_bag_01',
     'p_med_bag_01_s',
 }
+
 
