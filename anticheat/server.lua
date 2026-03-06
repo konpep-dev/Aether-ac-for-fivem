@@ -538,7 +538,7 @@ local function SendBanWebhook(playerName, playerId, reason, detectionType, licen
             }
         },
         footer = {
-            text = '🛡️ Aether Anticheat v4.0 • ' .. serverName,
+            text = '🛡️ Aether Anticheat v4.5.0 • ' .. serverName,
             icon_url = 'https://i.imgur.com/AfFp7pu.png'
         },
         timestamp = timestamp
@@ -1165,7 +1165,9 @@ local function InitNoclipTracking(src)
             speedViolations = 0,
             teleportViolations = 0,
             upwardCount = 0,       -- New: upward position delta tracking
-            extremeHeightCount = 0 -- New: extreme altitude tracking
+            extremeHeightCount = 0, -- New: extreme altitude tracking
+            firstSeen = GetGameTimer(), -- Grace period for new joins
+            isSafe = false         -- Cache for safe mode
         }
     end
     return serverNoclipData[src]
@@ -1214,7 +1216,16 @@ CreateThread(function()
                     -- Initialize tracking
                     local data = InitNoclipTracking(src)
                     
-                    -- Skip if dead
+                    -- Check if player is in safe mode or recently joined
+                    local currentTimeMs = GetGameTimer()
+                    local timeSinceSeen = currentTimeMs - data.firstSeen
+                    local isSafe = IsPlayerInSafeMode(src) or (timeSinceSeen < 15000) -- 15 seconds grace period
+                    data.isSafe = isSafe
+                    
+                    -- Skip if banned already (prevent double ban cards)
+                    if (GlobalBanBlocked and GlobalBanBlocked[src]) or (LocalBanBlocked and LocalBanBlocked[src]) then
+                        goto continueServerNoclip
+                    end
                     if GetEntityHealth(ped) <= 0 then
                         data.lastPos = nil
                         data.violations = 0
@@ -1369,15 +1380,19 @@ CreateThread(function()
                             realHorizSpeed = math.sqrt(dx^2 + dy^2) / 0.5 -- m/s
                         end
 
-                        -- === DETECTION A: SUSTAINED HIGH Z + ZERO/POSITIVE VELOCITY ===
-                        -- Player at high Z with no downward velocity = flying/floating
-                        -- Normal falling has velocity.z < -5
-                        if coords.z > 50.0 and verticalSpeed > -2.0 and verticalSpeed < 2.0 and realHorizSpeed > 3.0 then
+                        -- === DETECTION A: SUSTAINED HORIZONTAL MOVEMENT + ZERO VERTICAL CHANGE ===
+                        -- Suspicious: Moving fast horizontally while Z stays perfectly constant (floating)
+                        -- Normal players on terrain alternate Z even slightly.
+                        -- We only check this if they aren't falling or jumping.
+                        local isFloating = math.abs(verticalSpeed) < 0.1 and math.abs(realVerticalDelta) < 0.1
+                        
+                        if isFloating and realHorizSpeed > 8.5 and not data.isSafe then
                             data.floatingTime = data.floatingTime + 1
-
-                            if data.floatingTime >= 8 then -- 8×500ms = 4 seconds
-                                DebugLog('✈️ ' .. name .. ' FLYING! Z: ' .. math.floor(coords.z) .. ', VSpeed: ' .. string.format('%.1f', verticalSpeed))
-                                data.violations = data.violations + 2
+                            
+                            -- Need 10 seconds of perfectly level fast movement to trigger (20 ticks)
+                            if data.floatingTime >= 20 then 
+                                DebugLog('✈️ ' .. name .. ' FLOAT-FLYING! Speed: ' .. string.format('%.1f', realHorizSpeed))
+                                data.violations = data.violations + 1 -- Reduced weight to avoid instant ban
                                 data.floatingTime = 0
 
                                 if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -1406,11 +1421,11 @@ CreateThread(function()
                         end
 
                         -- === DETECTION B: RAPID UPWARD POSITION DELTA ===
-                        -- Z moving up >3m per 500ms without jumping = noclip going up
+                        -- Z moving up >5m per 500ms without vehicle = noclip going up or super jump
                         -- Normal jump raises Z by max ~1.5m in 500ms
-                        if data.lastPos and realVerticalDelta > 3.0 and coords.z > 30.0 then
+                        if data.lastPos and realVerticalDelta > 5.0 and not data.isSafe then
                             data.upwardCount = data.upwardCount + 1
-                            if data.upwardCount >= 3 then
+                            if data.upwardCount >= 4 then
                                 DebugLog('⬆️ ' .. name .. ' UPWARD NOCLIP! Z delta: +' .. string.format('%.1f', realVerticalDelta) .. 'm')
                                 data.violations = data.violations + 2
                                 data.upwardCount = 0
@@ -1419,13 +1434,13 @@ CreateThread(function()
                             data.upwardCount = math.max(0, data.upwardCount - 1)
                         end
 
-                        -- === DETECTION C: EXTREME ALTITUDE ===
-                        -- >200m Z without aircraft = impossible without noclip
-                        if coords.z > 200.0 then
+                        -- === DETECTION C: IMPOSSIBLE ALTITUDE ===
+                        -- >900m Z without aircraft = impossible in GTA Map (Chilliad is ~800m)
+                        if coords.z > 950.0 and not data.isSafe and not isInVehicle then
                             data.extremeHeightCount = data.extremeHeightCount + 1
-                            if data.extremeHeightCount >= 2 then
+                            if data.extremeHeightCount >= 4 then -- 2 seconds
                                 DebugLog('🚨 ' .. name .. ' EXTREME ALTITUDE! Z: ' .. math.floor(coords.z))
-                                data.violations = data.violations + 3
+                                data.violations = data.violations + 2
                                 data.extremeHeightCount = 0
                             end
                         else
