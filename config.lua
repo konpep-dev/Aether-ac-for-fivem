@@ -59,19 +59,19 @@ Config.LogActions = true
 -- Discord Webhooks (leave empty to disable)
 Config.Webhooks = {
     -- Main log channel (all logs go here)
-    main = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    main = 'xxxxxxxxxxxxxx',
     -- Specific action webhooks (optional, falls back to main)
-    bans = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    kicks = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    reports = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    permissions = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    bans = 'xxxxxxxxxxxxxx',
+    kicks = 'xxxxxxxxxxxxxx',
+    reports = 'xxxxxxxxxxxxxx',
+    permissions = 'xxxxxxxxxxxxxx',
     -- New webhooks
-    kills = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    connects = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    screenshots = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    spawn = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    teleport = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    anticheat = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    kills = 'xxxxxxxxxxxxxx',
+    connects = 'xxxxxxxxxxxxxx',
+    screenshots = 'xxxxxxxxxxxxxx',
+    spawn = 'xxxxxxxxxxxxxx',
+    teleport = 'xxxxxxxxxxxxxx',
+    anticheat = 'xxxxxxxxxxxxxx',
 }
 
 -- Webhook colors (decimal)
@@ -90,7 +90,7 @@ Config.ServerName = 'Aether Server'
 
 -- Fivemanage API Token (για screenshots στο Discord)
 -- Πάρε δωρεάν token από: https://fivemanage.com
-Config.FivemanageToken = 'xSDwaADlGHGeHSCNGwFmTHof8JRAbI94'
+Config.FivemanageToken = 'xxxxxxxxxxxxx'
 
 -- Discord invite link for ban appeals
 Config.DiscordInvite = 'https://discord.gg/your-server'
@@ -100,7 +100,7 @@ Config.DiscordInvite = 'https://discord.gg/your-server'
 -- ============================================
 Config.AntiVPN = {
     enabled = true,  -- Enable/Disable VPN detection
-    apiKey = '22afb8dfa3ea99ba64f304b247e1392d5642ec26022e0351a1b37a62f99462eb',  -- proxycheck.io API key
+    apiKey = 'xxxxxxxxxxxxxxxxxxxxxx',  -- proxycheck.io API key
     cacheDuration = 7 * 24 * 60 * 60,  -- Cache IPs for 7 days (in seconds)
     whitelist = {
         -- Add IPs that should bypass VPN check
@@ -773,3 +773,4 @@ Config.WhitelistedProps = {
     'p_med_bag_01',
     'p_med_bag_01_s',
 }
+
