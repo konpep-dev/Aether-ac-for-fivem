@@ -1043,6 +1043,14 @@ AddEventHandler('playerConnecting', function()
         noDamageInCombat = 0
     }
     clientHeartbeats[src] = { lastBeat = os.time(), started = false }
+    
+    -- IMPORTANT: Clear noclip tracking data for this ID to prevent reusing data from previous player
+    if serverNoclipData then serverNoclipData[src] = nil end
+end)
+
+AddEventHandler('playerDropped', function()
+    local src = source
+    if serverNoclipData then serverNoclipData[src] = nil end
 end)
 
 -- ============================================
@@ -1219,12 +1227,24 @@ CreateThread(function()
                     -- Check if player is in safe mode or recently joined
                     local currentTimeMs = GetGameTimer()
                     local timeSinceSeen = currentTimeMs - data.firstSeen
-                    local isSafe = IsPlayerInSafeMode(src) or (timeSinceSeen < 15000) -- 15 seconds grace period
+                    local isSafe = IsPlayerInSafeMode(src) or (timeSinceSeen < 30000) -- 30 seconds grace period
                     data.isSafe = isSafe
                     
                     -- Skip if banned already (prevent double ban cards)
                     if (GlobalBanBlocked and GlobalBanBlocked[src]) or (LocalBanBlocked and LocalBanBlocked[src]) then
                         goto continueServerNoclip
+                    end
+                    
+                    -- Teleport/Spawn protection: If they moved too far in 0.5s, it's a teleport, not noclip
+                    if data.lastPos then
+                        local teleDist = GetDistance3D(coords, data.lastPos)
+                        if teleDist > 15.0 then
+                            data.lastPos = coords
+                            data.floatingTime = 0
+                            data.upwardCount = 0
+                            data.extremeHeightCount = 0
+                            goto continueServerNoclip
+                        end
                     end
                     if GetEntityHealth(ped) <= 0 then
                         data.lastPos = nil
@@ -1389,10 +1409,10 @@ CreateThread(function()
                         if isFloating and realHorizSpeed > 8.5 and not data.isSafe then
                             data.floatingTime = data.floatingTime + 1
                             
-                            -- Need 10 seconds of perfectly level fast movement to trigger (20 ticks)
-                            if data.floatingTime >= 20 then 
+                            -- Need 15 seconds of perfectly level fast movement to trigger (30 ticks)
+                            if data.floatingTime >= 30 then 
                                 DebugLog('✈️ ' .. name .. ' FLOAT-FLYING! Speed: ' .. string.format('%.1f', realHorizSpeed))
-                                data.violations = data.violations + 1 -- Reduced weight to avoid instant ban
+                                data.violations = data.violations + 1
                                 data.floatingTime = 0
 
                                 if Config and Config.Webhooks and Config.Webhooks.anticheat then
@@ -1423,9 +1443,9 @@ CreateThread(function()
                         -- === DETECTION B: RAPID UPWARD POSITION DELTA ===
                         -- Z moving up >5m per 500ms without vehicle = noclip going up or super jump
                         -- Normal jump raises Z by max ~1.5m in 500ms
-                        if data.lastPos and realVerticalDelta > 5.0 and not data.isSafe then
+                        if data.lastPos and realVerticalDelta > 7.5 and not data.isSafe then
                             data.upwardCount = data.upwardCount + 1
-                            if data.upwardCount >= 4 then
+                            if data.upwardCount >= 5 then -- 2.5 seconds of rapid climbing
                                 DebugLog('⬆️ ' .. name .. ' UPWARD NOCLIP! Z delta: +' .. string.format('%.1f', realVerticalDelta) .. 'm')
                                 data.violations = data.violations + 2
                                 data.upwardCount = 0
@@ -1488,17 +1508,16 @@ CreateThread(function()
                             lastDirection = direction
                         end
                         
-                        -- Too many direction changes in short time = erratic/noclip
-                        if directionChanges >= 6 then
-                            DebugLog('🔀 ' .. name .. ' ERRATIC MOVEMENT! Direction changes: ' .. directionChanges)
-                            data.violations = data.violations + 1
-                        end
+                        -- Disabled erratic movement check - prone to false positives on terrain
+                        -- if directionChanges >= 6 then
+                        --     data.violations = data.violations + 1
+                        -- end
                     end
                     
                     -- ═══════════════════════════════════════════════════════════
                     -- VIOLATION CHECK & BAN
                     -- ═══════════════════════════════════════════════════════════
-                    local maxViolations = GetACViolations('noclip') + 1 -- Faster bans (was +2)
+                    local maxViolations = GetACViolations('noclip') + 4 -- Much more lenient (needs 5+ violations)
                     
                     if data.violations >= maxViolations then
                         ImportantLog('🚨 ' .. name .. ' NOCLIP CONFIRMED (Server-Side)! Violations: ' .. data.violations)
