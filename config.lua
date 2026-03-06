@@ -61,17 +61,17 @@ Config.Webhooks = {
     -- Main log channel (all logs go here)
     main = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
     -- Specific action webhooks (optional, falls back to main)
-    bans = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    kicks = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    reports = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    permissions = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    bans = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxxx',
+    kicks = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxx',
+    reports = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxx',
+    permissions = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxx',
     -- New webhooks
-    kills = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    connects = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    screenshots = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    spawn = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    teleport = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
-    anticheat = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-fGmVBIJvs0qosJ',
+    kills = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxxx',
+    connects = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxx',
+    screenshots = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxx',
+    spawn = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxxxxx',
+    teleport = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxxx',
+    anticheat = 'https://discord.com/api/webhooks/1444109485663719565/XfkC8tOBO095Y5Oyct8ehs4DEuGn4WaBRkN297YaPmlP8tdZsuLIo-xxxxxxxxxx',
 }
 
 -- Webhook colors (decimal)
@@ -765,3 +765,4 @@ Config.WhitelistedProps = {
     'p_med_bag_01',
     'p_med_bag_01_s',
 }
+
