@@ -4,7 +4,7 @@
 -- ============================================
 
 local GITHUB_REPO = "konpep-dev/Aether-ac-for-fivem"
-local GITHUB_API = "https://api.github.com/repos/" .. GITHUB_REPO .. "/releases/latest"
+local GITHUB_API = "https://raw.githubusercontent.com/" .. GITHUB_REPO .. "/main/version.json"
 local CURRENT_VERSION = "4.5.0"  -- Update this with each release
 local CHECK_INTERVAL = 30 * 60 * 1000  -- Check every 30 minutes
 
@@ -45,6 +45,7 @@ local function CheckForUpdates()
     PerformHttpRequest(GITHUB_API, function(statusCode, response, headers)
         if statusCode ~= 200 then
             print('[AUTO-UPDATE] Failed to check for updates (Status: ' .. statusCode .. ')')
+            print('[AUTO-UPDATE] Make sure version.json exists in GitHub repo')
             return
         end
         
@@ -55,17 +56,14 @@ local function CheckForUpdates()
             return
         end
         
-        local version = data.tag_name or data.name
+        local version = data.version
         if not version then
-            print('[AUTO-UPDATE] No version found in release')
+            print('[AUTO-UPDATE] No version found in version.json')
             return
         end
         
-        -- Remove 'v' prefix if exists
-        version = version:gsub("^v", "")
-        
         latestVersion = version
-        downloadUrl = data.zipball_url
+        downloadUrl = data.download_url or 'https://github.com/' .. GITHUB_REPO .. '/releases'
         
         if CompareVersions(CURRENT_VERSION, version) then
             updateAvailable = true
