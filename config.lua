@@ -692,6 +692,10 @@ Config.BlacklistedPlates = {
     'xcheats',
     'REDENGINE',
     'redengine',
+    '420_services',
+    '420_cheats',
+    'keyser',
+    'susano',
     
     -- Common troll plates
     'HACKER',
@@ -765,6 +769,7 @@ Config.WhitelistedProps = {
     'p_med_bag_01',
     'p_med_bag_01_s',
 }
+
 
 
 
